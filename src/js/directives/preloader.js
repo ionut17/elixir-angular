@@ -1,0 +1,7 @@
+app.directive('preloader', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<section class="preloader"><section class="p-boxes-wrapper"><figure class="p-box"></figure><figure class="p-box"></figure><figure class="p-box"></figure></section><section class="logo-wrapper hide"><figure class="logo"></figure></section></section>',
+  };
+});

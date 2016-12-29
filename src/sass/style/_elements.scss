@@ -1,0 +1,33 @@
+//Tags
+
+span.tag{
+  width: auto;
+  padding: 3px 10px;
+
+  font-family: $tagFont;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+
+  width: 75px;
+  min-width: 75px;
+
+  display: block;
+  text-align: center;
+
+  color: white;
+  background-color: $lightgrey;
+
+
+  &.tag-student{
+    background-color: $studentColor;
+  }
+
+  &.tag-lecturer{
+    background-color: $lecturerColor;
+  }
+
+  &.tag-admin{
+    background-color: $adminColor;
+  }
+}
