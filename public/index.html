@@ -23,10 +23,13 @@
     <link rel="stylesheet" href="css/main.css">
 
     <!--Vendor scripts-->
+    <script src="js/vendor/jquery-1.11.2.min.js"></script>
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     <script src="js/vendor/angular.min.js"></script>
     <script src="js/vendor/angular-ui-router.min.js"></script>
-    <script src="js/vendor/angular-resource.min.js"></script>
+    <!-- <script src="js/vendor/angular-animate.min.js"></script> -->
+    <script src="js/vendor/angular-resource.js"></script>
+    <script src="js/vendor/bootstrap.min.js"></script>
 
     <!--Custom fonts-->
     <link href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400" rel="stylesheet">
@@ -68,13 +71,13 @@
             </a>
           </li>
           <li>
-            <a ui-sref="groups" ui-sref-active="active">
+            <a ui-sref="groups.list" ng-class="{active:$state.includes('groups')}">
               <i class="fa fa-book" aria-hidden="true"></i>
               <span>Groups</span>
             </a>
           </li>
           <li>
-            <a ui-sref="users" ui-sref-active="active">
+            <a ui-sref="users.list" ng-class="{active: $state.includes('users')}">
               <i class="fa fa-users" aria-hidden="true"></i>
               <span>Users</span>
             </a>

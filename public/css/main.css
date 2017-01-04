@@ -25,6 +25,10 @@
   margin: 10px 0;
   margin-bottom: 20px;
   padding-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 5px solid rgba(0, 0, 0, 0.1); }
   .page-title-wrapper h2 {
     font-family: "Titillium Web", Montserrat, Arial;
@@ -202,6 +206,9 @@ ul.projects-list {
 ::-webkit-scrollbar {
   display: none; }
 
+input[type=checkbox].checkbox-hidden {
+  display: none; }
+
 .preloader {
   width: 100vw;
   height: 100vh;
@@ -324,6 +331,21 @@ ul.projects-list {
   width: 100%;
   background-color: white; }
 
+.table-title {
+  width: 100%;
+  background-color: #8b3aba;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+  font-family: "Titillium Web", Montserrat, Arial;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: capitalize; }
+
 .elixir-table {
   margin-bottom: 0;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -347,7 +369,7 @@ ul.projects-list {
   .elixir-table thead tr {
     background-color: rgba(0, 0, 0, 0.1); }
     .elixir-table thead tr th {
-      padding: 20px 0; }
+      padding: 10px 0; }
   .elixir-table tbody tr:hover {
     transition: all 200ms cubic-bezier(0.3, 1.35, 1, 1);
     background-color: rgba(0, 0, 0, 0.05);
@@ -381,6 +403,180 @@ span.tag {
     background-color: #446CB3; }
   span.tag.tag-admin {
     background-color: #e74c3c; }
+
+.filters-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: bold; }
+  .filters-wrapper span {
+    font-family: "Titillium Web", Montserrat, Arial;
+    color: rgba(0, 0, 0, 0.5);
+    margin-right: 25px; }
+  .filters-wrapper ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    list-style-type: none;
+    margin-bottom: 0;
+    padding: 0; }
+    .filters-wrapper ul li {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin-right: 25px; }
+      .filters-wrapper ul li label {
+        position: relative;
+        font-family: "Titillium Web", Montserrat, Arial;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.5);
+        text-transform: uppercase;
+        user-select: none;
+        margin-bottom: 0;
+        padding-left: 35px;
+        cursor: pointer;
+        transition: color 200ms ease-in-out; }
+        .filters-wrapper ul li label:before {
+          content: '';
+          position: absolute;
+          z-index: 1;
+          top: 6px;
+          left: 6px;
+          width: 8px;
+          height: 8px;
+          cursor: pointer;
+          background-color: rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          transition: background-color 200ms ease-in-out; }
+        .filters-wrapper ul li label:after {
+          content: '';
+          position: absolute;
+          z-index: 0;
+          top: 0;
+          left: 0;
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(0, 0, 0, 0.5);
+          transition: all 200ms ease-in-out; }
+      .filters-wrapper ul li figure.custom-checkbox {
+        width: 15px;
+        height: 15px;
+        border: 3px solid #2ecc71;
+        margin: 0;
+        margin-right: 10px;
+        padding: 0; }
+      .filters-wrapper ul li input[type="checkbox"] {
+        margin: 0;
+        margin-right: 10px;
+        border-radius: 0; }
+        .filters-wrapper ul li input[type="checkbox"]:checked + label {
+          color: #2ecc71; }
+          .filters-wrapper ul li input[type="checkbox"]:checked + label:after {
+            border-color: #2ecc71; }
+          .filters-wrapper ul li input[type="checkbox"]:checked + label:before {
+            opacity: 1;
+            background-color: #2ecc71; }
+
+button.ebutton {
+  box-shadow: none;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  padding: 5px 20px;
+  text-transform: uppercase;
+  font-size: 12px;
+  opacity: 0.8;
+  transition: all 200ms cubic-bezier(0.07, 0.97, 0.58, 1);
+  color: white;
+  font-family: "Titillium Web", Montserrat, Arial;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: capitalize;
+  border: 1px solid rgba(0, 0, 0, 0.05); }
+  button.ebutton:hover {
+    opacity: 1; }
+  button.ebutton:focus {
+    outline: none; }
+  button.ebutton.green-button {
+    color: white;
+    background-color: #2ecc71; }
+  button.ebutton.white-button {
+    color: rgba(0, 0, 0, 0.5);
+    background-color: white;
+    border-color: rgba(0, 0, 0, 0.2); }
+
+.custom-modal .modal-content {
+  box-shadow: none;
+  border-radius: 0;
+  padding: 25px; }
+  .custom-modal .modal-content .modal-header {
+    padding: 0;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.1); }
+    .custom-modal .modal-content .modal-header h2 {
+      font-family: "Titillium Web", Montserrat, Arial;
+      font-size: 24px;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.5);
+      margin: 0;
+      padding: 0; }
+    .custom-modal .modal-content .modal-header:before, .custom-modal .modal-content .modal-header:after {
+      display: none; }
+  .custom-modal .modal-content .modal-body {
+    padding: 25px 0;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.1); }
+    .custom-modal .modal-content .modal-body ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0; }
+      .custom-modal .modal-content .modal-body ul li.error {
+        color: #e74c3c;
+        font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+        font-size: 14px;
+        font-weight: 400;
+        width: 100%;
+        margin-top: -10px;
+        text-align: left;
+        display: block;
+        margin-left: 115px; }
+      .custom-modal .modal-content .modal-body ul li {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center; }
+        .custom-modal .modal-content .modal-body ul li:not(:last-child) {
+          margin-bottom: 20px; }
+        .custom-modal .modal-content .modal-body ul li p {
+          font-family: "Source Sans Pro", Montserrat, Arial;
+          font-size: 16px;
+          color: rgba(0, 0, 0, 0.5); }
+        .custom-modal .modal-content .modal-body ul li label {
+          font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+          font-size: 14px;
+          font-weight: 400;
+          margin-right: 15px;
+          margin-bottom: 0;
+          width: 100px; }
+        .custom-modal .modal-content .modal-body ul li input, .custom-modal .modal-content .modal-body ul li select {
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: 0;
+          padding: 8px 10px;
+          flex-grow: 1;
+          transition: all 200ms ease-in-out; }
+          .custom-modal .modal-content .modal-body ul li input:focus, .custom-modal .modal-content .modal-body ul li select:focus {
+            outline: none;
+            border-color: #7ee2a8; }
+  .custom-modal .modal-content .modal-footer {
+    padding: 20px 0;
+    padding-bottom: 0; }
 
 @media screen and (max-width: 960px) {
   .container {

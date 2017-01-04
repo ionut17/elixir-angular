@@ -1,0 +1,69 @@
+<section class="content-container">
+
+  <!-- Header -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <h2>{{title}}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+
+      <div class="table-wrapper" ng-if="user.hasGroups">
+        <div class="table-title">
+          Groups
+          <button class="ebutton green-button" data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()">Add Group</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="group in user.groups track by $index" ui-sref="groups.view({id: group.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{group.name}}</td>
+              <td class="td-bold">{{group.year}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<div class="modal custom-modal fade" tabindex="-1" role="dialog" id="add-group-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Group</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>
+            <p>Select in which group to enroll this student</p>
+          </li>
+          <li>
+            <select name="group" id="group" ng-model="modal.user.group" ng-options="group as group.name for group in modal.groups track by group.id" placeholder="Select Group">
+              <option value="" selected disabled>Select Group</option>
+            </select>
+          </li>
+          <li class="error" ng-if="modal.user.errors.group">{{modal.user.errors.group}}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="ebutton white-button" data-dismiss="modal">Close</button>
+        <button type="button" class="ebutton green-button" ng-click="modal.submit()">Add Group</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

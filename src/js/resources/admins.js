@@ -1,5 +1,5 @@
-app.factory("Students", ["config", "$resource", function(config, $resource) {
-    return $resource(config.apiEndpoint + "students", {}, {
+app.factory("Admins", ["config", "$resource", function(config, $resource) {
+    return $resource(config.apiEndpoint + "admins", {}, {
         getAll: {
             method: "GET",
             isArray: true,
@@ -11,7 +11,7 @@ app.factory("Students", ["config", "$resource", function(config, $resource) {
             }
         },
         getById: {
-            url: config.apiEndpoint + "students/:id",
+            url: config.apiEndpoint + "admins/:id",
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -21,17 +21,7 @@ app.factory("Students", ["config", "$resource", function(config, $resource) {
             }
         },
         add: {
-            url: config.apiEndpoint + "students",
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: function() {
-                    return "Bearer ";
-                }
-            }
-        },
-        addGroup: {
-            url: config.apiEndpoint + "students/:id/groups",
+            url: config.apiEndpoint + "admins",
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
