@@ -177,7 +177,7 @@ ul.projects-list {
     text-decoration: none;
     color: inherit; }
     ul.projects-list li a:hover {
-      color: #8b3aba; }
+      color: #446CB3; }
   ul.projects-list li.coming-soon, ul.projects-list li.not-available {
     position: relative; }
     ul.projects-list li.coming-soon:after, ul.projects-list li.not-available:after {
@@ -200,7 +200,7 @@ ul.projects-list {
     background-color: grey;
     content: "Not available"; }
   ul.projects-list li:hover {
-    color: #8b3aba;
+    color: #446CB3;
     cursor: pointer; }
 
 ::-webkit-scrollbar {
@@ -268,7 +268,7 @@ input[type=checkbox].checkbox-hidden {
   height: 100%;
   min-height: 100vh;
   box-sizing: border-box;
-  background-color: #7c34a7;
+  background-color: #3d61a1;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center; }
@@ -282,8 +282,8 @@ input[type=checkbox].checkbox-hidden {
   font-family: "Source Sans Pro", Montserrat, Arial;
   font-weight: 700;
   font-size: 28px;
-  color: #b882d8;
-  background-color: #5f2880; }
+  color: #8aa4d3;
+  background-color: #2f4b7c; }
 
 .sidebar-links {
   width: 100%;
@@ -293,7 +293,7 @@ input[type=checkbox].checkbox-hidden {
     list-style-type: none;
     display: flex;
     flex-direction: column;
-    background-color: #6e2e93;
+    background-color: #36568e;
     padding: 1px 0; }
   .sidebar-links li {
     width: 100%; }
@@ -304,7 +304,7 @@ input[type=checkbox].checkbox-hidden {
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: #7c34a7;
+    background-color: #3d61a1;
     color: white;
     padding: 15px 20px;
     font-family: "Titillium Web", Montserrat, Arial;
@@ -317,23 +317,24 @@ input[type=checkbox].checkbox-hidden {
     transition: all 200ms ease-in-out;
     margin-left: 0; }
     .sidebar-links a.active {
-      border-left: 10px solid #5f2880;
-      background-color: #9848c6; }
+      border-left: 10px solid #2f4b7c;
+      background-color: #5379be; }
     .sidebar-links a i {
       margin-right: 20px;
       opacity: 0.5; }
     .sidebar-links a:hover {
       text-decoration: none;
-      border-left: 10px solid #5f2880;
-      background-color: #8b3aba; }
+      border-left: 10px solid #2f4b7c;
+      background-color: #446CB3; }
 
 .table-wrapper {
   width: 100%;
-  background-color: white; }
+  background-color: white;
+  margin-bottom: 20px; }
 
 .table-title {
   width: 100%;
-  background-color: #8b3aba;
+  background-color: #446CB3;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -372,7 +373,7 @@ input[type=checkbox].checkbox-hidden {
       padding: 10px 0; }
   .elixir-table tbody tr:hover {
     transition: all 200ms cubic-bezier(0.3, 1.35, 1, 1);
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.03);
     cursor: pointer; }
 
 .td-bold {
@@ -391,7 +392,7 @@ span.tag {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
-  width: 75px;
+  width: 100px;
   min-width: 75px;
   display: block;
   text-align: center;
@@ -403,6 +404,12 @@ span.tag {
     background-color: #446CB3; }
   span.tag.tag-admin {
     background-color: #e74c3c; }
+  span.tag.tag-attendance {
+    background-color: #2ecc71; }
+  span.tag.tag-grade {
+    background-color: #f2ca26; }
+  span.tag.tag-file {
+    background-color: #446CB3; }
 
 .filters-wrapper {
   display: flex;
@@ -486,14 +493,14 @@ span.tag {
 button.ebutton {
   box-shadow: none;
   border: 2px solid rgba(0, 0, 0, 0.1);
-  padding: 5px 20px;
+  padding: 3px 15px;
   text-transform: uppercase;
   font-size: 12px;
   opacity: 0.8;
   transition: all 200ms cubic-bezier(0.07, 0.97, 0.58, 1);
   color: white;
   font-family: "Titillium Web", Montserrat, Arial;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   text-transform: capitalize;
   border: 1px solid rgba(0, 0, 0, 0.05); }

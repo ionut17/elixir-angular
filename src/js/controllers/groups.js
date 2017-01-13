@@ -55,6 +55,4 @@ app.config(function($stateProvider) {
 app.controller('GroupsViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
     $scope.group = resolvedData.group;
     $scope.title = "Group "+ $scope.group.name + " ("+$scope.group.students.length+")";
-
-    console.log($scope.group);
 }]);

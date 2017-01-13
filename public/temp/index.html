@@ -1,0 +1,66 @@
+<!DOCTYPE html><!--[if lt IE 7]>
+<html lang="" class="no-js lt-ie9 lt-ie8 lt-ie7"></html><![endif]--><!--[if IE 7]>
+<html lang="" class="no-js lt-ie9 lt-ie8"></html><![endif]--><!--[if IE 8]>
+<html lang="" class="no-js lt-ie9"></html><![endif]-->
+<!-- [if gt IE 8] <!-->
+<html lang="" class="no-js">
+  <!-- <![endif]-->
+  <head>
+    <base href="/">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Elixir - Management Platform</title>
+    <meta name="keywords" content="web,designer,developer,html,css,javascript,java">
+    <meta name="description" content="I am a passionate web designer and developer and I focus on creating beautiful web experiences.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Vendor styles-->
+    <link rel="stylesheet" href="css/vendor/normalize.min.css">
+    <link rel="stylesheet" href="css/vendor/default.css">
+    <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="css/vendor/font-awesome.css">
+    <link rel="stylesheet" href="css/vendor/animate.css">
+    <!-- Custom styles-->
+    <link rel="stylesheet" href="css/main.css">
+    <!-- Vendor scripts-->
+    <script src="js/vendor/jquery-1.11.2.min.js"></script>
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="js/vendor/angular.min.js"></script>
+    <script src="js/vendor/angular-ui-router.min.js"></script>
+    <!-- <script src="js/vendor/angular-animate.min.js"></script>-->
+    <script src="js/vendor/angular-resource.js"></script>
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <!-- Custom fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet">
+  </head>
+  <body ng-app="app">
+    <!-- Common elements-->
+    <!-- <div ng-include="'templates/elements/preloader.html'"></div>-->
+    <section class="main-container">
+      <!-- Sidebar-->
+      <section class="sidebar-wrapper">
+        <div class="sidebar-logo">Elixir</div>
+        <!-- Navigation-->
+        <nav class="sidebar-links">
+          <ul>
+            <li><a ui-sref="dashboard" ui-sref-active="active"><i aria-hidden="true" class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
+            <li><a ui-sref="activities.list" ng-class="{active:$state.includes('activities')}"><i aria-hidden="true" class="fa fa-check-square-o"></i><span>Activities</span></a></li>
+            <li><a ui-sref="courses.list" ng-class="{active:$state.includes('courses')}"><i aria-hidden="true" class="fa fa-graduation-cap"></i><span>Courses</span></a></li>
+            <li><a ui-sref="groups.list" ng-class="{active:$state.includes('groups')}"><i aria-hidden="true" class="fa fa-book"></i><span>Groups</span></a></li>
+            <li><a ui-sref="users.list" ng-class="{active: $state.includes('users')}"><i aria-hidden="true" class="fa fa-users"></i><span>Users</span></a></li>
+            <li><a ui-sref="settings" ui-sref-active="active"><i aria-hidden="true" class="fa fa-cog"></i><span>Settings</span></a></li>
+          </ul>
+        </nav>
+      </section>
+      <!-- Content-->
+      <section class="container-wrapper">
+        <div ui-view=""></div>
+      </section>
+    </section>
+    <!-- Scripts-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\\/script>')</script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

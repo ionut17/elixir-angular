@@ -9,9 +9,9 @@
     </div>
   </div>
 
+  <!-- Groups -->
   <div class="row">
     <div class="col-md-6">
-
       <div class="table-wrapper" ng-if="user.hasGroups">
         <div class="table-title">
           Groups
@@ -34,7 +34,68 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
 
+  <!-- Courses -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="table-wrapper" ng-if="user.hasCourses">
+        <div class="table-title">
+          Courses
+          <button class="ebutton green-button" data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()">Add Course</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Semester</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="course in user.courses track by $index" ui-sref="courses.view({id: course.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{course.title}}</td>
+              <td class="td-bold">{{course.year}}</td>
+              <td class="td-bold">{{course.semester}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendances -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="table-wrapper" ng-if="user.hasAttendances">
+        <div class="table-title">
+          Attendances
+          <button class="ebutton green-button" data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()">Add Attendance</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Course</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="activities.view({id: attendance.activity.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{attendance.activity.name}}</td>
+              <td class=""><span class="tag" ng-class="activity.tag">{{attendance.activity.type.name}}</span></td>
+              <td class="td-blue">{{attendance.activity.date}}</td>
+              <td class="td-bold">{{attendance.activity.course.title}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

@@ -59,13 +59,13 @@
             </a>
           </li>
           <li>
-            <a ui-sref="activities" ui-sref-active="active">
+            <a ui-sref="activities.list" ng-class="{active:$state.includes('activities')}">
               <i class="fa fa-check-square-o" aria-hidden="true"></i>
               <span>Activities</span>
             </a>
           </li>
           <li>
-            <a ui-sref="courses" ui-sref-active="active">
+            <a ui-sref="courses.list" ng-class="{active:$state.includes('courses')}">
               <i class="fa fa-graduation-cap" aria-hidden="true"></i>
               <span>Courses</span>
             </a>

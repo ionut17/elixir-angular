@@ -116,6 +116,8 @@ app.config(function($stateProvider) {
                 id: $stateParams.id
               }).$promise.then(function(response){
                 response.hasGroups = $stateParams.type == 'student' ? true : false;
+                response.hasCourses = $stateParams.type == 'student' || $stateParams.type == 'lecturer' ? true : false;
+                response.hasAttendances = $stateParams.type == 'student' ? true : false;
                 return {
                   user: response
                 };
@@ -130,6 +132,8 @@ app.config(function($stateProvider) {
 app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $stateParams, Students, Groups, resolvedData, $stateParams) {
     $scope.user = resolvedData.user;
     $scope.title = $scope.user.lastName + " " + $scope.user.firstName + " ("+$stateParams.type+")";
+
+    console.log($scope.user);
 
     $scope.modal = {
       element: $('#add-group-modal'),

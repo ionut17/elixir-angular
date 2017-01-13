@@ -1,0 +1,81 @@
+doctype html
+//if lt IE 7
+  html.no-js.lt-ie9.lt-ie8.lt-ie7(lang='')
+//if IE 7
+  html.no-js.lt-ie9.lt-ie8(lang='')
+//if IE 8
+  html.no-js.lt-ie9(lang='')
+// [if gt IE 8] <!
+html.no-js(lang='')
+  // <![endif]
+  head
+    base(href='/')
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    title Elixir - Management Platform
+    meta(name='keywords', content='web,designer,developer,html,css,javascript,java')
+    meta(name='description', content='I am a passionate web designer and developer and I focus on creating beautiful web experiences.')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    // Vendor styles
+    link(rel='stylesheet', href='css/vendor/normalize.min.css')
+    link(rel='stylesheet', href='css/vendor/default.css')
+    link(rel='stylesheet', href='css/vendor/bootstrap.min.css')
+    link(rel='stylesheet', href='css/vendor/font-awesome.css')
+    link(rel='stylesheet', href='css/vendor/animate.css')
+    // Custom styles
+    link(rel='stylesheet', href='css/main.css')
+    // Vendor scripts
+    script(src='js/vendor/jquery-1.11.2.min.js')
+    script(src='js/vendor/modernizr-2.8.3.min.js')
+    script(src='js/vendor/angular.min.js')
+    script(src='js/vendor/angular-ui-router.min.js')
+    // <script src="js/vendor/angular-animate.min.js"></script>
+    script(src='js/vendor/angular-resource.js')
+    script(src='js/vendor/bootstrap.min.js')
+    // Custom fonts
+    link(href='https://fonts.googleapis.com/css?family=Titillium+Web:300,400', rel='stylesheet')
+    link(href='https://fonts.googleapis.com/css?family=Raleway:400,600', rel='stylesheet')
+    link(href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700', rel='stylesheet')
+  body(ng-app='app')
+    // Common elements
+    // <div ng-include="'templates/elements/preloader.html'"></div>
+    section.main-container
+      // Sidebar
+      section.sidebar-wrapper
+        .sidebar-logo
+          | Elixir
+        // Navigation
+        nav.sidebar-links
+          ul
+            li
+              a(ui-sref='dashboard', ui-sref-active='active')
+                i.fa.fa-tachometer(aria-hidden='true')
+                span Dashboard
+            li
+              a(ui-sref='activities.list', ng-class="{active:$state.includes('activities')}")
+                i.fa.fa-check-square-o(aria-hidden='true')
+                span Activities
+            li
+              a(ui-sref='courses.list', ng-class="{active:$state.includes('courses')}")
+                i.fa.fa-graduation-cap(aria-hidden='true')
+                span Courses
+            li
+              a(ui-sref='groups.list', ng-class="{active:$state.includes('groups')}")
+                i.fa.fa-book(aria-hidden='true')
+                span Groups
+            li
+              a(ui-sref='users.list', ng-class="{active: $state.includes('users')}")
+                i.fa.fa-users(aria-hidden='true')
+                span Users
+            li
+              a(ui-sref='settings', ui-sref-active='active')
+                i.fa.fa-cog(aria-hidden='true')
+                span Settings
+      // Content
+      section.container-wrapper
+        div(ui-view='')
+    // Scripts
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
+    script.
+      window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\\/script>')
+    script(src='js/main.js')

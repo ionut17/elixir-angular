@@ -11,6 +11,32 @@ app.run(function($rootScope, $timeout, $state) {
   $rootScope.$state = $state;
 });
 
+app.factory("Activities", ["config", "$resource", function(config, $resource) {
+    return $resource(config.apiEndpoint + "activities", {}, {
+        getAll: {
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getView: {
+            url: config.apiEndpoint + "activities/view",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        }
+    });
+}]);
+
 app.factory("Admins", ["config", "$resource", function(config, $resource) {
     return $resource(config.apiEndpoint + "admins", {}, {
         getAll: {
@@ -38,6 +64,31 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        }
+    });
+}]);
+
+app.factory("Courses", ["config", "$resource", function(config, $resource) {
+    return $resource(config.apiEndpoint + "courses", {}, {
+        getAll: {
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getById: {
+            url: config.apiEndpoint + "courses/:id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
                 Authorization: function() {
                     return "Bearer ";
                 }
@@ -173,26 +224,128 @@ app.value("config", {
 
 app.config(function($stateProvider) {
     $stateProvider.state('activities', {
-        url: '/activities',
-        templateUrl: 'templates/activities.html',
-        controller: 'ActivitiesController'
+      template: '<div ui-view></div>'
     });
 });
 
-app.controller('ActivitiesController', ['$scope', function($scope) {
+// Group list
+app.config(function($stateProvider) {
+    $stateProvider.state('activities.list', {
+        name: 'activities.list',
+        url: '/activities',
+        templateUrl: 'templates/activities-list.html',
+        controller: 'ActivitiesListController',
+        resolve: {
+            resolvedData: ["Activities", "$http", "config", function(Activities, $http, config) {
+              return Activities.getView().$promise.then(function(response){
+                //Insert appropiate tag
+                angular.forEach(response, function(value, key) {
+                  response[key].tag = "tag-"+value.type;
+                });
+                //Return response
+                return {
+                  activities: response
+                };
+              }, function(response){
+                console.log(response);
+                return [];
+              });
+            }]
+        }
+    });
+});
+
+app.controller('ActivitiesListController', ['$scope', 'resolvedData', '$state', function($scope, resolvedData, $state) {
     $scope.title = 'Activities';
+    console.log(resolvedData);
+    $scope.activities = resolvedData.activities;
+}]);
+
+//Group view
+app.config(function($stateProvider) {
+    $stateProvider.state('activities.view', {
+        name: 'activities.view',
+        url: '/activities/:id',
+        templateUrl: 'templates/activities-view.html',
+        controller: 'ActivitiesViewController',
+        resolve: {
+            resolvedData: ["Activities", "$stateParams", function(Activities, $stateParams) {
+              return Activities.getById({
+                id: $stateParams.id
+              }).$promise.then(function(response){
+                return {
+                  activity: response
+                };
+              }, function(response){
+                console.log(response);
+              });
+            }]
+        }
+    });
+});
+
+app.controller('ActivitiesViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
+    $scope.activity = resolvedData.activities;
+    $scope.title = "placeholder activity title";
 }]);
 
 app.config(function($stateProvider) {
     $stateProvider.state('courses', {
-        url: '/courses',
-        templateUrl: 'templates/courses.html',
-        controller: 'CoursesController'
+      template: '<div ui-view></div>'
     });
 });
 
-app.controller('CoursesController', ['$scope', function($scope) {
+// Group list
+app.config(function($stateProvider) {
+    $stateProvider.state('courses.list', {
+        name: 'courses.list',
+        url: '/courses',
+        templateUrl: 'templates/courses-list.html',
+        controller: 'CoursesListController',
+        resolve: {
+            resolvedData: ["Courses", "$http", "config", function(Courses, $http, config) {
+              return Courses.getAll().$promise.then(function(response){
+                return {
+                  courses: response
+                };
+              });
+            }]
+        }
+    });
+});
+
+app.controller('CoursesListController', ['$scope', 'resolvedData', '$state', function($scope, resolvedData, $state) {
     $scope.title = 'Courses';
+
+    $scope.courses = resolvedData.courses;
+}]);
+
+//Group view
+app.config(function($stateProvider) {
+    $stateProvider.state('courses.view', {
+        name: 'courses.view',
+        url: '/courses/:id',
+        templateUrl: 'templates/courses-view.html',
+        controller: 'CoursesViewController',
+        resolve: {
+            resolvedData: ["Courses", "$stateParams", function(Courses, $stateParams) {
+              return Courses.getById({
+                id: $stateParams.id
+              }).$promise.then(function(response){
+                return {
+                  course: response
+                };
+              }, function(response){
+                console.log(response);
+              });
+            }]
+        }
+    });
+});
+
+app.controller('CoursesViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
+    $scope.course = resolvedData.course;
+    $scope.title = $scope.course.title + " ("+$scope.course.lecturers.length+")";
 }]);
 
 app.config(function($stateProvider) {
@@ -264,8 +417,6 @@ app.config(function($stateProvider) {
 app.controller('GroupsViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
     $scope.group = resolvedData.group;
     $scope.title = "Group "+ $scope.group.name + " ("+$scope.group.students.length+")";
-
-    console.log($scope.group);
 }]);
 
 app.config(function($stateProvider) {
@@ -410,6 +561,8 @@ app.config(function($stateProvider) {
                 id: $stateParams.id
               }).$promise.then(function(response){
                 response.hasGroups = $stateParams.type == 'student' ? true : false;
+                response.hasCourses = $stateParams.type == 'student' || $stateParams.type == 'lecturer' ? true : false;
+                response.hasAttendances = $stateParams.type == 'student' ? true : false;
                 return {
                   user: response
                 };
@@ -424,6 +577,8 @@ app.config(function($stateProvider) {
 app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $stateParams, Students, Groups, resolvedData, $stateParams) {
     $scope.user = resolvedData.user;
     $scope.title = $scope.user.lastName + " " + $scope.user.firstName + " ("+$stateParams.type+")";
+
+    console.log($scope.user);
 
     $scope.modal = {
       element: $('#add-group-modal'),

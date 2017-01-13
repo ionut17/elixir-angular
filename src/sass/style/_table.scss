@@ -3,6 +3,7 @@
   width: 100%;
   // padding: 20px;
   background-color: white;
+  margin-bottom: 20px;
 }
 
 .table-title{
@@ -69,7 +70,7 @@
     }
     tr:hover{
       transition: all 200ms cubic-bezier(0.3, 1.35, 1, 1);
-      background-color: rgba(0,0,0,0.05);
+      background-color: rgba(0,0,0,0.03);
       cursor: pointer;
       & td, & th{
         // color: white;

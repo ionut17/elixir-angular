@@ -5,30 +5,31 @@
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
-        <button class="ebutton green-button" data-toggle="modal" data-target="#add-user-modal">Add Group</button>
+        <button class="ebutton green-button" data-toggle="modal" data-target="#add-user-modal">Add Course</button>
       </div>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-
       <div class="table-wrapper">
         <table class="table elixir-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>Name</th>
+              <th>Title</th>
               <th>Year</th>
-              <th>Students</th>
+              <th>Semester</th>
+              <th>Lecturers</th>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="group in groups track by $index" ui-sref="groups.view({id: group.id})">
+            <tr ng-repeat="course in courses track by $index" ui-sref="courses.view({id: course.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
-              <td class="td-bold">{{group.name}}</td>
-              <td class="td-bold">{{group.year}}</td>
-              <td class="td-blue">{{group.students.length}}</td>
+              <td class="td-bold">{{course.title}}</td>
+              <td class="td-bold">{{course.year}}</td>
+              <td class="td-bold">{{course.semester}}</td>
+              <td class="td-blue">{{course.lecturers.length}}</td>
             </tr>
           </tbody>
         </table>
