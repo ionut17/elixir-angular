@@ -13,14 +13,22 @@ module.exports = function(grunt) {
         }
     },
     jade: {
-      html: {
-        files: {
-          'public/temp': ['src/jade/**/*.jade']
-        },
+      compile: {
         options: {
-          client: false,
+          data: {
+            debug: false
+          },
           pretty: true
-        }
+        },
+        files:
+          [{
+            expand: true,
+            flatten: false,
+            cwd: 'src/jade/',
+            src: ['*.jade', '**/*.jade'],
+            dest: 'public',
+            ext: '.html',
+          }]
       }
     },
     concat: {
@@ -46,9 +54,10 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-sass');
-  grunt.loadNpmTasks('grunt-jade');
+  grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   grunt.registerTask('default', ['sass']);
+  grunt.registerTask('start', ['sass','jade','concat','watch']);
 };

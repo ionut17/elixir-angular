@@ -1,6 +1,6 @@
-<section class="content-container">
 
-  <!-- Header -->
+<section class="content-container">
+  <!-- Header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
@@ -8,14 +8,11 @@
       </div>
     </div>
   </div>
-
   <div class="row">
     <div class="col-md-6">
-
       <div class="table-wrapper">
-        <div class="table-title">
-          Students
-          <button class="ebutton green-button" data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()">Add Student</button>
+        <div class="table-title">Students
+          <button data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()" class="ebutton green-button">Add Student</button>
         </div>
         <table class="table elixir-table">
           <thead>
@@ -33,15 +30,11 @@
               <td>{{user.firstName}}</td>
               <td class="td-bold">{{user.lastName}}</td>
               <td class="td-blue">{{user.email}}</td>
-              <td>
-                <i class="fa fa-times" aria-hidden="true"></i>
-              </td>
+              <td><i aria-hidden="true" class="fa fa-times"></i></td>
             </tr>
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
-
 </section>

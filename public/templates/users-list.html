@@ -1,40 +1,36 @@
-<section class="content-container">
 
-  <!-- Define scope title to be used by the header -->
+<section class="content-container">
+  <!-- Define scope title to be used by the header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
-        <button class="ebutton green-button" data-toggle="modal" data-target="#add-user-modal">Add User</button>
+        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add User</button>
       </div>
     </div>
   </div>
-
   <div class="row">
     <div class="col-md-12">
-      <div class="filters-wrapper">
-        <span>Categories</span>
+      <div class="filters-wrapper"><span>Categories</span>
         <ul>
           <li>
-            <input type="checkbox" id="studentsFilter" class="checkbox-hidden" ng-model="filters.students.visibility" ng-change="filters.toggleFilters()"/>
+            <input id="studentsFilter" type="checkbox" ng-model="filters.students.visibility" ng-change="filters.toggleFilters()" class="checkbox-hidden"/>
             <label for="studentsFilter">Students</label>
           </li>
           <li>
-            <input type="checkbox" id="lecturersFilter" class="checkbox-hidden" ng-model="filters.lecturers.visibility"  ng-change="filters.toggleFilters()"/>
+            <input id="lecturersFilter" type="checkbox" ng-model="filters.lecturers.visibility" ng-change="filters.toggleFilters()" class="checkbox-hidden"/>
             <label for="lecturersFilter">Lecturers</label>
           </li>
           <li>
-            <input type="checkbox" id="adminsFilter" class="checkbox-hidden" ng-model="filters.admins.visibility"  ng-change="filters.toggleFilters()"/>
+            <input id="adminsFilter" type="checkbox" ng-model="filters.admins.visibility" ng-change="filters.toggleFilters()" class="checkbox-hidden"/>
             <label for="adminsFilter">Admins</label>
           </li>
         </ul>
       </div>
     </div>
   </div>
-
   <div class="row">
     <div class="col-md-12">
-
       <div class="table-wrapper">
         <table class="table elixir-table">
           <thead>
@@ -50,74 +46,70 @@
           <tbody>
             <tr ng-repeat="user in users track by $index" ui-sref="users.view({type: user.type, id: user.id})" ng-show="filters.isTypeShown(user.type)">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
-              <td>
-                <span class="tag" ng-class="user.tag">{{user.type}}</span>
-              </td>
+              <td><span ng-class="user.tag" class="tag">{{user.type}}</span></td>
               <td>{{user.firstName}}</td>
               <td class="td-bold">{{user.lastName}}</td>
               <td class="td-blue">{{user.email}}</td>
-              <td>
-                <i class="fa fa-times" aria-hidden="true"></i>
-              </td>
+              <td><i aria-hidden="true" class="fa fa-times"></i></td>
             </tr>
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
-
 </section>
-
-<div class="modal custom-modal fade" tabindex="-1" role="dialog" id="add-user-modal">
-  <div class="modal-dialog" role="document">
+<div id="add-user-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Add User</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
       </div>
       <div class="modal-body">
         <ul>
           <li>
             <label for="type">Type</label>
-            <select name="type" id="type" ng-model="modal.user.type" placeholder="Select type">
+            <select id="type" name="type" ng-model="modal.user.type" placeholder="Select type">
               <option value="student">Student</option>
               <option value="lecturer">Lecturer</option>
               <option value="admin">Admin</option>
             </select>
           </li>
-          <li class="error" ng-if="modal.user.errors.type">{{modal.user.errors.type}}</li>
+          <li ng-if="modal.user.errors.type" class="error">{{modal.user.errors.type}}</li>
           <li>
             <label for="first_name">First Name</label>
-            <input type="input" id="first_name" ng-model="modal.user.firstName" placeholder="Enter first name"/>
+            <input id="first_name" type="input" ng-model="modal.user.firstName" placeholder="Enter first name"/>
           </li>
-          <li class="error" ng-if="modal.user.errors.firstName">{{modal.user.errors.firstName}}</li>
+          <li ng-if="modal.user.errors.firstName" class="error">{{modal.user.errors.firstName}}</li>
           <li>
             <label for="last_name">Last Name</label>
-            <input type="input" id="last_name" ng-model="modal.user.lastName" placeholder="Enter last name"/>
+            <input id="last_name" type="input" ng-model="modal.user.lastName" placeholder="Enter last name"/>
           </li>
-          <li class="error" ng-if="modal.user.errors.lastName">{{modal.user.errors.lastName}}</li>
+          <li ng-if="modal.user.errors.lastName" class="error">{{modal.user.errors.lastName}}</li>
           <li>
             <label for="email">Email</label>
-            <input type="input" id="email" ng-model="modal.user.email" placeholder="Enter email"/>
+            <input id="email" type="input" ng-model="modal.user.email" placeholder="Enter email"/>
           </li>
-          <li class="error" ng-if="modal.user.errors.email">{{modal.user.errors.email}}</li>
+          <li ng-if="modal.user.errors.email" class="error">{{modal.user.errors.email}}</li>
           <li>
             <label for="password">Password</label>
-            <input type="password" id="password" ng-model="modal.user.password" placeholder="Enter password"/>
+            <input id="password" type="password" ng-model="modal.user.password" placeholder="Enter password"/>
           </li>
-          <li class="error" ng-if="modal.user.errors.password">{{modal.user.errors.password}}</li>
+          <li ng-if="modal.user.errors.password" class="error">{{modal.user.errors.password}}</li>
           <li>
             <label for="rpassword">Repeat Password</label>
-            <input type="password" id="rpassword" ng-model="modal.user.rpassword" placeholder="Confirm password"/>
+            <input id="rpassword" type="password" ng-model="modal.user.rpassword" placeholder="Confirm password"/>
           </li>
-          <li class="error" ng-if="modal.user.errors.rpassword">{{modal.user.errors.rpassword}}</li>
+          <li ng-if="modal.user.errors.rpassword" class="error">{{modal.user.errors.rpassword}}</li>
         </ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="ebutton white-button" data-dismiss="modal">Close</button>
-        <button type="button" class="ebutton green-button" ng-click="modal.submit()">Add User</button>
+        <button type="button" data-dismiss="modal" class="ebutton white-button">Close</button>
+        <button type="button" ng-click="modal.submit()" class="ebutton green-button">Add User</button>
       </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </div>
+    <!-- /.modal-content-->
+  </div>
+  <!-- /.modal-dialog-->
+</div>
+<!-- /.modal-->

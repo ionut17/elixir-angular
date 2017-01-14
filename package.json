@@ -14,8 +14,8 @@
     "angular-ui-router": "^0.3.2",
     "grunt": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-jade": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-jade": "^0.5.1",
     "grunt-sass": "^1.2.1"
   },
   "scripts": {

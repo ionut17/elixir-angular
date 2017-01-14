@@ -1,0 +1,28 @@
+section.content-container
+  // Header
+  .row
+    .col-md-12
+      .page-title-wrapper
+        h2 {{title}}
+  .row
+    .col-md-6
+      .table-wrapper
+        .table-title
+          | Students
+          button.ebutton.green-button(data-toggle='modal', data-target='#add-group-modal', ng-click='modal.open()') Add Student
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th First Name
+              th Last Name
+              th Email
+              th Actions
+          tbody
+            tr(ng-repeat='user in group.students track by $index', ui-sref="users.view({type: 'student', id: user.id})")
+              th.col-sm-1(scope='row') {{$index+1}}
+              td {{user.firstName}}
+              td.td-bold {{user.lastName}}
+              td.td-blue {{user.email}}
+              td
+                i.fa.fa-times(aria-hidden='true')

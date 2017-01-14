@@ -1,0 +1,28 @@
+section.content-container
+  // Define scope title to be used by the header
+  .row
+    .col-md-12
+      .page-title-wrapper
+        h2 {{title}}
+        button.ebutton.green-button(data-toggle='modal', data-target='#add-user-modal') Add Activity
+  .row
+    .col-md-12
+      .table-wrapper
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th Type
+              th Name
+              th User
+              th Course
+              th Date
+          tbody
+            tr(ng-repeat='activity in activities track by $index', ui-sref='activities.view({id: activity.activity.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td
+                span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
+              td {{activity.activity.name}}
+              td.td-bold {{activity.user.firstName + ' ' + activity.user.lastName}}
+              td.td-blue {{activity.course.title}}
+              td.td-blue {{activity.activity.date}}

@@ -16,7 +16,7 @@ app.config(function($stateProvider) {
               return Activities.getView().$promise.then(function(response){
                 //Insert appropiate tag
                 angular.forEach(response, function(value, key) {
-                  response[key].tag = "tag-"+value.type;
+                  response[key].tag = "tag-"+value.activity.type.name;
                 });
                 //Return response
                 return {

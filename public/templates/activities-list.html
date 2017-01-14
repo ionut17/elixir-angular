@@ -1,15 +1,14 @@
-<section class="content-container">
 
-  <!-- Define scope title to be used by the header -->
+<section class="content-container">
+  <!-- Define scope title to be used by the header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
-        <button class="ebutton green-button" data-toggle="modal" data-target="#add-user-modal">Add Activity</button>
+        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add Activity</button>
       </div>
     </div>
   </div>
-
   <div class="row">
     <div class="col-md-12">
       <div class="table-wrapper">
@@ -19,22 +18,23 @@
               <th>#</th>
               <th>Type</th>
               <th>Name</th>
+              <th>User</th>
               <th>Course</th>
               <th>Date</th>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="activity in activities track by $index" ui-sref="activities.view({id: activity.id})">
+            <tr ng-repeat="activity in activities track by $index" ui-sref="activities.view({id: activity.activity.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
-              <td class=""><span class="tag" ng-class="activity.tag">{{activity.type}}</span></td>
-              <td class="td-bold">{{activity.user}}</td>
-              <td class="td-blue">{{activity.course}}</td>
-              <td class="td-blue">{{activity.date}}</td>
+              <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
+              <td>{{activity.activity.name}}</td>
+              <td class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
+              <td class="td-blue">{{activity.course.title}}</td>
+              <td class="td-blue">{{activity.activity.date}}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
-
 </section>

@@ -1,0 +1,88 @@
+section.content-container
+  // Header
+  .row
+    .col-md-12
+      .page-title-wrapper
+        h2 {{title}}
+  // Groups
+  .row
+    .col-md-6
+      .table-wrapper(ng-if='user.hasGroups')
+        .table-title
+          | Groups
+          button.ebutton.green-button(data-toggle='modal', data-target='#add-group-modal', ng-click='modal.open()') Add Group
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th Name
+              th Year
+          tbody
+            tr(ng-repeat='group in user.groups track by $index', ui-sref='groups.view({id: group.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td.td-bold {{group.name}}
+              td.td-bold {{group.year}}
+  // Courses
+  .row
+    .col-md-6
+      .table-wrapper(ng-if='user.hasCourses')
+        .table-title
+          | Courses
+          button.ebutton.green-button(data-toggle='modal', data-target='#add-course-modal', ng-click='modal.open()') Add Course
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th Title
+              th Year
+              th Semester
+          tbody
+            tr(ng-repeat='course in user.courses track by $index', ui-sref='courses.view({id: course.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td.td-bold {{course.title}}
+              td.td-bold {{course.year}}
+              td.td-bold {{course.semester}}
+  // Attendances
+  .row
+    .col-md-6
+      .table-wrapper(ng-if='user.hasAttendances')
+        .table-title
+          | Attendances
+          button.ebutton.green-button(data-toggle='modal', data-target='#add-course-modal', ng-click='modal.open()') Add Attendance
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th Name
+              th Type
+              th Date
+              th Course
+          tbody
+            tr(ng-repeat='attendance in user.attendances track by $index', ui-sref='activities.view({id: attendance.activity.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td.td-bold {{attendance.activity.name}}
+              td
+                span.tag(ng-class='activity.tag') {{attendance.activity.type.name}}
+              td.td-blue {{attendance.activity.date}}
+              td.td-bold {{attendance.activity.course.title}}
+#add-group-modal.modal.custom-modal.fade(tabindex='-1', role='dialog')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h2 Add Group
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+      .modal-body
+        ul
+          li
+            p Select in which group to enroll this student
+          li
+            select#group(name='group', ng-model='modal.user.group', ng-options='group as group.name for group in modal.groups track by group.id', placeholder='Select Group')
+              option(value='', selected='', disabled='') Select Group
+          li.error(ng-if='modal.user.errors.group') {{modal.user.errors.group}}
+      .modal-footer
+        button.ebutton.white-button(type='button', data-dismiss='modal') Close
+        button.ebutton.green-button(type='button', ng-click='modal.submit()') Add Group
+    // /.modal-content
+  // /.modal-dialog
+// /.modal

@@ -11,7 +11,7 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
             }
         },
         getView: {
-            url: config.apiEndpoint + "activities/view",
+            url: config.apiEndpoint + "activities/join",
             method: "GET",
             isArray: true,
             headers: {

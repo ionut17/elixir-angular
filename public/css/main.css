@@ -397,7 +397,7 @@ span.tag {
   display: block;
   text-align: center;
   color: white;
-  background-color: #c6c5ca; }
+  background-color: rgba(0, 0, 0, 0.5); }
   span.tag.tag-student {
     background-color: #2ecc71; }
   span.tag.tag-lecturer {
