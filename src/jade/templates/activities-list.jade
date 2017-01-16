@@ -13,6 +13,7 @@ section.content-container
             tr
               th #
               th Type
+              th Role
               th Name
               th User
               th Course
@@ -22,7 +23,9 @@ section.content-container
               th.col-sm-1(scope='row') {{$index+1}}
               td
                 span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
+              td
+                span.tag(ng-class='activity.roleTag') {{activity.role}}
               td {{activity.activity.name}}
               td.td-bold {{activity.user.firstName + ' ' + activity.user.lastName}}
-              td.td-blue {{activity.course.title}}
+              td.td-blue {{activity.activity.course.title}}
               td.td-blue {{activity.activity.date}}

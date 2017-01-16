@@ -17,6 +17,7 @@ app.config(function($stateProvider) {
                 //Insert appropiate tag
                 angular.forEach(response, function(value, key) {
                   response[key].tag = "tag-"+value.activity.type.name;
+                  response[key].roleTag = "tag-"+value.role;
                 });
                 //Return response
                 return {

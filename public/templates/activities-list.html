@@ -17,6 +17,7 @@
             <tr>
               <th>#</th>
               <th>Type</th>
+              <th>Role</th>
               <th>Name</th>
               <th>User</th>
               <th>Course</th>
@@ -27,9 +28,10 @@
             <tr ng-repeat="activity in activities track by $index" ui-sref="activities.view({id: activity.activity.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
+              <td><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
               <td>{{activity.activity.name}}</td>
               <td class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
-              <td class="td-blue">{{activity.course.title}}</td>
+              <td class="td-blue">{{activity.activity.course.title}}</td>
               <td class="td-blue">{{activity.activity.date}}</td>
             </tr>
           </tbody>
