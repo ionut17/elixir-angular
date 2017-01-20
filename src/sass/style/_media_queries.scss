@@ -1,0 +1,42 @@
+@media screen and (max-width: 960px){
+    .container{
+      flex-direction: column;
+    }
+    .projects-wrapper{
+      border-left: none;
+      padding: 0;
+      margin: 0;
+      padding-top: 5vh;
+      margin-top: 5vh;
+      border-top: 1px solid lighten($backgroundColor,10);
+    }
+}
+
+@media screen and (max-width: 640px), screen and (max-height: 480px) {
+    figure.logo{
+      width: 100px;
+      height: 100px;
+      margin-top: 30px;
+    }
+    .logo-text{
+      margin-top: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+  .logo-wrapper {
+    flex-direction: column;
+
+    .logo-text {
+      padding: 20px;
+
+      h1,h3{
+        text-align: center;
+      }
+    }
+  }
+
+  .project-wrapper{
+    padding: 20px;
+  }
+}

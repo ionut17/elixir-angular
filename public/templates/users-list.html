@@ -1,0 +1,115 @@
+
+<section class="content-container">
+  <!-- Define scope title to be used by the header-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <h2>{{title}}</h2>
+        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add User</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="filters-wrapper"><span>Categories</span>
+        <ul>
+          <li>
+            <input id="studentsFilter" type="checkbox" ng-model="filters.students.visibility" ng-change="filters.toggleFilters()" class="checkbox-hidden"/>
+            <label for="studentsFilter">Students</label>
+          </li>
+          <li>
+            <input id="lecturersFilter" type="checkbox" ng-model="filters.lecturers.visibility" ng-change="filters.toggleFilters()" class="checkbox-hidden"/>
+            <label for="lecturersFilter">Lecturers</label>
+          </li>
+          <li>
+            <input id="adminsFilter" type="checkbox" ng-model="filters.admins.visibility" ng-change="filters.toggleFilters()" class="checkbox-hidden"/>
+            <label for="adminsFilter">Admins</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-wrapper">
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Type</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users track by $index" ui-sref="users.view({type: user.type, id: user.id})" ng-show="filters.isTypeShown(user.type)">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td><span ng-class="user.tag" class="tag">{{user.type}}</span></td>
+              <td>{{user.firstName}}</td>
+              <td class="td-bold">{{user.lastName}}</td>
+              <td class="td-blue">{{user.email}}</td>
+              <td><i aria-hidden="true" class="fa fa-times"></i></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="add-user-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add User</h2>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>
+            <label for="type">Type</label>
+            <select id="type" name="type" ng-model="modal.user.type" placeholder="Select type">
+              <option value="student">Student</option>
+              <option value="lecturer">Lecturer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </li>
+          <li ng-if="modal.user.errors.type" class="error">{{modal.user.errors.type}}</li>
+          <li>
+            <label for="first_name">First Name</label>
+            <input id="first_name" type="input" ng-model="modal.user.firstName" placeholder="Enter first name"/>
+          </li>
+          <li ng-if="modal.user.errors.firstName" class="error">{{modal.user.errors.firstName}}</li>
+          <li>
+            <label for="last_name">Last Name</label>
+            <input id="last_name" type="input" ng-model="modal.user.lastName" placeholder="Enter last name"/>
+          </li>
+          <li ng-if="modal.user.errors.lastName" class="error">{{modal.user.errors.lastName}}</li>
+          <li>
+            <label for="email">Email</label>
+            <input id="email" type="input" ng-model="modal.user.email" placeholder="Enter email"/>
+          </li>
+          <li ng-if="modal.user.errors.email" class="error">{{modal.user.errors.email}}</li>
+          <li>
+            <label for="password">Password</label>
+            <input id="password" type="password" ng-model="modal.user.password" placeholder="Enter password"/>
+          </li>
+          <li ng-if="modal.user.errors.password" class="error">{{modal.user.errors.password}}</li>
+          <li>
+            <label for="rpassword">Repeat Password</label>
+            <input id="rpassword" type="password" ng-model="modal.user.rpassword" placeholder="Confirm password"/>
+          </li>
+          <li ng-if="modal.user.errors.rpassword" class="error">{{modal.user.errors.rpassword}}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">Close</button>
+        <button type="button" ng-click="modal.submit()" class="ebutton green-button">Add User</button>
+      </div>
+    </div>
+    <!-- /.modal-content-->
+  </div>
+  <!-- /.modal-dialog-->
+</div>
+<!-- /.modal-->

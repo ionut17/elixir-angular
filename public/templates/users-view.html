@@ -1,0 +1,125 @@
+
+<section class="content-container">
+  <!-- Header-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <h2>{{title}}</h2>
+      </div>
+    </div>
+  </div>
+  <!-- Groups-->
+  <div class="row">
+    <div class="col-md-6">
+      <div ng-if="user.hasGroups" class="table-wrapper">
+        <div class="table-title">Groups
+          <button data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()" class="ebutton green-button">Add Group</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="group in user.groups track by $index" ui-sref="groups.view({id: group.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{group.name}}</td>
+              <td class="td-bold">{{group.year}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Courses-->
+  <div class="row">
+    <div class="col-md-6">
+      <div ng-if="user.hasCourses" class="table-wrapper">
+        <div class="table-title">Courses
+          <button data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()" class="ebutton green-button">Add Course</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Semester</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="course in user.courses track by $index" ui-sref="courses.view({id: course.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{course.title}}</td>
+              <td class="td-bold">{{course.year}}</td>
+              <td class="td-bold">{{course.semester}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Attendances-->
+  <div class="row">
+    <div class="col-md-6">
+      <div ng-if="user.hasAttendances" class="table-wrapper">
+        <div class="table-title">Attendances
+          <button data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()" class="ebutton green-button">Add Attendance</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Course</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="activities.view({id: attendance.activity.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{attendance.activity.name}}</td>
+              <td><span ng-class="activity.tag" class="tag">{{attendance.activity.type.name}}</span></td>
+              <td class="td-blue">{{attendance.activity.date}}</td>
+              <td class="td-bold">{{attendance.activity.course.title}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="add-group-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Group</h2>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>
+            <p>Select in which group to enroll this student</p>
+          </li>
+          <li>
+            <select id="group" name="group" ng-model="modal.user.group" ng-options="group as group.name for group in modal.groups track by group.id" placeholder="Select Group">
+              <option value="" selected="" disabled="">Select Group</option>
+            </select>
+          </li>
+          <li ng-if="modal.user.errors.group" class="error">{{modal.user.errors.group}}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">Close</button>
+        <button type="button" ng-click="modal.submit()" class="ebutton green-button">Add Group</button>
+      </div>
+    </div>
+    <!-- /.modal-content-->
+  </div>
+  <!-- /.modal-dialog-->
+</div>
+<!-- /.modal-->

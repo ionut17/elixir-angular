@@ -1,0 +1,23 @@
+section.content-container
+  // Define scope title to be used by the header
+  .row
+    .col-md-12
+      .page-title-wrapper
+        h2 {{title}}
+        button.ebutton.green-button(data-toggle='modal', data-target='#add-user-modal') Add Group
+  .row
+    .col-md-12
+      .table-wrapper
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th Name
+              th Year
+              th Students
+          tbody
+            tr(ng-repeat='group in groups track by $index', ui-sref='groups.view({id: group.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td.td-bold {{group.name}}
+              td.td-bold {{group.year}}
+              td.td-blue {{group.students.length}}

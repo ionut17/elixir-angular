@@ -1,0 +1,38 @@
+
+<section class="content-container">
+  <!-- Define scope title to be used by the header-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <h2>{{title}}</h2>
+        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add Course</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-wrapper">
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Semester</th>
+              <th>Lecturers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="course in courses track by $index" ui-sref="courses.view({id: course.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-bold">{{course.title}}</td>
+              <td class="td-bold">{{course.year}}</td>
+              <td class="td-bold">{{course.semester}}</td>
+              <td class="td-blue">{{course.lecturers.length}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+.preloader{
+  width: 100vw;
+  height: 100vh;
+  background-color: $backgroundColor;
+  background: linear-gradient(to bottom, $backgroundColor 0%, darken($backgroundColor,10) 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+
+  position:absolute;
+  top: 0;
+  left: 0;
+
+  box-sizing: border-box;
+
+  transition: opacity $preloader-hide-time ease-out;
+
+  .p-boxes-wrapper{
+    // display: none !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .p-box{
+      width: 10px;
+      height: 10px;
+      margin: 0;
+      padding: 0;
+      background-color: white;
+
+      animation: fadeInOut 1s infinite;
+      animation-fill-mode: both;
+
+      opacity: 0;
+      &:nth-child(1){
+        animation-delay: 0s;
+      }
+      &:nth-child(2){
+        animation-delay: 0.25s;
+      }
+      &:nth-child(3){
+        animation-delay: 0.50s;
+      }
+
+      &:not(:last-child){
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+@keyframes fadeInOut{
+  0%   { opacity: 0; transform: scale(1);}
+  30%  { opacity: 1; transform: scale(1.5);}
+  100% { opacity: 0; transform: scale(1);}
+}
