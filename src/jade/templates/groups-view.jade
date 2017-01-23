@@ -3,7 +3,12 @@ section.content-container
   .row
     .col-md-12
       .page-title-wrapper
-        h2 {{title}}
+        .page-title-item
+          h2.h2-sm
+            a(ui-sref='groups.list') Groups 
+            | >
+          h2
+            a(ui-sref='groups.view({id: group.id})') {{title}}
   .row
     .col-md-6
       .table-wrapper
@@ -19,7 +24,7 @@ section.content-container
               th Email
               th Actions
           tbody
-            tr(ng-repeat='user in group.students track by $index', ui-sref="users.view({type: 'student', id: user.id})")
+            tr(ng-repeat='user in group.students track by $index', ui-sref="users.view({type: 'students', id: user.id})")
               th.col-sm-1(scope='row') {{$index+1}}
               td {{user.firstName}}
               td.td-bold {{user.lastName}}

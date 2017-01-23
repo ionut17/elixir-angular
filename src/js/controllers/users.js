@@ -102,22 +102,29 @@ app.config(function($stateProvider) {
             resolvedData: ["Students", "Lecturers", "Admins", "$stateParams", function(Students, Lecturers, Admins, $stateParams) {
               var resource;
               switch($stateParams.type){
-                case 'student':
+                case 'students':
                   resource = Students;
                   break;
-                case 'lecturer':
+                case 'lecturers':
                   resource = Lecturers;
                   break;
-                case 'admin':
+                case 'admins':
                   resource = Admins;
                   break;
               }
               return resource.getById({
                 id: $stateParams.id
               }).$promise.then(function(response){
-                response.hasGroups = $stateParams.type == 'student' ? true : false;
-                response.hasCourses = $stateParams.type == 'student' || $stateParams.type == 'lecturer' ? true : false;
-                response.hasAttendances = $stateParams.type == 'student' ? true : false;
+                response.hasGroups = $stateParams.type == 'students' ? true : false;
+                response.hasCourses = $stateParams.type == 'students' || $stateParams.type == 'lecturers' ? true : false;
+                response.hasAttendances = $stateParams.type == 'students' ? true : false;
+                response.hasGrades = $stateParams.type == 'students' ? true : false;
+                angular.forEach(response.attendances, function(value, key) {
+                  value.activity.type.tag = value.activity.type.name.substring(0,1);
+                });
+                angular.forEach(response.grades, function(value, key) {
+                  value.activity.type.tag = value.activity.type.name.substring(0,1);
+                });
                 return {
                   user: response
                 };
@@ -131,7 +138,13 @@ app.config(function($stateProvider) {
 
 app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $stateParams, Students, Groups, resolvedData, $stateParams) {
     $scope.user = resolvedData.user;
-    $scope.title = $scope.user.lastName + " " + $scope.user.firstName + " ("+$stateParams.type+")";
+    $scope.user.type = $stateParams.type;
+    $scope.user.tag = 'tag-'+$scope.user.type;
+    $scope.title = $scope.user.lastName + " " + $scope.user.firstName;
+
+    $scope.settings = {
+      'editButtons' : false
+    }
 
     console.log($scope.user);
 
@@ -164,7 +177,7 @@ app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Gr
     }
 
     $scope.modal.submit = function(){
-      if ($stateParams.type === 'student'){
+      if ($stateParams.type === 'students'){
         Students.addGroup({
           id: $scope.user.id
         }, $scope.modal.user.group).$promise.then(function(response){

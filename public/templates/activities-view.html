@@ -1,35 +1,41 @@
 
 <section class="content-container">
-  <!-- Define scope title to be used by the header-->
+  <!-- Header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <h2>{{title}}</h2>
-        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add Activity</button>
+        <div class="page-title-item">
+          <h2 class="h2-sm"><a ui-sref="activities.list">Activities </a>></h2>
+          <h2 class="h2-sm"><a ui-sref="activities.sublist({type: activity.type})">{{activity.type}} </a>></h2>
+          <h2 class="h2-sm"><a ui-sref="activities.sublist({type: activity.type, activity_id: activity.id.activityId})">{{activity.activity.name}} ({{activity.activity.course.title}}) </a>></h2>
+          <h2><a ui-sref="activities.view({type: activity.type, activity_id: activity.activity.id, user_id: activity.user.id})">{{title}}</a></h2>
+        </div>
       </div>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="table-wrapper">
-        <table class="table elixir-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Type</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Course</th>
-              <th>Date</th>
-            </tr>
-          </thead>
+        <div class="table-title">{{table.title}}</div>
+        <table class="table elixir-table elixir-table-horizontal">
           <tbody>
-            <tr ng-repeat="course in activities track by $index" ui-sref="courses.view({id: course.id})">
-              <th scope="row" class="col-sm-1">{{$index+1}}</th>
-              <td class="td-bold">{{course.title}}</td>
-              <td class="td-bold">{{course.year}}</td>
-              <td class="td-bold">{{course.semester}}</td>
-              <td class="td-blue">{{course.lecturers.length}}</td>
+            <tr ng-repeat="extraRow in table.extraRows track by $index">
+              <th scope="row" class="col-sm-3">{{extraRow.title}}</th>
+              <td class="td-bold"><span ng-class="extraRow.customClass">{{extraRow.value}}</span></td>
+            </tr>
+            <tr ui-sref="users.view({type: activity.user.type+&quot;s&quot;, id: activity.user.id})">
+              <th scope="row" class="col-sm-3">{{table.columns.user}}</th>
+              <td class="td-bold"><span ng-class="activity.user.tag" class="tag">{{activity.user.type}}</span>{{activity.user.firstName+" "+activity.user.lastName}}</td>
+              <td class="td-blue">{{activity.user.email}}</td>
+            </tr>
+            <tr ui-sref="activities.sublist({type: activity.type, activity_id: activity.activity.id})">
+              <th scope="row" class="col-sm-3">{{table.columns.activity}}</th>
+              <td class="td-bold"><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span>{{activity.activity.name}}</td>
+              <td>{{activity.activity.date}}</td>
+            </tr>
+            <tr ui-sref="courses.view({id: activity.activity.course.id})">
+              <th scope="row" class="col-sm-3">{{table.columns.course}}</th>
+              <td class="td-bold">{{activity.activity.course.title}}</td>
             </tr>
           </tbody>
         </table>

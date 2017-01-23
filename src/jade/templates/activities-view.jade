@@ -1,26 +1,42 @@
 section.content-container
-  // Define scope title to be used by the header
+  // Header
   .row
     .col-md-12
       .page-title-wrapper
-        h2 {{title}}
-        button.ebutton.green-button(data-toggle='modal', data-target='#add-user-modal') Add Activity
+        .page-title-item
+          h2.h2-sm
+            a(ui-sref='activities.list') Activities 
+            | >
+          h2.h2-sm
+            a(ui-sref='activities.sublist({type: activity.type})') {{activity.type}} 
+            | >
+          h2.h2-sm
+            a(ui-sref='activities.sublist({type: activity.type, activity_id: activity.id.activityId})') {{activity.activity.name}} ({{activity.activity.course.title}}) 
+            | >
+          h2
+            a(ui-sref='activities.view({type: activity.type, activity_id: activity.activity.id, user_id: activity.user.id})') {{title}}
   .row
-    .col-md-12
+    .col-md-6
       .table-wrapper
-        table.table.elixir-table
-          thead
-            tr
-              th #
-              th Type
-              th First Name
-              th Last Name
-              th Course
-              th Date
+        .table-title {{table.title}}
+        table.table.elixir-table.elixir-table-horizontal
           tbody
-            tr(ng-repeat='course in activities track by $index', ui-sref='courses.view({id: course.id})')
-              th.col-sm-1(scope='row') {{$index+1}}
-              td.td-bold {{course.title}}
-              td.td-bold {{course.year}}
-              td.td-bold {{course.semester}}
-              td.td-blue {{course.lecturers.length}}
+            tr(ng-repeat='extraRow in table.extraRows track by $index')
+              th.col-sm-3(scope='row') {{extraRow.title}}
+              td.td-bold
+                span(ng-class="extraRow.customClass") {{extraRow.value}}
+            tr(ui-sref='users.view({type: activity.user.type+"s", id: activity.user.id})')
+              th.col-sm-3(scope='row') {{table.columns.user}}
+              td.td-bold
+                span.tag(ng-class='activity.user.tag') {{activity.user.type}}
+                | {{activity.user.firstName+" "+activity.user.lastName}}
+              td.td-blue {{activity.user.email}}
+            tr(ui-sref='activities.sublist({type: activity.type, activity_id: activity.activity.id})')
+              th.col-sm-3(scope='row') {{table.columns.activity}}
+              td.td-bold
+                span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
+                | {{activity.activity.name}}
+              td {{activity.activity.date}}
+            tr(ui-sref='courses.view({id: activity.activity.course.id})')
+              th.col-sm-3(scope='row') {{table.columns.course}}
+              td.td-bold {{activity.activity.course.title}}

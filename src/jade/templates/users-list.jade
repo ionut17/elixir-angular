@@ -30,16 +30,16 @@ section.content-container
               th First Name
               th Last Name
               th Email
-              th Actions
+              th.hide Actions
           tbody
-            tr(ng-repeat='user in users track by $index', ui-sref='users.view({type: user.type, id: user.id})', ng-show='filters.isTypeShown(user.type)')
+            tr(ng-repeat='user in users track by $index', ui-sref='users.view({type: user.type+"s", id: user.id})', ng-show='filters.isTypeShown(user.type)')
               th.col-sm-1(scope='row') {{$index+1}}
               td
                 span.tag(ng-class='user.tag') {{user.type}}
               td {{user.firstName}}
               td.td-bold {{user.lastName}}
               td.td-blue {{user.email}}
-              td
+              td.hide
                 i.fa.fa-times(aria-hidden='true')
                 
                 

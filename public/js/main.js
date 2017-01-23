@@ -5,6 +5,11 @@ app.config(function($urlRouterProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
     $urlRouterProvider.otherwise('/dashboard');
 
+    //Extra functions
+    String.prototype.capitalizeFirstLetter = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    }
+
 });
 
 app.run(function($rootScope, $timeout, $state) {
@@ -72,6 +77,42 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
     });
 }]);
 
+app.factory("Attendances", ["config", "$resource", function(config, $resource) {
+    return $resource(config.apiEndpoint + "attendances", {}, {
+        getAll: {
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getById: {
+            url: config.apiEndpoint + "attendances/:activity_id/:student_id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getByActivityId: {
+            url: config.apiEndpoint + "attendances/:activity_id",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        }
+    });
+}]);
+
 app.factory("Courses", ["config", "$resource", function(config, $resource) {
     return $resource(config.apiEndpoint + "courses", {}, {
         getAll: {
@@ -87,6 +128,68 @@ app.factory("Courses", ["config", "$resource", function(config, $resource) {
         getById: {
             url: config.apiEndpoint + "courses/:id",
             method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        }
+    });
+}]);
+
+app.factory("Files", ["config", "$resource", function(config, $resource) {
+    return $resource(config.apiEndpoint + "files", {}, {
+        getAll: {
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getById: {
+            url: config.apiEndpoint + "files/:activity_id/:student_id",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        }
+    });
+}]);
+
+app.factory("Grades", ["config", "$resource", function(config, $resource) {
+    return $resource(config.apiEndpoint + "grades", {}, {
+        getAll: {
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getById: {
+            url: config.apiEndpoint + "grades/:activity_id/:student_id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer ";
+                }
+            }
+        },
+        getByActivityId: {
+            url: config.apiEndpoint + "grades/:activity_id",
+            method: "GET",
+            isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -228,7 +331,7 @@ app.config(function($stateProvider) {
     });
 });
 
-// Group list
+// Actitivities list
 app.config(function($stateProvider) {
     $stateProvider.state('activities.list', {
         name: 'activities.list',
@@ -236,7 +339,8 @@ app.config(function($stateProvider) {
         templateUrl: 'templates/activities-list.html',
         controller: 'ActivitiesListController',
         resolve: {
-            resolvedData: ["Activities", "$http", "config", function(Activities, $http, config) {
+            resolvedData: ["Activities", "$http", "config", "$stateParams", function(Activities, $http, config, $stateParams) {
+              //In case of no parameters, return default view
               return Activities.getView().$promise.then(function(response){
                 //Insert appropiate tag
                 angular.forEach(response, function(value, key) {
@@ -256,24 +360,106 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('ActivitiesListController', ['$scope', 'resolvedData', '$state', function($scope, resolvedData, $state) {
+app.controller('ActivitiesListController', ['$scope', 'resolvedData', '$state', "$stateParams", function($scope, resolvedData, $state, $stateParams) {
     $scope.title = 'Activities';
     console.log(resolvedData);
     $scope.activities = resolvedData.activities;
 }]);
 
-//Group view
+//Sub-Activities List
+app.config(function($stateProvider) {
+    $stateProvider.state('activities.sublist', {
+        name: 'activities.sublist',
+        url: '/activities/:type/:activity_id',
+        templateUrl: 'templates/activities-sublist.html',
+        controller: 'ActivitiesSubListController',
+        resolve: {
+            resolvedData: ["Attendances", "Grades", "Files", "$http", "config", "$stateParams", function(Attendances, Grades, Files, $http, config, $stateParams) {
+              console.log($stateParams);
+              var resource = null, role = null;
+              switch($stateParams.type){
+                case 'attendances':
+                  resource = Attendances;
+                  role = 'attendance';
+                  break;
+                case 'grades':
+                  resource = Grades;
+                  role = 'grade';
+                  break;
+                case 'files':
+                  resource = Files;
+                  role = 'file';
+                  break;
+              }
+              if ($stateParams.activity_id){
+                return resource.getByActivityId({
+                  activity_id: $stateParams.activity_id,
+                }).$promise.then(function(response){
+                  response.type = $stateParams.type;
+                  response.activityId = $stateParams.activity_id;
+                  response.typeAll = false;
+                  return {
+                    activities: response
+                  };
+                }, function(response){
+                  console.log(response);
+                });
+              } else{
+                return resource.getAll().$promise.then(function(response){
+                  response.type = $stateParams.type;
+                  response.typeAll = true;
+                  return {
+                    activities: response
+                  };
+                }, function(response){
+                  console.log(response);
+                });
+              }
+            }]
+        }
+    });
+});
+
+app.controller('ActivitiesSubListController', ['$scope', 'resolvedData', '$state', "$stateParams", function($scope, resolvedData, $state, $stateParams) {
+    console.log(resolvedData);
+    $scope.activities = resolvedData.activities;
+    $scope.title = $scope.activities.typeAll ? $scope.activities.type : $scope.activities[0].activity.name + "("+$scope.activities[0].activity.course.title+")";
+
+    $scope.table = {
+      showGrades : $scope.activities.type === 'grades'
+    }
+}]);
+
+//Activity detail view
 app.config(function($stateProvider) {
     $stateProvider.state('activities.view', {
         name: 'activities.view',
-        url: '/activities/:id',
+        url: '/activities/:type/:activity_id/:user_id',
         templateUrl: 'templates/activities-view.html',
         controller: 'ActivitiesViewController',
         resolve: {
-            resolvedData: ["Activities", "$stateParams", function(Activities, $stateParams) {
-              return Activities.getById({
-                id: $stateParams.id
+            resolvedData: ["Attendances", "Grades", "Files", "$stateParams", function(Attendances, Grades, Files, $stateParams) {
+              var resource;
+              switch($stateParams.type){
+                case 'attendances':
+                  resource = Attendances;
+                  break;
+                case 'grades':
+                  resource = Grades;
+                  break;
+                case 'files':
+                  resource = Files;
+                  break;
+              }
+              return resource.getById({
+                student_id: $stateParams.user_id,
+                activity_id: $stateParams.activity_id,
               }).$promise.then(function(response){
+                response.type = $stateParams.type;
+                response.user = response.student;
+                response.user.type = 'student';
+                response.user.tag = 'tag-'+response.user.type;
+                delete response.student;
                 return {
                   activity: response
                 };
@@ -286,8 +472,34 @@ app.config(function($stateProvider) {
 });
 
 app.controller('ActivitiesViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
-    $scope.activity = resolvedData.activities;
-    $scope.title = "placeholder activity title";
+    $scope.activity = resolvedData.activity;
+    console.log($scope.activity);
+    $scope.title = $scope.activity.user.firstName +' '+ $scope.activity.user.lastName;
+
+    $scope.table = {
+      title : $scope.activity.type.slice(0,-1) + " Details",
+      columns : {
+        user: $scope.activity.user.type.capitalizeFirstLetter(),
+        activity: 'Activity',
+        course: 'Course'
+      },
+      extraRows : []
+    }
+
+    switch($scope.activity.type){
+      case 'attendances':
+        break;
+      case 'grades':
+        $scope.table.extraRows = [{
+            title : 'Value',
+            value : $scope.activity.value,
+            customClass : 'tag tag-auto tag-grade'
+          }
+        ]
+        break;
+      case 'files':
+        break;
+    }
 }]);
 
 app.config(function($stateProvider) {
@@ -417,7 +629,7 @@ app.config(function($stateProvider) {
 
 app.controller('GroupsViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
     $scope.group = resolvedData.group;
-    $scope.title = "Group "+ $scope.group.name + " ("+$scope.group.students.length+")";
+    $scope.title = $scope.group.name + " ("+$scope.group.students.length+")";
 }]);
 
 app.config(function($stateProvider) {
@@ -548,22 +760,29 @@ app.config(function($stateProvider) {
             resolvedData: ["Students", "Lecturers", "Admins", "$stateParams", function(Students, Lecturers, Admins, $stateParams) {
               var resource;
               switch($stateParams.type){
-                case 'student':
+                case 'students':
                   resource = Students;
                   break;
-                case 'lecturer':
+                case 'lecturers':
                   resource = Lecturers;
                   break;
-                case 'admin':
+                case 'admins':
                   resource = Admins;
                   break;
               }
               return resource.getById({
                 id: $stateParams.id
               }).$promise.then(function(response){
-                response.hasGroups = $stateParams.type == 'student' ? true : false;
-                response.hasCourses = $stateParams.type == 'student' || $stateParams.type == 'lecturer' ? true : false;
-                response.hasAttendances = $stateParams.type == 'student' ? true : false;
+                response.hasGroups = $stateParams.type == 'students' ? true : false;
+                response.hasCourses = $stateParams.type == 'students' || $stateParams.type == 'lecturers' ? true : false;
+                response.hasAttendances = $stateParams.type == 'students' ? true : false;
+                response.hasGrades = $stateParams.type == 'students' ? true : false;
+                angular.forEach(response.attendances, function(value, key) {
+                  value.activity.type.tag = value.activity.type.name.substring(0,1);
+                });
+                angular.forEach(response.grades, function(value, key) {
+                  value.activity.type.tag = value.activity.type.name.substring(0,1);
+                });
                 return {
                   user: response
                 };
@@ -577,7 +796,13 @@ app.config(function($stateProvider) {
 
 app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $stateParams, Students, Groups, resolvedData, $stateParams) {
     $scope.user = resolvedData.user;
-    $scope.title = $scope.user.lastName + " " + $scope.user.firstName + " ("+$stateParams.type+")";
+    $scope.user.type = $stateParams.type;
+    $scope.user.tag = 'tag-'+$scope.user.type;
+    $scope.title = $scope.user.lastName + " " + $scope.user.firstName;
+
+    $scope.settings = {
+      'editButtons' : false
+    }
 
     console.log($scope.user);
 
@@ -610,7 +835,7 @@ app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Gr
     }
 
     $scope.modal.submit = function(){
-      if ($stateParams.type === 'student'){
+      if ($stateParams.type === 'students'){
         Students.addGroup({
           id: $scope.user.id
         }, $scope.modal.user.group).$promise.then(function(response){

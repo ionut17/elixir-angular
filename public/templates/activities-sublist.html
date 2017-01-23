@@ -4,8 +4,11 @@
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <h2>{{title}}</h2>
-        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add Activity</button>
+        <div class="page-title-item">
+          <h2 class="h2-sm"><a ui-sref="activities.list">Activities </a>></h2>
+          <h2 ng-hide="activities.typeAll" class="h2-sm"><a ui-sref="activities.sublist({type: activities.type, activity_id: null})">{{activities.type}} </a>></h2>
+          <h2><a ui-sref="activities.sublist({type: activities.type, activity_id: activities.activityId})">{{title}}</a></h2>
+        </div>
       </div>
     </div>
   </div>
@@ -17,20 +20,20 @@
             <tr>
               <th>#</th>
               <th>Type</th>
-              <th>Role</th>
+              <th>Student</th>
+              <th ng-show="table.showGrades">Grade</th>
               <th>Name</th>
-              <th>User</th>
               <th>Course</th>
               <th>Date</th>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="activity in activities track by $index" ui-sref="activities.view({type: activity.role+&quot;s&quot;, activity_id: activity.activity.id, user_id: activity.user.id})">
+            <tr ng-repeat="activity in activities track by $index" ui-sref="activities.view({type: activities.type, activity_id: activity.activity.id, user_id: activity.student.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
-              <td><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
+              <td class="td-bold">{{activity.student.firstName + ' ' + activity.student.lastName}}</td>
+              <td ng-show="table.showGrades"><span class="tag tag-auto tag-grade">{{activity.value}}</span></td>
               <td>{{activity.activity.name}}</td>
-              <td class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
               <td class="td-blue">{{activity.activity.course.title}}</td>
               <td class="td-blue">{{activity.activity.date}}</td>
             </tr>

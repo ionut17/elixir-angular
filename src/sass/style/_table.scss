@@ -39,11 +39,15 @@
       font-size: 14px;
       font-weight: 400;
       color: lighten(black, 20);
+
+      vertical-align: middle;
     }
 
     tr th{
       padding: 15px 0;
       font-family: $contentFont;
+
+      vertical-align: middle;
 
       font-weight: 700;
       font-size: 12px;
@@ -67,6 +71,9 @@
   tbody{
     tr{
       // transition: background-color 100ms ease;
+      th.th-bg{
+        background-color: rgba(0,0,0,0.1);
+      }
     }
     tr:hover{
       transition: all 200ms cubic-bezier(0.3, 1.35, 1, 1);
@@ -80,10 +87,34 @@
 
 }
 
+.elixir-table-horizontal{
+  tbody{
+    tr{
+      th{
+        background-color: rgba(0,0,0,0.1);
+        font-size: 14px;
+      }
+      td{
+        display: block;
+        padding-left: 15px;
+
+        & > span.tag{
+          display: inline;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+
 
 //Cells extra styles
 .td-bold{
   font-weight: bold !important;
+}
+
+.td-lg{
+  font-size: 16px !important;
 }
 
 .td-blue{

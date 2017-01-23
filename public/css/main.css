@@ -37,6 +37,24 @@
     color: rgba(0, 0, 0, 0.5);
     margin: 0;
     padding: 0; }
+    .page-title-wrapper h2.h2-sm {
+      font-size: 24px; }
+    .page-title-wrapper h2:not(:last-child) {
+      margin-right: 10px; }
+    .page-title-wrapper h2 a {
+      text-decoration: none;
+      color: rgba(0, 0, 0, 0.5);
+      transition: color 100ms ease-in-out;
+      text-transform: capitalize; }
+      .page-title-wrapper h2 a:hover {
+        color: #4d4d4d; }
+  .page-title-wrapper span:not(:last-child) {
+    margin-right: 10px; }
+  .page-title-wrapper .page-title-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; }
 
 .logo-wrapper {
   display: flex;
@@ -209,6 +227,9 @@ ul.projects-list {
 input[type=checkbox].checkbox-hidden {
   display: none; }
 
+.col-wrapper {
+  padding: 0; }
+
 .preloader {
   width: 100vw;
   height: 100vh;
@@ -358,10 +379,12 @@ input[type=checkbox].checkbox-hidden {
       font-family: "Source Sans Pro", Monaco, Georgia, Arial;
       font-size: 14px;
       font-weight: 400;
-      color: #333333; }
+      color: #333333;
+      vertical-align: middle; }
     .elixir-table tbody tr th, .elixir-table thead tr th {
       padding: 15px 0;
       font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+      vertical-align: middle;
       font-weight: 700;
       font-size: 12px;
       color: rgba(0, 0, 0, 0.5); }
@@ -371,13 +394,29 @@ input[type=checkbox].checkbox-hidden {
     background-color: rgba(0, 0, 0, 0.1); }
     .elixir-table thead tr th {
       padding: 10px 0; }
+  .elixir-table tbody tr th.th-bg {
+    background-color: rgba(0, 0, 0, 0.1); }
   .elixir-table tbody tr:hover {
     transition: all 200ms cubic-bezier(0.3, 1.35, 1, 1);
     background-color: rgba(0, 0, 0, 0.03);
     cursor: pointer; }
 
+.elixir-table-horizontal tbody tr th {
+  background-color: rgba(0, 0, 0, 0.1);
+  font-size: 14px; }
+
+.elixir-table-horizontal tbody tr td {
+  display: block;
+  padding-left: 15px; }
+  .elixir-table-horizontal tbody tr td > span.tag {
+    display: inline;
+    margin-right: 10px; }
+
 .td-bold {
   font-weight: bold !important; }
+
+.td-lg {
+  font-size: 16px !important; }
 
 .td-blue {
   color: #19b5fe !important; }
@@ -398,6 +437,13 @@ span.tag {
   text-align: center;
   color: white;
   background-color: rgba(0, 0, 0, 0.5); }
+  span.tag.tag-sm {
+    min-width: 0px;
+    width: 30px; }
+  span.tag.tag-auto {
+    width: auto;
+    min-width: 0;
+    display: inline; }
   span.tag.tag-student {
     background-color: #2ecc71; }
   span.tag.tag-lecturer {
@@ -407,7 +453,7 @@ span.tag {
   span.tag.tag-attendance {
     background-color: #2ecc71; }
   span.tag.tag-grade {
-    background-color: #f2ca26; }
+    background-color: #9b59b6; }
   span.tag.tag-file {
     background-color: #446CB3; }
 
@@ -496,7 +542,6 @@ button.ebutton {
   padding: 3px 15px;
   text-transform: uppercase;
   font-size: 12px;
-  opacity: 0.8;
   transition: all 200ms cubic-bezier(0.07, 0.97, 0.58, 1);
   color: white;
   font-family: "Titillium Web", Montserrat, Arial;

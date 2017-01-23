@@ -4,7 +4,10 @@
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <h2>{{title}}</h2>
+        <div class="page-title-item">
+          <h2 class="h2-sm"><a ui-sref="courses.list">Courses </a>></h2>
+          <h2><a ui-sref="courses.view({id: course.id})">{{title}}</a></h2>
+        </div>
       </div>
     </div>
   </div>
@@ -25,7 +28,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="user in course.lecturers track by $index" ui-sref="users.view({type: 'lecturer', id: user.id})">
+            <tr ng-repeat="user in course.lecturers track by $index" ui-sref="users.view({type: 'lecturers', id: user.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td>{{user.firstName}}</td>
               <td class="td-bold">{{user.lastName}}</td>
@@ -54,7 +57,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="user in course.students track by $index" ui-sref="users.view({type: 'student', id: user.id})">
+            <tr ng-repeat="user in course.students track by $index" ui-sref="users.view({type: 'students', id: user.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td>{{user.firstName}}</td>
               <td class="td-bold">{{user.lastName}}</td>
