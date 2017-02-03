@@ -1,24 +1,30 @@
-section.content-container
-  // Define scope title to be used by the header
+section.container-title
   .row
     .col-md-12
       .page-title-wrapper
         h2 {{title}}
-        button.ebutton.green-button(data-toggle='modal', data-target='#add-user-modal') Add User
-  .row
+        .filters-wrapper.hide
+          span Categories
+          ul
+            li
+              input#studentsFilter.checkbox-hidden(type='checkbox', ng-model='filters.students.visibility', ng-change='filters.toggleFilters()')
+              label(for='studentsFilter') Students
+            li
+              input#lecturersFilter.checkbox-hidden(type='checkbox', ng-model='filters.lecturers.visibility', ng-change='filters.toggleFilters()')
+              label(for='lecturersFilter') Lecturers
+            li
+              input#adminsFilter.checkbox-hidden(type='checkbox', ng-model='filters.admins.visibility', ng-change='filters.toggleFilters()')
+              label(for='adminsFilter') Admins
+  .row.container-title-nav
     .col-md-12
-      .filters-wrapper
-        span Categories
-        ul
-          li
-            input#studentsFilter.checkbox-hidden(type='checkbox', ng-model='filters.students.visibility', ng-change='filters.toggleFilters()')
-            label(for='studentsFilter') Students
-          li
-            input#lecturersFilter.checkbox-hidden(type='checkbox', ng-model='filters.lecturers.visibility', ng-change='filters.toggleFilters()')
-            label(for='lecturersFilter') Lecturers
-          li
-            input#adminsFilter.checkbox-hidden(type='checkbox', ng-model='filters.admins.visibility', ng-change='filters.toggleFilters()')
-            label(for='adminsFilter') Admins
+      .page-title-wrapper
+        ul.tabs-wrapper
+          li(ui-sref='users.list({type: null})', ng-class='{active: users.type=="users"}') All Users
+          li(ui-sref='users.list({type: "students"})', ng-class='{active: users.type=="students"}') Students
+          li(ui-sref='users.list({type: "lecturers"})', ng-class='{active: users.type=="lecturers"}') Lecturers
+          li(ui-sref='users.list({type: "admins"})', ng-class='{active: users.type=="admins"}') Admins
+
+section.container-content
   .row
     .col-md-12
       .table-wrapper
@@ -26,15 +32,15 @@ section.content-container
           thead
             tr
               th #
-              th Type
+              th(ng-hide='users.singleType') Type
               th First Name
               th Last Name
               th Email
               th.hide Actions
           tbody
-            tr(ng-repeat='user in users track by $index', ui-sref='users.view({type: user.type+"s", id: user.id})', ng-show='filters.isTypeShown(user.type)')
+            tr(ng-repeat='user in users track by $index', ui-sref='users.view({type: user.type+"s", id: user.id})')
               th.col-sm-1(scope='row') {{$index+1}}
-              td
+              td(ng-hide='users.singleType')
                 span.tag(ng-class='user.tag') {{user.type}}
               td {{user.firstName}}
               td.td-bold {{user.lastName}}

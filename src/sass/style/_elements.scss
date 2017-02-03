@@ -1,3 +1,54 @@
+//Search
+
+figure.search-bar-wrapper{
+  display: relative;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  i{
+    transition: color 200ms ease-in-out;
+    position: absolute;
+    right: 50px;
+  }
+}
+
+input.search-bar{
+  width: 250px;
+  height: 35px;
+
+  margin: 0;
+  padding: 5px 15px;
+  padding-right: 35px;
+
+  background-color: transparent;
+  border: 1px solid $shadowGrey;
+  border-radius: 0;
+
+  font-size: 13px;
+  font-family: $contentFont;
+  font-weight: 400;
+
+  color: rgba(0,0,0,0.7);
+
+  transition: border-color 200ms ease-in-out;
+
+  &:focus{
+    // outline-color: rgba(0,0,0,0.4);
+    outline: none;
+    border-color: rgba(0,0,0,0.3);
+    border-color: $lightGreen;
+
+    & + i{
+      color: $lightGreen;
+    }
+  }
+}
+
 //Tags
 
 span.tag{
@@ -55,6 +106,58 @@ span.tag{
 
 }
 
+//Tabs
+
+.tabs-wrapper{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+
+  font-family: $headerFont;
+  font-size: 16px;
+  font-weight: 700;
+
+  color: rgba(0,0,0,0.5);
+
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li{
+    transition: color 100ms ease-in-out;
+
+    &:first-child{
+      margin-left: 2px;
+    }
+    &:last-child{
+      margin-right: 0;
+    }
+    padding: 20px 0 10px 0;
+    margin: 10px 20px 0 20px;
+    border-bottom: 2px solid transparent;
+
+    cursor: pointer;
+
+    &.active{
+      border-bottom: 2px solid $sidebarGreen;
+    }
+
+    &.disabled{
+      color: rgba(0,0,0,0.2);
+      cursor: default;
+      
+      &:hover{
+        color: rgba(0,0,0,0.2);
+      }
+    }
+
+    &:hover{
+      // border-bottom: 2px solid $sidebarGreen;
+      color: rgba(0,0,0,0.8);
+    }
+  }
+}
 
 //Filters
 
@@ -64,16 +167,13 @@ span.tag{
   justify-content: flex-start;
   align-items: center;
 
-  padding: 10px 0;
-  margin-bottom: 20px;
-
   font-size: 16px;
   font-weight: bold;
 
   span{
     font-family: $headerFont;
     color: rgba(0,0,0,0.5);
-    margin-right: 25px;
+    margin-right: 25px !important;
   }
 
   ul{
@@ -92,7 +192,9 @@ span.tag{
       justify-content: center;
       align-items: center;
 
-      margin-right: 25px;
+      &:not(:last-child){
+        margin-right: 25px;
+      }
 
       label{
         position: relative;

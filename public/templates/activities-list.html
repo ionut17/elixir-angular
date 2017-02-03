@@ -1,6 +1,6 @@
 
-<section class="content-container">
-  <!-- Define scope title to be used by the header-->
+<section class="container-title">
+  <!-- Header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
@@ -9,6 +9,20 @@
       </div>
     </div>
   </div>
+  <div class="row container-title-nav">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <ul class="tabs-wrapper">
+          <li ui-sref="activities.list({type: null})" ng-class="{active: activities.type==&quot;activities&quot;}">All Activities</li>
+          <li ui-sref="activities.list({type: &quot;attendances&quot;})" ng-class="{active: activities.type==&quot;attendances&quot;}">Attendances</li>
+          <li ui-sref="activities.list({type: &quot;grades&quot;})" ng-class="{active: activities.type==&quot;grades&quot;}">Grades</li>
+          <li ng-class="{active: activities.type==&quot;files&quot;}" class="disabled">Files</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="container-content">
   <div class="row">
     <div class="col-md-12">
       <div class="table-wrapper">
@@ -17,7 +31,7 @@
             <tr>
               <th>#</th>
               <th>Type</th>
-              <th>Role</th>
+              <th ng-hide="activities.singleType">Role</th>
               <th>Name</th>
               <th>User</th>
               <th>Course</th>
@@ -28,7 +42,7 @@
             <tr ng-repeat="activity in activities track by $index" ui-sref="activities.view({type: activity.role+&quot;s&quot;, activity_id: activity.activity.id, user_id: activity.user.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
-              <td><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
+              <td ng-hide="activities.singleType"><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
               <td>{{activity.activity.name}}</td>
               <td class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
               <td class="td-blue">{{activity.activity.course.title}}</td>

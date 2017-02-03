@@ -7,16 +7,47 @@ app.config(function($stateProvider) {
 // Users List
 app.config(function($stateProvider) {
     $stateProvider.state('users.list', {
-        url: '/users',
+        url: '/users/:type',
         templateUrl: 'templates/users-list.html',
         controller: 'UsersListController',
+        params:  {
+          type: {
+            value: null,
+            squash: true
+          }
+        },
         resolve: {
-            resolvedData: ["Users", "$http", "config", function(Users, $http, config) {
-              return Users.getAll().$promise.then(function(response){
+            resolvedData: ["Users", "Students", "Lecturers", "Admins", "$http", "config", "$stateParams", function(Users, Students, Lecturers, Admins, $http, config, $stateParams) {
+              console.log($stateParams);
+              var resource = null, role = true;
+              switch($stateParams.type){
+                case 'students':
+                  resource = Students;
+                  role = 'students';
+                  break;
+                case 'lecturers':
+                  resource = Lecturers;
+                  role = 'lecturers';
+                  break;
+                case 'admins':
+                  resource = Admins;
+                  role = 'admins';
+                  break;
+                default:
+                  resource = Users;
+                  role = 'users';
+                  break;
+              }
+              return resource.getAll().$promise.then(function(response){
                 //Insert appropiate tag
                 angular.forEach(response, function(value, key) {
-                  response[key].tag = "tag-"+value.type;
+                  value.tag = "tag-"+value.type;
+                  if (!value.type){
+                    value.type = role.slice(0,-1);
+                  }
                 });
+                response.type = role;
+                response.singleType = role == 'users' ? false : true;
                 //Return modified response
                 return {
                   users: response
@@ -27,9 +58,31 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('UsersListController', ['$scope', 'config', 'resolvedData', 'Users', 'Students', function($scope, config, resolvedData, Users, Students) {
-    $scope.title = 'Users';
+app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins) {
+    //Init
+    $scope.title = $stateParams.type ? $stateParams.type : 'Users';
     $scope.users = resolvedData.users;
+    console.log($scope.users);
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Users',
+      'icon': null,
+      'state': 'users.list',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
+    if ($stateParams.type){
+      $rootScope.paths[2] = {
+        'title': $stateParams.type,
+        'icon': null,
+        'state': 'users.list',
+        'params': {
+          'type': $stateParams.type
+        }
+      };
+      $rootScope.paths.length = 3;
+    }
 
     $scope.modal = {
       user : {
@@ -136,11 +189,38 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $stateParams, Students, Groups, resolvedData, $stateParams) {
+app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $rootScope, $stateParams, Students, Groups, resolvedData, $stateParams) {
+    //Init
     $scope.user = resolvedData.user;
     $scope.user.type = $stateParams.type;
     $scope.user.tag = 'tag-'+$scope.user.type;
     $scope.title = $scope.user.lastName + " " + $scope.user.firstName;
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Users',
+      'icon': null,
+      'state': 'users.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title':  $scope.user.type,
+      'icon': null,
+      'state': 'users.list',
+      'params': {
+        type: $scope.user.type
+      }
+    };
+    $rootScope.paths[3] = {
+      'title':  $scope.user.lastName + " " + $scope.user.firstName,
+      'icon': null,
+      'state': 'users.view',
+      'params': {
+        type: $scope.user.type,
+        id: $scope.user.id
+      }
+    };
+    $rootScope.paths.length = 4;
 
     $scope.settings = {
       'editButtons' : false

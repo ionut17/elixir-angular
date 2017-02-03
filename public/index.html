@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/vendor/default.css">
     <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="css/vendor/font-awesome.css">
+    <link rel="stylesheet" href="css/vendor/material.css">
     <link rel="stylesheet" href="css/vendor/animate.css">
     <!-- Custom styles-->
     <link rel="stylesheet" href="css/main.css">
@@ -34,8 +35,8 @@
     <script src="js/vendor/bootstrap.min.js"></script>
     <!-- Custom fonts-->
     <link href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
   </head>
   <body ng-app="app">
     <!-- Common elements-->
@@ -43,22 +44,40 @@
     <section class="main-container">
       <!-- Sidebar-->
       <section class="sidebar-wrapper hidden-sm hidden-xs">
-        <div class="sidebar-logo">Elixir</div>
+        <div class="sidebar-logo">
+          <figure class="logo"></figure> 
+        </div>
         <!-- Navigation-->
         <nav class="sidebar-links">
           <ul>
-            <li><a ui-sref="dashboard" ui-sref-active="active"><i aria-hidden="true" class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
-            <li><a ui-sref="activities.list" ng-class="{active:$state.includes('activities')}"><i aria-hidden="true" class="fa fa-check-square-o"></i><span>Activities</span></a></li>
-            <li><a ui-sref="courses.list" ng-class="{active:$state.includes('courses')}"><i aria-hidden="true" class="fa fa-graduation-cap"></i><span>Courses</span></a></li>
-            <li><a ui-sref="groups.list" ng-class="{active:$state.includes('groups')}"><i aria-hidden="true" class="fa fa-book"></i><span>Groups</span></a></li>
-            <li><a ui-sref="users.list" ng-class="{active: $state.includes('users')}"><i aria-hidden="true" class="fa fa-users"></i><span>Users</span></a></li>
-            <li><a ui-sref="settings" ui-sref-active="active"><i aria-hidden="true" class="fa fa-cog"></i><span>Settings</span></a></li>
+            <li><a ui-sref="dashboard" ui-sref-active="active"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-tachometer"></i><i ng-show="icons.showMaterial" class="material-icons">dashboard</i><span>Dashboard</span></a></li>
+            <li><a ui-sref="activities.list({type: null})" ng-class="{active:$state.includes('activities')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-check-square-o"></i><i ng-show="icons.showMaterial" class="material-icons">assignment</i><span>Activities</span></a></li>
+            <li><a ui-sref="courses.list" ng-class="{active:$state.includes('courses')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-graduation-cap"></i><i ng-show="icons.showMaterial" class="material-icons">school</i><span>Courses</span></a></li>
+            <li><a ui-sref="groups.list" ng-class="{active:$state.includes('groups')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-book"></i><i ng-show="icons.showMaterial" class="material-icons">library_books</i><span>Groups</span></a></li>
+            <li><a ui-sref="users.list({type: null})" ng-class="{active: $state.includes('users')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-users"></i><i ng-show="icons.showMaterial" class="material-icons">people</i><span>Users</span></a></li>
+            <li><a ui-sref="settings" ui-sref-active="active"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-cog"></i><i ng-show="icons.showMaterial" class="material-icons">settings</i><span>Settings</span></a></li>
           </ul>
         </nav>
       </section>
       <!-- Content-->
-      <section class="container-wrapper">
-        <div ui-view=""></div>
+      <section class="body-container">
+        <section class="container-header">
+          <ul class="breadcrumbs-list">
+            <li ng-repeat="path in paths"><a ng-href="{{getPath(path.state, path.params)}}"><i ng-show="icons.showMaterial" ng-if="path.icon" class="material-icons">{{path.icon}}</i><span ng-if="path.title">{{path.title}}</span></a><i ng-show="icons.showMaterial" class="material-icons breadcrumb-separator">chevron_right</i></li>
+          </ul>
+          <ul class="right-list">
+            <li><a href=""><i ng-show="icons.showMaterial" class="material-icons">person</i></a></li>
+            <li><a href=""><i ng-show="icons.showMaterial" class="material-icons">notifications</i></a></li>
+            <li>
+              <figure class="search-bar-wrapper">
+                <input name="search" type="text" placeholder="Search" class="search-bar"><i ng-show="icons.showMaterial" class="material-icons">search</i>
+              </figure>
+            </li>
+          </ul>
+        </section>
+        <section class="container-wrapper">
+          <div ui-view=""></div>
+        </section>
       </section>
     </section>
     <!-- Scripts-->

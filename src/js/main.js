@@ -12,6 +12,20 @@ app.config(function($urlRouterProvider, $locationProvider) {
 
 });
 
-app.run(function($rootScope, $timeout, $state) {
+app.run(function($rootScope, $timeout, $state, config) {
   $rootScope.$state = $state;
+  $rootScope.paths = [{
+    'title': '',
+    'icon': 'dashboard',
+    'state': 'dashboard',
+    'params': null
+  }];
+  $rootScope.getPath = function(state, paramObj){
+    return $state.href(state, paramObj);
+  }
+  $rootScope.icons = {
+    'type' : config.icons,
+    'showAwesome' : config.icons == 'awesome',
+    'showMaterial' : config.icons != 'awesome'
+  }
 });

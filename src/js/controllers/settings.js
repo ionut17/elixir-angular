@@ -6,6 +6,16 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('SettingsController', ['$scope', function($scope) {
+app.controller('SettingsController', ['$scope', '$rootScope', function($scope, $rootScope) {
+    //Init
     $scope.title = 'Settings';
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Settings',
+      'icon': null,
+      'state': 'settings',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
 }]);

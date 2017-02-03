@@ -12,13 +12,27 @@ app.config(function($urlRouterProvider, $locationProvider) {
 
 });
 
-app.run(function($rootScope, $timeout, $state) {
+app.run(function($rootScope, $timeout, $state, config) {
   $rootScope.$state = $state;
+  $rootScope.paths = [{
+    'title': '',
+    'icon': 'dashboard',
+    'state': 'dashboard',
+    'params': null
+  }];
+  $rootScope.getPath = function(state, paramObj){
+    return $state.href(state, paramObj);
+  }
+  $rootScope.icons = {
+    'type' : config.icons,
+    'showAwesome' : config.icons == 'awesome',
+    'showMaterial' : config.icons != 'awesome'
+  }
 });
 
 app.factory("Activities", ["config", "$resource", function(config, $resource) {
     return $resource(config.apiEndpoint + "activities", {}, {
-        getAll: {
+        getBasic: {
             method: "GET",
             isArray: true,
             headers: {
@@ -28,7 +42,7 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
                 }
             }
         },
-        getView: {
+        getAll: {
             url: config.apiEndpoint + "activities/join",
             method: "GET",
             isArray: true,
@@ -323,6 +337,7 @@ app.factory("Users", ["config", "$resource", function(config, $resource) {
 
 app.value("config", {
     apiEndpoint: "http://localhost:8080/api/",
+    icons: "material" //'material' or 'awesome'
 })
 
 app.config(function($stateProvider) {
@@ -335,18 +350,52 @@ app.config(function($stateProvider) {
 app.config(function($stateProvider) {
     $stateProvider.state('activities.list', {
         name: 'activities.list',
-        url: '/activities',
+        url: '/activities/:type',
         templateUrl: 'templates/activities-list.html',
         controller: 'ActivitiesListController',
+        // params:  {
+        //   type: {
+        //     value: null,
+        //     squash: true
+        //   }
+        // },
         resolve: {
-            resolvedData: ["Activities", "$http", "config", "$stateParams", function(Activities, $http, config, $stateParams) {
+            resolvedData: ["Activities", "Attendances", "Grades", "Files", "$http", "config", "$stateParams", function(Activities, Attendances, Grades, Files, $http, config, $stateParams) {
+              var resource = null, role = null;
+              switch($stateParams.type){
+                case 'attendances':
+                  resource = Attendances;
+                  role = 'attendances';
+                  break;
+                case 'grades':
+                  resource = Grades;
+                  role = 'grades';
+                  break;
+                case 'files':
+                  resource = Files;
+                  role = 'files';
+                  break;
+                default:
+                  resource = Activities;
+                  role = 'activities';
+                  break;
+              }
               //In case of no parameters, return default view
-              return Activities.getView().$promise.then(function(response){
+              return resource.getAll().$promise.then(function(response){
                 //Insert appropiate tag
                 angular.forEach(response, function(value, key) {
                   response[key].tag = "tag-"+value.activity.type.name;
                   response[key].roleTag = "tag-"+value.role;
+                  if (!value.role){
+                    value.role = role.slice(0,-1);
+                  }
+                  if (value.student){
+                    value.user = value.student;
+                    delete value.student;
+                  }
                 });
+                response.type = role;
+                response.singleType = role == 'activities' ? false : true;
                 //Return response
                 return {
                   activities: response
@@ -360,10 +409,35 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('ActivitiesListController', ['$scope', 'resolvedData', '$state', "$stateParams", function($scope, resolvedData, $state, $stateParams) {
-    $scope.title = 'Activities';
-    console.log(resolvedData);
+app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", function($scope, $rootScope, resolvedData, $state, $stateParams) {
+    //Init
     $scope.activities = resolvedData.activities;
+    $scope.title = $scope.activities.type;
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Activities',
+      'icon': null,
+      'state': 'activities.list',
+      'params': {
+        'type': null
+      }
+    };
+    $rootScope.paths.length = 2;
+    if($stateParams.type){
+      $rootScope.paths[2] = {
+        'title': $stateParams.type,
+        'icon': null,
+        'state': 'activities.list',
+        'params': {
+          'type': $stateParams.type
+        }
+      };
+      $rootScope.paths.length = 3;
+    }
+
+    //Logic
+    console.log(resolvedData);
 }]);
 
 //Sub-Activities List
@@ -391,43 +465,62 @@ app.config(function($stateProvider) {
                   role = 'file';
                   break;
               }
-              if ($stateParams.activity_id){
-                return resource.getByActivityId({
-                  activity_id: $stateParams.activity_id,
-                }).$promise.then(function(response){
-                  response.type = $stateParams.type;
-                  response.activityId = $stateParams.activity_id;
-                  response.typeAll = false;
-                  return {
-                    activities: response
-                  };
-                }, function(response){
-                  console.log(response);
-                });
-              } else{
-                return resource.getAll().$promise.then(function(response){
-                  response.type = $stateParams.type;
-                  response.typeAll = true;
-                  return {
-                    activities: response
-                  };
-                }, function(response){
-                  console.log(response);
-                });
-              }
+              return resource.getByActivityId({
+                activity_id: $stateParams.activity_id,
+              }).$promise.then(function(response){
+                response.type = $stateParams.type;
+                response.activityId = $stateParams.activity_id;
+                response.typeAll = false;
+                return {
+                  activities: response
+                };
+              }, function(response){
+                console.log(response);
+              });
             }]
         }
     });
 });
 
-app.controller('ActivitiesSubListController', ['$scope', 'resolvedData', '$state', "$stateParams", function($scope, resolvedData, $state, $stateParams) {
-    console.log(resolvedData);
+app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", function($scope, $rootScope, resolvedData, $state, $stateParams) {
+    //Init
     $scope.activities = resolvedData.activities;
-    $scope.title = $scope.activities.typeAll ? $scope.activities.type : $scope.activities[0].activity.name + "("+$scope.activities[0].activity.course.title+")";
-
+    $scope.title = [$scope.activities.typeAll ? $scope.activities.type : $scope.activities[0].activity.name,"(",$scope.activities[0].activity.course.title,")"].join(" ");
     $scope.table = {
       showGrades : $scope.activities.type === 'grades'
     }
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Activities',
+      'icon': null,
+      'state': 'activities.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title': $scope.activities.type,
+      'icon': null,
+      'state': 'activities.list',
+      'params': {
+        type: $scope.activities.type
+      }
+    };
+    $rootScope.paths.length = 3;
+    if (!$scope.activities.typeAll){
+      $rootScope.paths[3] = {
+        'title': $scope.activities[0].activity.name + " ("+$scope.activities[0].activity.course.title+")",
+        'icon': null,
+        'state': 'activities.sublist',
+        'params': {
+          type: $scope.activities.type,
+          activity_id: $scope.activities.activityId
+        }
+      };
+      $rootScope.paths.length = 4;
+    }
+
+    //Logic
+    console.log(resolvedData);
 }]);
 
 //Activity detail view
@@ -471,11 +564,49 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('ActivitiesViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
+app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+    //Init
     $scope.activity = resolvedData.activity;
-    console.log($scope.activity);
-    $scope.title = $scope.activity.user.firstName +' '+ $scope.activity.user.lastName;
+    $scope.title = [$scope.activity.user.firstName,$scope.activity.user.lastName,'-',$scope.activity.type.slice(0,-1),'at',$scope.activity.activity.type.name,'(',$scope.activity.activity.course.title,')'].join(' ');
 
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Activities',
+      'icon': null,
+      'state': 'activities.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title': $scope.activity.type,
+      'icon': null,
+      'state': 'activities.list',
+      'params': {
+        type: $scope.activity.type
+      }
+    };
+    $rootScope.paths[3] = {
+      'title': $scope.activity.activity.name + " ("+$scope.activity.activity.course.title+")",
+      'icon': null,
+      'state': 'activities.sublist',
+      'params': {
+        type: $scope.activity.type,
+        activity_id: $scope.activity.id.activityId
+      }
+    };
+    $rootScope.paths[4] = {
+      'title': $scope.activity.user.firstName +' '+ $scope.activity.user.lastName,
+      'icon': null,
+      'state': 'activities.view',
+      'params': {
+        type: $scope.activity.type,
+        activity_id: $scope.activity.activity.id,
+        user_id: $scope.activity.user.id
+      }
+    };
+    $rootScope.paths.length = 5;
+
+    //Logic
+    console.log($scope.activity);
     $scope.table = {
       title : $scope.activity.type.slice(0,-1) + " Details",
       columns : {
@@ -527,10 +658,19 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', 'resolvedData', '$state', function($scope, resolvedData, $state) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', function($scope, $rootScope, resolvedData, $state) {
+    //Init
     $scope.title = 'Courses';
-
     $scope.courses = resolvedData.courses;
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Courses',
+      'icon': null,
+      'state': 'courses.list',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
 }]);
 
 //Group view
@@ -556,9 +696,27 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('CoursesViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
+app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+    //Init
     $scope.course = resolvedData.course;
     $scope.title = $scope.course.title + " ("+$scope.course.lecturers.length+")";
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Courses',
+      'icon': null,
+      'state': 'courses.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title': $scope.course.title,
+      'icon': null,
+      'state': 'courses.view',
+      'params': {
+        id: $scope.course.id
+      }
+    };
+    $rootScope.paths.length = 3;
 }]);
 
 app.config(function($stateProvider) {
@@ -569,7 +727,16 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('DashboardController', ['$scope', function($scope) {
+app.controller('DashboardController', ['$scope','$rootScope', function($scope, $rootScope) {
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Dashboard',
+      'icon': null,
+      'state': 'dashboard',
+      'params': null
+    };
+
+    //Logic
     $scope.title = 'Dashboard';
 }]);
 
@@ -598,10 +765,19 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('GroupsListController', ['$scope', 'resolvedData', '$state', function($scope, resolvedData, $state) {
+app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', function($scope, $rootScope, resolvedData, $state) {
+    //Init
     $scope.title = 'Groups';
-
     $scope.groups = resolvedData.groups;
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Groups',
+      'icon': null,
+      'state': 'groups.list',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
 }]);
 
 //Group view
@@ -627,9 +803,27 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('GroupsViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
+app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+    //Init
     $scope.group = resolvedData.group;
     $scope.title = $scope.group.name + " ("+$scope.group.students.length+")";
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Groups',
+      'icon': null,
+      'state': 'groups.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title': $scope.group.name,
+      'icon': null,
+      'state': 'groups.view',
+      'params': {
+        id: $scope.group.id
+      }
+    };
+    $rootScope.paths.length = 3;
 }]);
 
 app.config(function($stateProvider) {
@@ -652,8 +846,18 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('SettingsController', ['$scope', function($scope) {
+app.controller('SettingsController', ['$scope', '$rootScope', function($scope, $rootScope) {
+    //Init
     $scope.title = 'Settings';
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Settings',
+      'icon': null,
+      'state': 'settings',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
 }]);
 
 app.config(function($stateProvider) {
@@ -665,16 +869,47 @@ app.config(function($stateProvider) {
 // Users List
 app.config(function($stateProvider) {
     $stateProvider.state('users.list', {
-        url: '/users',
+        url: '/users/:type',
         templateUrl: 'templates/users-list.html',
         controller: 'UsersListController',
+        params:  {
+          type: {
+            value: null,
+            squash: true
+          }
+        },
         resolve: {
-            resolvedData: ["Users", "$http", "config", function(Users, $http, config) {
-              return Users.getAll().$promise.then(function(response){
+            resolvedData: ["Users", "Students", "Lecturers", "Admins", "$http", "config", "$stateParams", function(Users, Students, Lecturers, Admins, $http, config, $stateParams) {
+              console.log($stateParams);
+              var resource = null, role = true;
+              switch($stateParams.type){
+                case 'students':
+                  resource = Students;
+                  role = 'students';
+                  break;
+                case 'lecturers':
+                  resource = Lecturers;
+                  role = 'lecturers';
+                  break;
+                case 'admins':
+                  resource = Admins;
+                  role = 'admins';
+                  break;
+                default:
+                  resource = Users;
+                  role = 'users';
+                  break;
+              }
+              return resource.getAll().$promise.then(function(response){
                 //Insert appropiate tag
                 angular.forEach(response, function(value, key) {
-                  response[key].tag = "tag-"+value.type;
+                  value.tag = "tag-"+value.type;
+                  if (!value.type){
+                    value.type = role.slice(0,-1);
+                  }
                 });
+                response.type = role;
+                response.singleType = role == 'users' ? false : true;
                 //Return modified response
                 return {
                   users: response
@@ -685,9 +920,31 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('UsersListController', ['$scope', 'config', 'resolvedData', 'Users', 'Students', function($scope, config, resolvedData, Users, Students) {
-    $scope.title = 'Users';
+app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins) {
+    //Init
+    $scope.title = $stateParams.type ? $stateParams.type : 'Users';
     $scope.users = resolvedData.users;
+    console.log($scope.users);
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Users',
+      'icon': null,
+      'state': 'users.list',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
+    if ($stateParams.type){
+      $rootScope.paths[2] = {
+        'title': $stateParams.type,
+        'icon': null,
+        'state': 'users.list',
+        'params': {
+          'type': $stateParams.type
+        }
+      };
+      $rootScope.paths.length = 3;
+    }
 
     $scope.modal = {
       user : {
@@ -794,11 +1051,38 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('UsersViewController', ['$scope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $stateParams, Students, Groups, resolvedData, $stateParams) {
+app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', function($scope, $rootScope, $stateParams, Students, Groups, resolvedData, $stateParams) {
+    //Init
     $scope.user = resolvedData.user;
     $scope.user.type = $stateParams.type;
     $scope.user.tag = 'tag-'+$scope.user.type;
     $scope.title = $scope.user.lastName + " " + $scope.user.firstName;
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Users',
+      'icon': null,
+      'state': 'users.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title':  $scope.user.type,
+      'icon': null,
+      'state': 'users.list',
+      'params': {
+        type: $scope.user.type
+      }
+    };
+    $rootScope.paths[3] = {
+      'title':  $scope.user.lastName + " " + $scope.user.firstName,
+      'icon': null,
+      'state': 'users.view',
+      'params': {
+        type: $scope.user.type,
+        id: $scope.user.id
+      }
+    };
+    $rootScope.paths.length = 4;
 
     $scope.settings = {
       'editButtons' : false

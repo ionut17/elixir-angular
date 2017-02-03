@@ -1,3 +1,8 @@
-section.content-container
-  // Define scope title to be used by the header
-  div(ng-include="'templates/elements/header.html'")
+section.container-title
+  // Header
+  .row
+    .col-md-12
+      .page-title-wrapper
+          h2 {{title}}
+
+section.container-content

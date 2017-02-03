@@ -1,17 +1,11 @@
-section.content-container
-  // Define scope title to be used by the header
+section.container-title
+  // Header
   .row
     .col-md-12
       .page-title-wrapper
-        .page-title-item
-          h2.h2-sm
-            a(ui-sref='activities.list') Activities 
-            | >
-          h2.h2-sm(ng-hide="activities.typeAll")
-            a(ui-sref='activities.sublist({type: activities.type, activity_id: null})') {{activities.type}} 
-            | >
-          h2
-            a(ui-sref='activities.sublist({type: activities.type, activity_id: activities.activityId})') {{title}}
+          h2 {{title}}
+
+section.container-content
   .row
     .col-md-12
       .table-wrapper

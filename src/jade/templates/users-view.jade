@@ -1,18 +1,11 @@
-section.content-container
+section.container-title
   // Header
   .row
     .col-md-12
       .page-title-wrapper
-        .page-title-item
-          h2.h2-sm
-            a(ui-sref='users.list') Users 
-            | >
-          h2.h2-sm
-            a(ui-sref='users.list') {{user.type}} 
-            | >
-          h2
-            a(ui-sref='users.view({id: user.id})') {{title}}
-          span.tag.hide(ng-class='user.tag') {{user.type}}
+          h2 {{title}}
+
+section.container-content
   // Groups
   .row
     .col-wrapper.col-lg-6.col-md-12(ng-if='user.hasAttendances || user.hasGrades')

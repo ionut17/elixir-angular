@@ -23,10 +23,19 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', 'resolvedData', '$state', function($scope, resolvedData, $state) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', function($scope, $rootScope, resolvedData, $state) {
+    //Init
     $scope.title = 'Courses';
-
     $scope.courses = resolvedData.courses;
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Courses',
+      'icon': null,
+      'state': 'courses.list',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
 }]);
 
 //Group view
@@ -52,7 +61,25 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('CoursesViewController', ['$scope', 'resolvedData', function($scope, resolvedData) {
+app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+    //Init
     $scope.course = resolvedData.course;
     $scope.title = $scope.course.title + " ("+$scope.course.lecturers.length+")";
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Courses',
+      'icon': null,
+      'state': 'courses.list',
+      'params': null
+    };
+    $rootScope.paths[2] = {
+      'title': $scope.course.title,
+      'icon': null,
+      'state': 'courses.view',
+      'params': {
+        id: $scope.course.id
+      }
+    };
+    $rootScope.paths.length = 3;
 }]);

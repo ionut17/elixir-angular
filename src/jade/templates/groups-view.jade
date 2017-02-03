@@ -1,20 +1,17 @@
-section.content-container
+section.container-title
   // Header
   .row
     .col-md-12
       .page-title-wrapper
-        .page-title-item
-          h2.h2-sm
-            a(ui-sref='groups.list') Groups 
-            | >
-          h2
-            a(ui-sref='groups.view({id: group.id})') {{title}}
+          h2 {{title}}
+
+section.container-content
+  // Header
   .row
     .col-md-6
       .table-wrapper
         .table-title
           | Students
-          button.ebutton.green-button(data-toggle='modal', data-target='#add-group-modal', ng-click='modal.open()') Add Student
         table.table.elixir-table
           thead
             tr

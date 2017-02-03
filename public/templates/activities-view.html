@@ -1,18 +1,15 @@
 
-<section class="content-container">
+<section class="container-title">
   <!-- Header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <div class="page-title-item">
-          <h2 class="h2-sm"><a ui-sref="activities.list">Activities </a>></h2>
-          <h2 class="h2-sm"><a ui-sref="activities.sublist({type: activity.type})">{{activity.type}} </a>></h2>
-          <h2 class="h2-sm"><a ui-sref="activities.sublist({type: activity.type, activity_id: activity.id.activityId})">{{activity.activity.name}} ({{activity.activity.course.title}}) </a>></h2>
-          <h2><a ui-sref="activities.view({type: activity.type, activity_id: activity.activity.id, user_id: activity.user.id})">{{title}}</a></h2>
-        </div>
+        <h2>{{title}}</h2>
       </div>
     </div>
   </div>
+</section>
+<section class="container-content">
   <div class="row">
     <div class="col-md-6">
       <div class="table-wrapper">

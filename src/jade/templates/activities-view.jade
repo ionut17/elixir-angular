@@ -1,20 +1,11 @@
-section.content-container
+section.container-title
   // Header
   .row
     .col-md-12
       .page-title-wrapper
-        .page-title-item
-          h2.h2-sm
-            a(ui-sref='activities.list') Activities 
-            | >
-          h2.h2-sm
-            a(ui-sref='activities.sublist({type: activity.type})') {{activity.type}} 
-            | >
-          h2.h2-sm
-            a(ui-sref='activities.sublist({type: activity.type, activity_id: activity.id.activityId})') {{activity.activity.name}} ({{activity.activity.course.title}}) 
-            | >
-          h2
-            a(ui-sref='activities.view({type: activity.type, activity_id: activity.activity.id, user_id: activity.user.id})') {{title}}
+          h2 {{title}}
+
+section.container-content
   .row
     .col-md-6
       .table-wrapper

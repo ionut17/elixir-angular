@@ -1,17 +1,15 @@
 
-<section class="content-container">
+<section class="container-title">
   <!-- Header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <div class="page-title-item">
-          <h2 class="h2-sm"><a ui-sref="users.list">Users </a>></h2>
-          <h2 class="h2-sm"><a ui-sref="users.list">{{user.type}} </a>></h2>
-          <h2><a ui-sref="users.view({id: user.id})">{{title}}</a></h2><span ng-class="user.tag" class="tag hide">{{user.type}}</span>
-        </div>
+        <h2>{{title}}</h2>
       </div>
     </div>
   </div>
+</section>
+<section class="container-content">
   <!-- Groups-->
   <div class="row">
     <div ng-if="user.hasAttendances || user.hasGrades" class="col-wrapper col-lg-6 col-md-12">

@@ -1,22 +1,19 @@
 
-<section class="content-container">
+<section class="container-title">
   <!-- Header-->
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <div class="page-title-item">
-          <h2 class="h2-sm"><a ui-sref="courses.list">Courses </a>></h2>
-          <h2><a ui-sref="courses.view({id: course.id})">{{title}}</a></h2>
-        </div>
+        <h2>{{title}}</h2>
       </div>
     </div>
   </div>
+</section>
+<section class="container-content">
   <div class="row">
     <div class="col-md-6">
       <div class="table-wrapper">
-        <div class="table-title">Lecturers
-          <button data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()" class="ebutton green-button">Add Lecturer</button>
-        </div>
+        <div class="table-title">Lecturers</div>
         <table class="table elixir-table">
           <thead>
             <tr>
@@ -43,9 +40,7 @@
   <div class="row">
     <div class="col-md-6">
       <div class="table-wrapper">
-        <div class="table-title">Students
-          <button data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()" class="ebutton green-button">Add Student</button>
-        </div>
+        <div class="table-title">Students</div>
         <table class="table elixir-table">
           <thead>
             <tr>

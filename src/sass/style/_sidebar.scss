@@ -3,15 +3,14 @@
 	flex-grow: 0;
 
 	width: $sidebarWidth;
-	min-width: 250px;
-	max-width: 250px;
+	min-width: 200px;
 	height: 100%;
 	min-height: 100vh;
 
 	box-sizing: border-box;
-	// border-right: 5px solid darken($accentColor, 5);
+	// border-right: 5px solid darken($sidebarMain, 5);
 
-	background-color:  darken($accentColor, 5);
+	background-color:  $sidebarMain;
 
 	flex-direction: column;
 	justify-content: flex-start;
@@ -20,19 +19,36 @@
 
 .sidebar-logo{
 	width: 100%;
-	height: 75px;
+	height: $logoWrapperHeight;
 
 	display: flex;
 	justify-content: center;
 	align-items: center;
 
-	font-family: $titleFont;
-	font-weight: 700;
-	font-size: 28px;
+	font-family: $contentFont;
+	font-weight: 400;
+	font-size: 20px;
+	letter-spacing: 2px;
 
-	color: lighten($accentColor, 20);
+	color: rgba(255,255,255,1);
 
-	background-color: darken($accentColor, 15);
+	background-color: $sidebarLighter;
+
+	figure.logo{
+		width: $sidebarLogoSize;
+		height: $sidebarLogoSize;
+
+		opacity: 1;
+
+		background: url('../img/white_potion2.svg');
+		background-size: contain;
+		background-position: center;
+		background-repeat: no-repeat;
+
+		padding: 0;
+		margin: 0;
+		margin-right: 10px;
+	}
 }
 
 .sidebar-links{
@@ -46,14 +62,16 @@
 		display: flex;
 		flex-direction: column;
 
-		background-color: darken($accentColor, 10);
+		// background-color: darken($sidebarMain, 10);
 		padding: 1px 0;
 	}
 
 	li{
 		width: 100%;
-		&:not(:last-child){
-			margin-bottom: 1px;
+		// border-bottom: 1px solid darken($sidebarMain, 8);
+
+		&:first-child{
+			// border-top: 1px solid darken($sidebarMain, 8);
 		}
 	}
 
@@ -63,13 +81,13 @@
 		flex-direction: row;
 		align-items: center;
 
-		background-color: darken($accentColor, 5);
-		color: white;
-		padding: 15px 20px;
+		background-color: $sidebarMain;
+		padding: 15px 30px;
 
 		font-family: $sidebarFont;
 		font-size: 14px;
-		font-weight: 400;
+		font-weight: 700;
+
 
 		text-align: left;
 		cursor: pointer;
@@ -77,24 +95,44 @@
 
 		border-left: 0px solid transparent;
 
-		transition: all $sidebarAnimation;
+		transition: background $sidebarAnimation;
 
 		&.active{
-			border-left: 10px solid darken($accentColor, 15);
-			background-color: lighten($accentColor, 5);
+			border-left: 2px solid $sidebarGreen;
+			i{
+				margin-left: -2px;
+				color: $sidebarGreen;
+			}
+			background-color: $sidebarDarker;
+			opacity: 1;
+			&:hover i{
+				color: white;
+			}
 		}
 
 		i{
 			margin-right: 20px;
-			opacity: 0.5;
+			width: 25px;
+			// opacity: 0.5;
+
+			&.material-icons{
+				font-size: 18px;
+			}
 		}
+
+		span{
+			// opacity: 0.9;
+		}
+
+		opacity: 0.7;
 
 		margin-left: 0;
 
 		&:hover{
 			text-decoration: none;
-			border-left: 10px solid darken($accentColor, 15);
-			background-color: $accentColor;
+			opacity: 1;
+			background-color: $lightGreen;
+	    border-right: 1px solid rgba(255,255,255,0.2);
 		}
 	}
 }

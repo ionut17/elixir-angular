@@ -1,6 +1,6 @@
 app.factory("Activities", ["config", "$resource", function(config, $resource) {
     return $resource(config.apiEndpoint + "activities", {}, {
-        getAll: {
+        getBasic: {
             method: "GET",
             isArray: true,
             headers: {
@@ -10,7 +10,7 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
                 }
             }
         },
-        getView: {
+        getAll: {
             url: config.apiEndpoint + "activities/join",
             method: "GET",
             isArray: true,

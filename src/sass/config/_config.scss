@@ -2,13 +2,21 @@
 $backgroundColor: #f4f4f4;
 $accentColor: #8b3aba;
 $accentColor: #446CB3;
+// $accentColor: #39C164;
 $customAccent: #f2ca26;
 
+$shadowGrey: #e7e7e7;
 $lightgrey: #c6c5ca;
 $darkGrey: rgba(0,0,0,0.5);;
 $lightBlue: #19b5fe;
 $lightGreen: #2ecc71;
 $lightRed: #e74c3c;
+
+//Elements Colors
+$sidebarMain: #333742;
+$sidebarLighter: #434752;
+$sidebarDarker: #292C35;
+$sidebarGreen: #50CF7E;
 
 //Specific colors:
 $studentColor: #2ecc71;
@@ -20,15 +28,17 @@ $gradeColor: #9b59b6;
 $fileColor: #446CB3;
 
 //Fonts
-$logoFont: 'Raleway', "Titillium Web", Montserrat, Arial;
+$logoFont: "Titillium Web", Montserrat, Arial;
 $headerFont: 'Titillium Web', Montserrat, Arial;
 $titleFont: 'Source Sans Pro', Montserrat, Arial;
 $contentFont: "Source Sans Pro", Monaco, Georgia, Arial;
 $tagFont: 'Titillium Web', Montserrat, Arial;
 
 //Others
-$sidebarWidth: 250px;
+$logoWrapperHeight: 70px;
+$sidebarLogoSize: 35px;
+$sidebarWidth: 12%;
 $sidebarFont: 'Titillium Web', Montserrat, Arial;
-$sidebarAnimation: 200ms ease-in-out;
+$sidebarAnimation: 100ms ease-in-out;
 
 $preloader-hide-time: 500ms
