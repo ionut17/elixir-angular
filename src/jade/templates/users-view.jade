@@ -9,6 +9,31 @@ section.container-content
   // Groups
   .row
     .col-wrapper.col-lg-6.col-md-12(ng-if='user.hasAttendances || user.hasGrades')
+      // Files
+      .col-md-12.col-sm-12
+        .table-wrapper(ng-if='user.hasFiles')
+          .table-title
+            | Files
+          table.table.elixir-table
+            thead
+              tr
+                th #
+                th File
+                th.hidden-xs Name
+                th Type
+                th.hidden-xs Date
+                th Course
+            tbody
+              tr(ng-repeat='file in user.files track by $index', ui-sref='base.activities.view({type: "files", activity_id: file.activity.id, user_id: file.student.id})')
+                th.col-sm-1(scope='row') {{$index+1}}
+                td.td-bold.td-blue {{file.fileName+'.'+file.extension}}
+                td.hidden-xs.td-bold {{file.activity.name}}
+                td
+                  span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{grade.activity.type.name}}') {{file.activity.type.name}}
+                td.hidden-xs.td-blue {{file.activity.date}}
+                td.td-bold {{file.activity.course.title}}
+              tr.hide(ng-hide='user.files.length')
+                td.td-empty.text-center(colspan='6') No results
       // Attendances
       .col-md-12.col-sm-12
         .table-wrapper(ng-if='user.hasAttendances')
@@ -24,7 +49,7 @@ section.container-content
                 th Date
                 th Course
             tbody
-              tr(ng-repeat='attendance in user.attendances track by $index', ui-sref='activities.view({type: "attendances", activity_id: attendance.activity.id, user_id: attendance.student.id})')
+              tr(ng-repeat='attendance in user.attendances track by $index', ui-sref='base.activities.view({type: "attendances", activity_id: attendance.activity.id, user_id: attendance.student.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.hidden-xs.td-bold {{attendance.activity.name}}
                 td
@@ -47,7 +72,7 @@ section.container-content
                 th.hidden-xs Date
                 th Course
             tbody
-              tr(ng-repeat='grade in user.grades track by $index', ui-sref='activities.view({type: "grades", activity_id: grade.activity.id, user_id: grade.student.id})')
+              tr(ng-repeat='grade in user.grades track by $index', ui-sref='base.activities.view({type: "grades", activity_id: grade.activity.id, user_id: grade.student.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.td-bold.td-lg.td-blue
                   span.tag.tag-auto.tag-grade {{grade.value}}
@@ -69,7 +94,7 @@ section.container-content
                 th Name
                 th Year
             tbody
-              tr(ng-repeat='group in user.groups track by $index', ui-sref='groups.view({id: group.id})')
+              tr(ng-repeat='group in user.groups track by $index', ui-sref='base.groups.view({id: group.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.td-bold {{group.name}}
                 td.td-bold {{group.year}}
@@ -87,7 +112,7 @@ section.container-content
                 th Year
                 th Semester
             tbody
-              tr(ng-repeat='course in user.courses track by $index', ui-sref='courses.view({id: course.id})')
+              tr(ng-repeat='course in user.courses track by $index', ui-sref='base.courses.view({id: course.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.td-bold {{course.title}}
                 td.td-bold {{course.year}}

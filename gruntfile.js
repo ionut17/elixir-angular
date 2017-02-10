@@ -33,7 +33,7 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['src/js/**/main.js', 'src/js/**/resources/*.js','src/js/**/*.js'],
+        src: ['src/js/**/main.js', 'src/js/**/resources/*.js', 'src/js/**/*.js'],
         dest: 'public/js/main.js',
       },
     },

@@ -25,7 +25,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="course in courses track by $index" ui-sref="courses.view({id: course.id})">
+            <tr ng-repeat="course in courses track by $index" ui-sref="base.courses.view({id: course.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td class="td-bold">{{course.title}}</td>
               <td class="td-bold">{{course.year}}</td>

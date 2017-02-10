@@ -1,19 +1,38 @@
-var app = angular.module('app', ['ui.router', 'ngResource']);
+var app = angular.module('app', ['ui.router', 'ngResource', 'ngCookies']);
 
 app.config(function($urlRouterProvider, $locationProvider) {
 
     $locationProvider.html5Mode(true);
-    $urlRouterProvider.otherwise('/dashboard');
+    $urlRouterProvider.otherwise('/login');
 
     //Extra functions
     String.prototype.capitalizeFirstLetter = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
+      return this.charAt(0).toUpperCase() + this.slice(1);
+    }
+    Date.prototype.addHours = function(h) {
+      this.setTime(this.getTime() + (h*60*60*1000));
+      return this;
     }
 
 });
 
-app.run(function($rootScope, $timeout, $state, config) {
+app.run(function($rootScope, $timeout, $state, $cookies, config) {
   $rootScope.$state = $state;
+  $rootScope.loading = false;
+  var cookieAuthUser = $cookies.getObject('authUser');
+  if (cookieAuthUser){
+    $rootScope.authUser = $cookies.getObject('authUser');
+  } else{
+    $rootScope.authUser = {
+      token: null,
+      user: {
+        firstName: null,
+        lastName: null,
+        email: null
+      }
+    }
+  }
+
   $rootScope.paths = [{
     'title': '',
     'icon': 'dashboard',
@@ -23,14 +42,151 @@ app.run(function($rootScope, $timeout, $state, config) {
   $rootScope.getPath = function(state, paramObj){
     return $state.href(state, paramObj);
   }
+
   $rootScope.icons = {
     'type' : config.icons,
     'showAwesome' : config.icons == 'awesome',
     'showMaterial' : config.icons != 'awesome'
   }
+
+  //Notifications wrapper
+  $rootScope.notifications = {
+    active: [],
+    append: function(notification){
+      $rootScope.notifications.active.push({
+        title: notification.title,
+        content: notification.content,
+        link: notification.link,
+        type: notification.type
+      });
+      return $rootScope.notifications.active.length-1;
+    },
+    dismiss: function(index){
+      $rootScope.notifications.active.splice(index,1);
+    }
+  };
+
 });
 
-app.factory("Activities", ["config", "$resource", function(config, $resource) {
+//Base.js
+app.config(function($stateProvider) {
+  $stateProvider.state('base', {
+    templateUrl: 'templates/base.html',
+    controller: 'BaseController',
+  });
+});
+
+app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', function($scope, $rootScope, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService) {
+  $scope.logout = function(){
+    AuthService.logout();
+    NotificationService.push({
+      title: 'Logged out',
+      content: 'You haved logged out of your account.',
+      link: null,
+      type: NOTIFICATIONS_TYPES.default
+    });
+  }
+  $scope.isAuthorized = AuthService.isAuthorized;
+  $scope.authorizedRoles = config.authorizedRoles;
+
+  $scope.loading = false;
+  $scope.authUser = {
+    username: $rootScope.authUser.user.firstName+' '+$rootScope.authUser.user.lastName,
+    email: $rootScope.authUser.user.email
+  }
+
+  $scope.modal = {
+    confirm: {
+      action: {
+        value: null,
+        submit: function(){
+          angular.element('#confirm-modal').modal('hide');
+          angular.element('.modal-backdrop').remove();
+          $scope.modal.confirm.action.value();
+        }
+      },
+      title: 'Logout confirmation?',
+      cancel: 'Cancel',
+      submit: 'Logout',
+      this: function(callback){
+        angular.element('#confirm-modal').modal('show');
+        $scope.modal.confirm.action.value = callback;
+      }
+    }
+  };
+
+  //Notifications wrapper
+  $scope.notifications = $rootScope.notifications;
+  //Notifications listener
+  $scope.$on('not-authorized', function (event) {
+    NotificationService.push({
+      title: 'Not authorized',
+      content: 'You are not allowed to view the requested resource.',
+      link: null,
+      type: NOTIFICATIONS_TYPES.error
+    });
+  });
+
+
+  //TODO insert restrictions based on role (pending api restrictions based on token)
+  //TODO impose these restrictions on url guessing as well
+  $rootScope.$on('$stateChangeStart', function (event, next) {
+    if (next.data && next.data.authorizedRoles){
+      var authorizedRoles = next.data.authorizedRoles;
+      // console.log(authorizedRoles);
+      if (!AuthService.isAuthorized(authorizedRoles)) {
+        event.preventDefault();
+        if (AuthService.isAuthenticated()) {
+          // user is not allowed
+          // console.log("not-authorized");
+          $rootScope.$broadcast("not-authorized");
+        } else {
+          // user is not logged in
+          // console.log("not-authenticated");
+          $rootScope.$broadcast("not-authenticated");
+        }
+      } else{
+        $scope.loading = true;
+      }
+    }
+  });
+  $rootScope.$on('$stateChangeSuccess', function(event, toState){
+    $scope.loading = false;
+  });
+
+  //TODO insert middleware to handle authentication filtering
+  if (!AuthService.isAuthenticated()){
+    NotificationService.push({
+      title: 'Not authenticated',
+      content: 'You are not logged in or your session expired. Please login again.',
+      link: null,
+      type: NOTIFICATIONS_TYPES.error
+    });
+    $state.go('login');
+  };
+
+}]);
+
+app.constant('NOTIFICATIONS_TYPES', {
+  default: 'default-notification',
+  error: 'error-notification',
+  success: 'success-notification'
+});
+
+//Sample notification
+/*
+{
+  title: 'Notification 1',
+  type: 'default-notification',
+  content: 'Where the f**k is all this text coming from? Someone damaged the content pipe or smth? Stop it now pls.',
+  link: {
+    text: 'Read more',
+    href: '#'
+  }
+}
+*/
+
+app.factory("Activities", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "activities", {}, {
         getBasic: {
             method: "GET",
@@ -38,7 +194,7 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -49,14 +205,14 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Admins", ["config", "$resource", function(config, $resource) {
+app.factory("Admins", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "admins", {}, {
         getAll: {
             method: "GET",
@@ -64,7 +220,7 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -74,7 +230,7 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -84,14 +240,14 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Attendances", ["config", "$resource", function(config, $resource) {
+app.factory("Attendances", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "attendances", {}, {
         getAll: {
             method: "GET",
@@ -99,7 +255,7 @@ app.factory("Attendances", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -109,7 +265,7 @@ app.factory("Attendances", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -120,14 +276,14 @@ app.factory("Attendances", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Courses", ["config", "$resource", function(config, $resource) {
+app.factory("Courses", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "courses", {}, {
         getAll: {
             method: "GET",
@@ -135,7 +291,7 @@ app.factory("Courses", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -145,14 +301,14 @@ app.factory("Courses", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Files", ["config", "$resource", function(config, $resource) {
+app.factory("Files", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "files", {}, {
         getAll: {
             method: "GET",
@@ -160,25 +316,35 @@ app.factory("Files", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
         getById: {
             url: config.apiEndpoint + "files/:activity_id/:student_id",
             method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getByActivityId: {
+            url: config.apiEndpoint + "files/:activity_id",
+            method: "GET",
             isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Grades", ["config", "$resource", function(config, $resource) {
+app.factory("Grades", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "grades", {}, {
         getAll: {
             method: "GET",
@@ -186,7 +352,7 @@ app.factory("Grades", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -196,7 +362,7 @@ app.factory("Grades", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -207,14 +373,14 @@ app.factory("Grades", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Groups", ["config", "$resource", function(config, $resource) {
+app.factory("Groups", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "groups", {}, {
         getAll: {
             method: "GET",
@@ -222,7 +388,7 @@ app.factory("Groups", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -232,14 +398,14 @@ app.factory("Groups", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Lecturers", ["config", "$resource", function(config, $resource) {
+app.factory("Lecturers", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "lecturers", {}, {
         getAll: {
             method: "GET",
@@ -247,7 +413,7 @@ app.factory("Lecturers", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -257,7 +423,7 @@ app.factory("Lecturers", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -267,14 +433,29 @@ app.factory("Lecturers", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Students", ["config", "$resource", function(config, $resource) {
+app.factory("Storage", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
+    return $resource(config.apiEndpoint + "storage", {}, {
+        retrieveFile: {
+            url: config.apiEndpoint + "storage/download",
+            method: "POST",
+            headers: {
+                'Accept': 'application/download',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        }
+    });
+}]);
+
+app.factory("Students", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "students", {}, {
         getAll: {
             method: "GET",
@@ -282,7 +463,7 @@ app.factory("Students", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -292,7 +473,7 @@ app.factory("Students", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -302,7 +483,7 @@ app.factory("Students", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -312,14 +493,14 @@ app.factory("Students", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.factory("Users", ["config", "$resource", function(config, $resource) {
+app.factory("Users", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "users", {}, {
         getAll: {
             method: "GET",
@@ -328,31 +509,65 @@ app.factory("Users", ["config", "$resource", function(config, $resource) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }
     });
 }]);
 
-app.value("config", {
+app.constant("config", {
     apiEndpoint: "http://localhost:8080/api/",
-    icons: "material" //'material' or 'awesome'
+    icons: "material", //'material' or 'awesome'
+
+    preloader: {
+      artificialTime: 2500
+    },
+
+    notifications: {
+      autoDismissTime: 10000,
+    },
+
+    authorizedRoles: {
+      activities: {
+        list: ['*'],
+        sublist: ['ADMIN', 'LECTURER'],
+        view: ['*']
+      },
+      courses: {
+        list: ['*'],
+        view: ['ADMIN', 'LECTURER']
+      },
+      dashboard: ['*'],
+      groups: {
+        list: ['*'],
+        view: ['ADMIN', 'LECTURER']
+      },
+      settings: ['*'],
+      users: {
+        list: ['ADMIN'],
+        view: ['*']
+      }
+    }
+
 })
 
 app.config(function($stateProvider) {
-    $stateProvider.state('activities', {
+    $stateProvider.state('base.activities', {
       template: '<div ui-view></div>'
     });
 });
 
 // Actitivities list
-app.config(function($stateProvider) {
-    $stateProvider.state('activities.list', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.activities.list', {
         name: 'activities.list',
         url: '/activities/:type',
         templateUrl: 'templates/activities-list.html',
         controller: 'ActivitiesListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.activities.list
+        },
         // params:  {
         //   type: {
         //     value: null,
@@ -418,7 +633,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[1] = {
       'title': 'Activities',
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': {
         'type': null
       }
@@ -428,7 +643,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       $rootScope.paths[2] = {
         'title': $stateParams.type,
         'icon': null,
-        'state': 'activities.list',
+        'state': 'base.activities.list',
         'params': {
           'type': $stateParams.type
         }
@@ -441,12 +656,15 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
 }]);
 
 //Sub-Activities List
-app.config(function($stateProvider) {
-    $stateProvider.state('activities.sublist', {
-        name: 'activities.sublist',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.activities.sublist', {
+        name: 'base.activities.sublist',
         url: '/activities/:type/:activity_id',
         templateUrl: 'templates/activities-sublist.html',
         controller: 'ActivitiesSubListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.activities.sublist
+        },
         resolve: {
             resolvedData: ["Attendances", "Grades", "Files", "$http", "config", "$stateParams", function(Attendances, Grades, Files, $http, config, $stateParams) {
               console.log($stateParams);
@@ -494,13 +712,13 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
     $rootScope.paths[1] = {
       'title': 'Activities',
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.activities.type,
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': {
         type: $scope.activities.type
       }
@@ -510,7 +728,7 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
       $rootScope.paths[3] = {
         'title': $scope.activities[0].activity.name + " ("+$scope.activities[0].activity.course.title+")",
         'icon': null,
-        'state': 'activities.sublist',
+        'state': 'base.activities.sublist',
         'params': {
           type: $scope.activities.type,
           activity_id: $scope.activities.activityId
@@ -524,12 +742,15 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
 }]);
 
 //Activity detail view
-app.config(function($stateProvider) {
-    $stateProvider.state('activities.view', {
-        name: 'activities.view',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.activities.view', {
+        name: 'base.activities.view',
         url: '/activities/:type/:activity_id/:user_id',
         templateUrl: 'templates/activities-view.html',
         controller: 'ActivitiesViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.activities.list
+        },
         resolve: {
             resolvedData: ["Attendances", "Grades", "Files", "$stateParams", function(Attendances, Grades, Files, $stateParams) {
               var resource;
@@ -564,7 +785,7 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', 'config', function($scope, $rootScope, resolvedData, config) {
     //Init
     $scope.activity = resolvedData.activity;
     $scope.title = [$scope.activity.user.firstName,$scope.activity.user.lastName,'-',$scope.activity.type.slice(0,-1),'at',$scope.activity.activity.type.name,'(',$scope.activity.activity.course.title,')'].join(' ');
@@ -573,13 +794,13 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[1] = {
       'title': 'Activities',
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.activity.type,
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': {
         type: $scope.activity.type
       }
@@ -587,7 +808,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[3] = {
       'title': $scope.activity.activity.name + " ("+$scope.activity.activity.course.title+")",
       'icon': null,
-      'state': 'activities.sublist',
+      'state': 'base.activities.sublist',
       'params': {
         type: $scope.activity.type,
         activity_id: $scope.activity.id.activityId
@@ -596,7 +817,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[4] = {
       'title': $scope.activity.user.firstName +' '+ $scope.activity.user.lastName,
       'icon': null,
-      'state': 'activities.view',
+      'state': 'base.activities.view',
       'params': {
         type: $scope.activity.type,
         activity_id: $scope.activity.activity.id,
@@ -614,6 +835,9 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         activity: 'Activity',
         course: 'Course'
       },
+      retrieveLink : function(){
+        return config.apiEndpoint+'storage/retrieve/'+$scope.activity.fileId;
+      },
       extraRows : []
     }
 
@@ -629,23 +853,37 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         ]
         break;
       case 'files':
+        $scope.table.extraRows = [{
+            title : 'File',
+            value : $scope.activity.fileName+'.'+$scope.activity.extension,
+            customClass : '',
+            hasDownloadButton: true,
+          },{
+            title: 'Type',
+            value : $scope.activity.extension,
+            customClass : 'tag tag-auto tag-file'
+          }
+        ]
         break;
     }
 }]);
 
 app.config(function($stateProvider) {
-    $stateProvider.state('courses', {
+    $stateProvider.state('base.courses', {
       template: '<div ui-view></div>'
     });
 });
 
-// Group list
-app.config(function($stateProvider) {
-    $stateProvider.state('courses.list', {
-        name: 'courses.list',
+// Courses list
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.courses.list', {
+        name: 'base.courses.list',
         url: '/courses',
         templateUrl: 'templates/courses-list.html',
         controller: 'CoursesListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.courses.list
+        },
         resolve: {
             resolvedData: ["Courses", "$http", "config", function(Courses, $http, config) {
               return Courses.getAll().$promise.then(function(response){
@@ -667,19 +905,22 @@ app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData',
     $rootScope.paths[1] = {
       'title': 'Courses',
       'icon': null,
-      'state': 'courses.list',
+      'state': 'base.courses.list',
       'params': null
     };
     $rootScope.paths.length = 2;
 }]);
 
-//Group view
-app.config(function($stateProvider) {
-    $stateProvider.state('courses.view', {
-        name: 'courses.view',
+//Course view
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.courses.view', {
+        name: 'base.courses.view',
         url: '/courses/:id',
         templateUrl: 'templates/courses-view.html',
         controller: 'CoursesViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.courses.view
+        },
         resolve: {
             resolvedData: ["Courses", "$stateParams", function(Courses, $stateParams) {
               return Courses.getById({
@@ -705,13 +946,13 @@ app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData',
     $rootScope.paths[1] = {
       'title': 'Courses',
       'icon': null,
-      'state': 'courses.list',
+      'state': 'base.courses.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.course.title,
       'icon': null,
-      'state': 'courses.view',
+      'state': 'base.courses.view',
       'params': {
         id: $scope.course.id
       }
@@ -719,11 +960,14 @@ app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData',
     $rootScope.paths.length = 3;
 }]);
 
-app.config(function($stateProvider) {
-    $stateProvider.state('dashboard', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.dashboard', {
         url: '/dashboard',
         templateUrl: 'templates/dashboard.html',
-        controller: 'DashboardController'
+        controller: 'DashboardController',
+        data: {
+          authorizedRoles: config.authorizedRoles.dashboard
+        }
     });
 });
 
@@ -741,18 +985,21 @@ app.controller('DashboardController', ['$scope','$rootScope', function($scope, $
 }]);
 
 app.config(function($stateProvider) {
-    $stateProvider.state('groups', {
+    $stateProvider.state('base.groups', {
       template: '<div ui-view></div>'
     });
 });
 
 // Group list
-app.config(function($stateProvider) {
-    $stateProvider.state('groups.list', {
-        name: 'groups.list',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.groups.list', {
+        name: 'base.groups.list',
         url: '/groups',
         templateUrl: 'templates/groups-list.html',
         controller: 'GroupsListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.groups.list
+        },
         resolve: {
             resolvedData: ["Groups", "$http", "config", function(Groups, $http, config) {
               return Groups.getAll().$promise.then(function(response){
@@ -774,19 +1021,22 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
     $rootScope.paths[1] = {
       'title': 'Groups',
       'icon': null,
-      'state': 'groups.list',
+      'state': 'base.groups.list',
       'params': null
     };
     $rootScope.paths.length = 2;
 }]);
 
 //Group view
-app.config(function($stateProvider) {
-    $stateProvider.state('groups.view', {
-        name: 'groups.view',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.groups.view', {
+        name: 'base.groups.view',
         url: '/groups/:id',
         templateUrl: 'templates/groups-view.html',
         controller: 'GroupsViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.groups.view
+        },
         resolve: {
             resolvedData: ["Groups", "$stateParams", function(Groups, $stateParams) {
               return Groups.getById({
@@ -812,13 +1062,13 @@ app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 
     $rootScope.paths[1] = {
       'title': 'Groups',
       'icon': null,
-      'state': 'groups.list',
+      'state': 'base.groups.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.group.name,
       'icon': null,
-      'state': 'groups.view',
+      'state': 'base.groups.view',
       'params': {
         id: $scope.group.id
       }
@@ -830,25 +1080,104 @@ app.config(function($stateProvider) {
     $stateProvider.state('login', {
         url: '/login',
         templateUrl: 'templates/login.html',
-        controller: 'LoginController'
+        controller: 'LoginController',
     });
 });
 
-app.controller('LoginController', ['$scope', function($scope) {
+app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthService', 'config', '$rootScope', 'NOTIFICATIONS_TYPES', 'NotificationService', function($scope, $q, $state, $timeout, AuthService, config, $rootScope, NOTIFICATIONS_TYPES, NotificationService) {
     $scope.title = 'Login';
+    $scope.form = {
+      loading: false,
+      email: null,
+      password: null,
+      errors : null,
+      submit: function(){
+        $scope.form.loading = true;
+        $scope.form.errors = null;
+        //Artificial delay
+        $timeout(function(){
+          AuthService.login({
+            "email": $scope.form.email,
+            "password": $scope.form.password
+          }).then(function(response){
+            NotificationService.push({
+              title: 'Logged in',
+              content: 'You have successfully logged in your account.',
+              link: null,
+              type: NOTIFICATIONS_TYPES.success
+            });
+          }, function(response){
+            $scope.form.loading = false;
+            $scope.form.errors = response.errors;
+          });
+        }, config.preloader.artificialTime);
+      }
+    };
+
+    //Notifications wrapper
+    $scope.notifications = $rootScope.notifications;
+    //Notifications listener
+    $scope.$on('not-authenticated', function (event, data) {
+      NotificationService.push({
+        title: 'Not authorized',
+        content: 'You are not allowed to view the requested resource.',
+        link: null,
+        type: NOTIFICATIONS_TYPES.error
+      });
+    });
+
 }]);
 
-app.config(function($stateProvider) {
-    $stateProvider.state('settings', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.settings', {
         url: '/settings',
         templateUrl: 'templates/settings.html',
-        controller: 'SettingsController'
+        controller: 'SettingsController',
+        data: {
+          authorizedRoles: config.authorizedRoles.settings
+        },
+        resolve: {
+            resolvedData: ["Students", "Lecturers", "Admins", "$rootScope", function(Students, Lecturers, Admins, $rootScope) {
+              var resource;
+              var type = $rootScope.authUser.user.type;
+              switch(type){
+                case 'student':
+                  resource = Students;
+                  break;
+                case 'lecturer':
+                  resource = Lecturers;
+                  break;
+                case 'admin':
+                  resource = Admins;
+                  break;
+              }
+              return resource.getById({
+                id: $rootScope.authUser.user.id
+              }).$promise.then(function(response){
+                response.hasGroups = type == 'students' ? true : false;
+                response.hasCourses = type == 'students' || type == 'lecturers' ? true : false;
+                response.hasAttendances = type == 'students' ? true : false;
+                response.hasGrades = type == 'students' ? true : false;
+                response.hasFiles = type == 'students' ? true : false;
+                response.type = type;
+                return {
+                  user: response
+                };
+              }, function(response){
+                console.log(response);
+              });
+            }]
+        }
     });
 });
 
-app.controller('SettingsController', ['$scope', '$rootScope', function($scope, $rootScope) {
+
+app.controller('SettingsController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
     //Init
     $scope.title = 'Settings';
+    $scope.user = resolvedData.user;
+    console.log($scope.user);
+    $scope.user.tag = 'tag-'+$scope.user.type;
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -858,20 +1187,60 @@ app.controller('SettingsController', ['$scope', '$rootScope', function($scope, $
       'params': null
     };
     $rootScope.paths.length = 2;
+
+    //Details
+    $scope.table = {
+      title: 'User details'
+    };
+    $scope.table.detailRows = [{
+        title : 'First Name',
+        value : $scope.user.firstName,
+        customClass : 'td-bold'
+      },{
+        title : 'Last Name',
+        value : $scope.user.lastName,
+        customClass : 'td-bold'
+      },{
+        title: 'Type',
+        value : $scope.user.type,
+        customClass : 'tag '+$scope.user.tag
+      },{
+        title: 'Email',
+        value: $scope.user.email,
+        customClass: 'td-blue'
+      }
+    ];
+    $scope.table.settingRows = [{
+        title : 'Language',
+        value : 'unavailable',
+        customClass : 'td-disabled'
+      },{
+        title : 'Support',
+        value : 'unavailable',
+        customClass : 'td-disabled'
+      },{
+        title : 'Change Password',
+        value : 'unavailable',
+        customClass : 'td-disabled'
+      }
+    ];
 }]);
 
 app.config(function($stateProvider) {
-    $stateProvider.state('users', {
+    $stateProvider.state('base.users', {
       template: '<div ui-view></div>'
     });
 });
 
 // Users List
-app.config(function($stateProvider) {
-    $stateProvider.state('users.list', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.users.list', {
         url: '/users/:type',
         templateUrl: 'templates/users-list.html',
         controller: 'UsersListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.users.list
+        },
         params:  {
           type: {
             value: null,
@@ -930,7 +1299,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths[1] = {
       'title': 'Users',
       'icon': null,
-      'state': 'users.list',
+      'state': 'base.users.list',
       'params': null
     };
     $rootScope.paths.length = 2;
@@ -938,7 +1307,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
       $rootScope.paths[2] = {
         'title': $stateParams.type,
         'icon': null,
-        'state': 'users.list',
+        'state': 'base.users.list',
         'params': {
           'type': $stateParams.type
         }
@@ -1008,11 +1377,14 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
 }]);
 
 //Users view
-app.config(function($stateProvider) {
-    $stateProvider.state('users.view', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.users.view', {
         url: '/users/:type/:id',
         templateUrl: 'templates/users-view.html',
         controller: 'UsersViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.users.view
+        },
         resolve: {
             resolvedData: ["Students", "Lecturers", "Admins", "$stateParams", function(Students, Lecturers, Admins, $stateParams) {
               var resource;
@@ -1034,6 +1406,7 @@ app.config(function($stateProvider) {
                 response.hasCourses = $stateParams.type == 'students' || $stateParams.type == 'lecturers' ? true : false;
                 response.hasAttendances = $stateParams.type == 'students' ? true : false;
                 response.hasGrades = $stateParams.type == 'students' ? true : false;
+                response.hasFiles = $stateParams.type == 'students' ? true : false;
                 angular.forEach(response.attendances, function(value, key) {
                   value.activity.type.tag = value.activity.type.name.substring(0,1);
                 });
@@ -1062,13 +1435,13 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths[1] = {
       'title': 'Users',
       'icon': null,
-      'state': 'users.list',
+      'state': 'base.users.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title':  $scope.user.type,
       'icon': null,
-      'state': 'users.list',
+      'state': 'base.users.list',
       'params': {
         type: $scope.user.type
       }
@@ -1076,7 +1449,7 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths[3] = {
       'title':  $scope.user.lastName + " " + $scope.user.firstName,
       'icon': null,
-      'state': 'users.view',
+      'state': 'base.users.view',
       'params': {
         type: $scope.user.type,
         id: $scope.user.id
@@ -1141,3 +1514,77 @@ app.directive('preloader', function() {
     template: '<section class="preloader"><section class="p-boxes-wrapper"><figure class="p-box"></figure><figure class="p-box"></figure><figure class="p-box"></figure></section><section class="logo-wrapper hide"><figure class="logo"></figure></section></section>',
   };
 });
+
+app.factory('AuthService', ['$http', '$rootScope', '$state', '$cookies', '$q', 'config', function ($http, $rootScope, $state, $cookies, $q, config) {
+  var authService = {};
+
+  authService.login = function (credentials) {
+    var deferred = $q.defer();
+    $http
+      .post(config.apiEndpoint+'login', credentials)
+      .then(function (response){
+        $cookies.putObject('authUser', response.data, {expires: new Date().addHours(2)});
+        $rootScope.authUser = $cookies.getObject('authUser');
+        $state.go('base.dashboard');
+        deferred.resolve({
+          'user': $rootScope.authUser
+        })
+      }, function(response){
+        deferred.reject(response.data);
+        return response;
+      });
+    return deferred.promise;
+  };
+
+  authService.logout = function(){
+    $cookies.remove('authUser');
+    console.log($cookies.getObject('authUser'));
+    $rootScope.authUser.token = null;
+    $rootScope.authUser.user = null;
+    $state.go('login');
+  }
+
+  authService.getToken = function(){
+    return $rootScope.authUser.token;
+  }
+
+  authService.isAuthenticated = function () {
+    return $cookies.getObject('authUser')!=null;
+  };
+
+  authService.isAuthorized = function (authorizedRoles) {
+    if (!authService.isAuthenticated()){
+      return false;
+    }
+    if (!angular.isArray(authorizedRoles)) {
+      authorizedRoles = [authorizedRoles];
+    }
+    role = $rootScope.authUser.user.type.toUpperCase();
+    // return authService.isAuthenticated();
+    return (authorizedRoles.indexOf(role) !== -1 || authorizedRoles.indexOf("*") !== - 1);
+  };
+
+  authService.hasRole = function(role){
+    role = role.toUpperCase();
+    return authService.isAuthenticated() && (role === $rootScope.authUser.user.type.toUpperCase() || role === '*');
+  }
+
+  return authService;
+}])
+
+app.factory('NotificationService', ['$http', '$rootScope', '$state', '$cookies', '$q', 'config', '$timeout', function ($http, $rootScope, $state, $cookies, $q, config, $timeout) {
+  var notificationService = {};
+
+  notificationService.push = function (notification) {
+    var index = $rootScope.notifications.append(notification);
+    $timeout(function(){
+      $rootScope.notifications.dismiss(index);
+    }, config.notifications.autoDismissTime);
+  };
+
+  notificationService.flush = function(){
+    $rootScope.notifications.values = [];
+  }
+
+  return notificationService;
+}])

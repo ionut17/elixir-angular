@@ -19,7 +19,7 @@ section.container-content
               th Semester
               th Lecturers
           tbody
-            tr(ng-repeat='course in courses track by $index', ui-sref='courses.view({id: course.id})')
+            tr(ng-repeat='course in courses track by $index', ui-sref='base.courses.view({id: course.id})')
               th.col-sm-1(scope='row') {{$index+1}}
               td.td-bold {{course.title}}
               td.td-bold {{course.year}}

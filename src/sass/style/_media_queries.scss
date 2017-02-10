@@ -21,6 +21,16 @@
     .logo-text{
       margin-top: 0;
     }
+    //login
+    .login-box{
+      flex-direction: column;
+      border-left: 0;
+      border-right: 0;
+      height: 700px;
+      .left-box, .right-box{
+        width: 100%;
+      }
+    }
 }
 
 @media screen and (max-width: 400px) {

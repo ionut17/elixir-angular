@@ -13,14 +13,14 @@
 }
 
 .table-title{
-  // width: 100%;
+  width: 100%;
   // background-color: $accentColor;
   background-color: transparent;
   // background-color: $lightGreen;
   border-bottom: 1px solid rgba(0,0,0,0.06);
 
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-grow: 0;
 
@@ -41,7 +41,7 @@
 .elixir-table{
   margin-bottom: 0;
   box-sizing: border-box;
-  background-color: white;
+  // background-color: white;
 
   tbody, thead{
     background-color: white;
@@ -72,6 +72,7 @@
 
       &:first-child{
         padding-left: 20px;
+        padding-right: 20px;
       }
     }
 
@@ -105,6 +106,15 @@
     }
   }
 
+  &.disable-hover{
+    tbody{
+      tr:hover{
+        background-color: white;
+        cursor: default;
+      }
+    }
+  }
+
 }
 
 .elixir-table-horizontal{
@@ -113,6 +123,8 @@
       th{
         background-color: rgba(0,0,0,0.1);
         font-size: 14px;
+        width: auto;
+        width: 30%; //TODO temporary value
       }
       td{
         display: block;
@@ -145,4 +157,25 @@
 
 .td-green{
   color: $lightGreen !important;
+}
+
+.td-spaced{
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.td-disabled{
+  color: grey;
+  opacity: 0.5;
+}
+
+.td-empty{
+  color: black !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  background-color: lightgrey !important;
+  border: none !important;
+  opacity: 0.5 !important;
 }

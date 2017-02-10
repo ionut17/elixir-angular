@@ -1,0 +1,67 @@
+
+<!-- Common elements-->
+<section class="main-container">
+  <!-- Sidebar-->
+  <section class="sidebar-wrapper hidden-sm hidden-xs">
+    <div class="sidebar-logo">
+      <figure class="logo"></figure> 
+    </div>
+    <!-- Navigation-->
+    <nav class="sidebar-links">
+      <ul>
+        <label>Management</label>
+        <li ng-if="isAuthorized(authorizedRoles.dashboard)"><a ui-sref="base.dashboard" ui-sref-active="active"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-tachometer"></i><i ng-show="icons.showMaterial" class="material-icons">dashboard</i><span>Dashboard</span></a></li>
+        <li ng-if="isAuthorized(authorizedRoles.activities.list)"><a ui-sref="base.activities.list({type: null})" ng-class="{active:$state.includes('base.activities')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-check-square-o"></i><i ng-show="icons.showMaterial" class="material-icons">assignment</i><span>Activities</span></a></li>
+        <li ng-if="isAuthorized(authorizedRoles.courses.list)"><a ui-sref="base.courses.list" ng-class="{active:$state.includes('base.courses')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-graduation-cap"></i><i ng-show="icons.showMaterial" class="material-icons">school</i><span>Courses</span></a></li>
+        <li ng-if="isAuthorized(authorizedRoles.groups.list)"><a ui-sref="base.groups.list" ng-class="{active:$state.includes('base.groups')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-book"></i><i ng-show="icons.showMaterial" class="material-icons">library_books</i><span>Groups</span></a></li>
+        <li ng-if="isAuthorized(authorizedRoles.users.list)"><a ui-sref="base.users.list({type: null})" ng-class="{active: $state.includes('base.users')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-users"></i><i ng-show="icons.showMaterial" class="material-icons">people</i><span>Users</span></a></li>
+        <label>Account</label>
+        <li ng-if="isAuthorized(authorizedRoles.settings)"><a ui-sref="base.settings" ui-sref-active="active"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-cog"></i><i ng-show="icons.showMaterial" class="material-icons">settings</i><span>Settings</span></a></li>
+        <li><a ng-click="modal.confirm.this(logout)"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-cog"></i><i ng-show="icons.showMaterial" class="material-icons">exit_to_app</i><span>Logout</span></a></li>
+      </ul>
+    </nav>
+  </section>
+  <!-- Content-->
+  <section class="body-container">
+    <section class="container-header">
+      <ul class="breadcrumbs-list">
+        <li ng-repeat="path in paths"><a ng-href="{{getPath(path.state, path.params)}}"><i ng-show="icons.showMaterial" ng-if="path.icon" class="material-icons">{{path.icon}}</i><span ng-if="path.title">{{path.title}}</span></a><i ng-show="icons.showMaterial" class="material-icons breadcrumb-separator">chevron_right</i></li>
+      </ul>
+      <ul class="right-list">
+        <li><a href=""><span class="no-transform">{{authUser.email}}</span><i ng-show="icons.showMaterial" class="material-icons">person</i></a></li>
+        <li><a href=""><i ng-show="icons.showMaterial" class="material-icons">notifications</i></a></li>
+        <li>
+          <figure class="search-bar-wrapper">
+            <input name="search" type="text" placeholder="Search" class="search-bar"/><i ng-show="icons.showMaterial" class="material-icons">search</i>
+          </figure>
+        </li>
+      </ul>
+    </section>
+    <section class="container-wrapper">
+      <div ui-view=""></div>
+      <section class="notifications-wrapper">
+        <div ng-repeat="notification in notifications.active track by $index" ng-class="notification.type" class="notification"><i ng-click="notifications.dismiss($index)" class="material-icons">close</i>
+          <h2>{{notification.title}}</h2>
+          <p>{{notification.content}}</p><a ng-href="{{notification.link.href}}" ng-if="notification.link">{{notification.link.text}}</a>
+        </div>
+      </section>
+    </section>
+  </section>
+</section>
+<!--includes-->
+<div id="confirm-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">exit_to_app</i>
+        <h2>{{modal.confirm.title}}</h2>
+      </div>
+      <div class="modal-header text-center hide">
+        <h2>{{modal.confirm.title}}</h2>
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal.confirm.cancel}}</button>
+        <button type="button" ng-click="modal.confirm.action.submit()" class="ebutton green-button">{{modal.confirm.submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>

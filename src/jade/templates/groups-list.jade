@@ -19,7 +19,7 @@ section.container-content
               th Year
               th Students
           tbody
-            tr(ng-repeat='group in groups track by $index', ui-sref='groups.view({id: group.id})')
+            tr(ng-repeat='group in groups track by $index', ui-sref='base.groups.view({id: group.id})')
               th.col-sm-1(scope='row') {{$index+1}}
               td.td-bold {{group.name}}
               td.td-bold {{group.year}}

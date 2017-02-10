@@ -4,9 +4,42 @@
   <div class="row">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <h2>{{title}}</h2>
+        <div>
+          <h2>{{title}}</h2>
+        </div>
       </div>
     </div>
   </div>
 </section>
-<section class="container-content"></section>
+<section class="container-content">
+  <div class="row">
+    <div class="col-md-6 col-sm-12">
+      <div class="table-wrapper">
+        <div class="table-title">{{table.title}}
+          <button class="ebutton white-button">Change Details</button>
+        </div>
+        <table class="table elixir-table elixir-table-horizontal disable-hover">
+          <tbody>
+            <tr ng-repeat="detailRow in table.detailRows">
+              <th scope="detailRow">{{detailRow.title}}</th>
+              <td><span ng-class="detailRow.customClass">{{detailRow.value}}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-12">
+      <div class="table-wrapper">
+        <div class="table-title">Settings</div>
+        <table class="table elixir-table elixir-table-horizontal disable-hover">
+          <tbody>
+            <tr ng-repeat="settingRow in table.settingRows">
+              <th scope="settingRow">{{settingRow.title}}</th>
+              <td><span ng-class="settingRow.customClass">{{settingRow.value}}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

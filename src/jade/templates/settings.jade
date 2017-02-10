@@ -3,6 +3,31 @@ section.container-title
   .row
     .col-md-12
       .page-title-wrapper
-          h2 {{title}}
+          div
+            h2 {{title}}
 
 section.container-content
+  .row
+    .col-md-6.col-sm-12
+      .table-wrapper
+        .table-title
+          | {{table.title}}
+          button.ebutton.white-button Change Details
+        table.table.elixir-table.elixir-table-horizontal.disable-hover
+          tbody
+            tr(ng-repeat='detailRow in table.detailRows')
+              th(scope='detailRow') {{detailRow.title}}
+              td
+                span(ng-class="detailRow.customClass") {{detailRow.value}}
+    .col-md-6.col-sm-12
+      .table-wrapper
+        .table-title Settings
+        table.table.elixir-table.elixir-table-horizontal.disable-hover
+          tbody
+            tr(ng-repeat='settingRow in table.settingRows')
+              th(scope='settingRow') {{settingRow.title}}
+              td
+                span(ng-class="settingRow.customClass") {{settingRow.value}}
+      
+      
+  

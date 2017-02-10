@@ -1,0 +1,17 @@
+
+<div id="confirm-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">exit_to_app</i>
+        <h2>{{modal.confirm.title}}</h2>
+      </div>
+      <div class="modal-header text-center hide">
+        <h2>{{modal.confirm.title}}</h2>
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal.confirm.cancel}}</button>
+        <button type="button" ng-click="modal.confirm.action.submit()" class="ebutton green-button">{{modal.confirm.submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>

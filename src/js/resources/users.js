@@ -1,4 +1,4 @@
-app.factory("Users", ["config", "$resource", function(config, $resource) {
+app.factory("Users", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "users", {}, {
         getAll: {
             method: "GET",
@@ -7,7 +7,7 @@ app.factory("Users", ["config", "$resource", function(config, $resource) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }

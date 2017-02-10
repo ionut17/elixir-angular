@@ -9,11 +9,10 @@ section.container-title
     .col-md-12
       .page-title-wrapper
         ul.tabs-wrapper
-          li(ui-sref='activities.list({type: null})', ng-class='{active: activities.type=="activities"}') All Activities
-          li(ui-sref='activities.list({type: "attendances"})', ng-class='{active: activities.type=="attendances"}') Attendances
-          li(ui-sref='activities.list({type: "grades"})', ng-class='{active: activities.type=="grades"}') Grades
-          li(ng-class='{active: activities.type=="files"}' class='disabled') Files
-          //- ui-sref='activities.list({type: "files"})'
+          li(ui-sref='base.activities.list({type: null})', ng-class='{active: activities.type=="activities"}') All Activities
+          li(ui-sref='base.activities.list({type: "attendances"})', ng-class='{active: activities.type=="attendances"}') Attendances
+          li(ui-sref='base.activities.list({type: "grades"})', ng-class='{active: activities.type=="grades"}') Grades
+          li(ui-sref='base.activities.list({type: "files"})', ng-class='{active: activities.type=="files"}') Files
 
 section.container-content
   .row
@@ -30,7 +29,7 @@ section.container-content
               th Course
               th Date
           tbody
-            tr(ng-repeat='activity in activities track by $index', ui-sref='activities.view({type: activity.role+"s", activity_id: activity.activity.id, user_id: activity.user.id})')
+            tr(ng-repeat='activity in activities track by $index', ui-sref='base.activities.view({type: activity.role+"s", activity_id: activity.activity.id, user_id: activity.user.id})')
               th.col-sm-1(scope='row') {{$index+1}}
               td
                 span.tag(ng-class='activity.tag') {{activity.activity.type.name}}

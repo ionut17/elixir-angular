@@ -4,7 +4,7 @@
 
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
 
   // background: linear-gradient(to bottom, $backgroundColor 0%, darken($backgroundColor, 5) 100%);
@@ -15,6 +15,9 @@
   display: flex;
   flex-grow: 1;
   overflow: scroll;
+  position: relative;
+
+  min-height: calc(100% - #{$logoWrapperHeight});
 
   & > * {
     width: 100%;
@@ -122,8 +125,8 @@
 
 .body-container{
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
 }
 
 .container-title{
@@ -147,6 +150,7 @@
   padding: 40px;
   padding-top: 30px;
   // padding-top: 20px;
+
 }
 
 .page-title-wrapper{
@@ -160,7 +164,7 @@
     font-weight: 400;
     text-transform: capitalize;
 
-    color: rgba(0,0,0,0.5);
+    color: rgba(0,0,0,0.75);
     // color: white;
 
     margin: 0;
@@ -206,6 +210,125 @@
   align-items: center;
 
   // border-bottom: 5px solid rgba(0,0,0,0.1);
+}
+
+//Notifications
+.notifications-wrapper{
+  width: 300px;
+  max-width: calc(100% - 80px);
+
+  display: flex;
+  flex-direction: column;
+
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  bottom: 20px;
+}
+
+.notification{
+  width: 100%;
+  position: relative;
+
+  padding: 15px;
+
+  background-color: white;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  border-right: 1px solid rgba(0,0,0,0.05);
+  // border-top: 3px solid $lightgrey;
+  // border-right: 5px solid $lightGreen;
+
+  box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.1);
+  transition: all 100ms ease-in-out;
+
+  i.material-icons{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    color: rgba(0,0,0,0.25);
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover{
+      color: rgba(0,0,0,0.5);
+      font-weight: bold;
+    }
+  }
+
+  h2{
+    margin-top: 0;
+    font-family: $headerFont;
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(0,0,0,0.75);
+
+    &:last-child{
+      margin-bottom: 0;
+    }
+  }
+
+  p{
+    font-family: $contentFont;
+    font-size: 14px;
+    color: $darkGrey;
+    margin-bottom: 0;
+  }
+
+  a{
+    font-family: $contentFont;
+    font-size: 12px;
+    text-decoration: none;
+
+    margin-top: 5px;
+
+    color: $lightBlue;
+    &:hover{
+      color: darken($lightBlue, 15);
+    }
+  }
+
+  &.default-notification{
+    // background-color: white;
+  }
+  &.error-notification{
+    // background-color: lighten($lightRed, 35);
+    h2{
+      color: $lightRed;
+    }
+  }
+  &.success-notification{
+    // background-color: lighten($lightGreen, 40);
+    h2{
+      color: $lightGreen;
+    }
+  }
+
+  &:hover{
+    border-top: 1px solid rgba(0,0,0,0.1);
+    border-right: 1px solid rgba(0,0,0,0.1);
+    box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.2);
+  }
+
+  &:not(:last-child){
+    margin-bottom: 20px;
+  }
+}
+
+
+//Transition
+.state-transition{
+  transition: all 200ms ease-in-out;
+  &.transition-state{
+    margin-left: 100vw;
+    overflow: hidden;
+    opacity: 0.5;
+  }
+}
+
+//Modal dialog
+.modal-dialog{
+  margin-top: $logoWrapperHeight;
 }
 
 //Hide

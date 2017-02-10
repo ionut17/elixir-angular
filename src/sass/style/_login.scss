@@ -1,0 +1,143 @@
+.login-wrapper{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100vw;
+  min-height: 100vh;
+
+  background-color: $backgroundColor;
+}
+
+.login-box{
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  height: 400px;
+  min-height: 400px;
+  padding: 0;
+  border: 1px solid $shadowGrey;
+  box-sizing: content-box;
+
+  .left-box, .right-box{
+    height: inherit;
+    transition: all 300ms ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &.loading-state{
+    border: none;
+    .left-box{
+      transition: all 200ms ease-in-out;
+      & > *{
+        display: none;
+      }
+      width: 0;
+    }
+    .right-box{
+      transition: all 200ms ease-in-out;
+      width: 100%;
+    }
+  }
+
+  .left-box{
+    width: 35%;
+    background-color: $sidebarMain;
+
+    figure.logo{
+      width: 75px;
+      height: 75px;
+    }
+
+    h2, h3{
+      font-family: $headerFont;
+      margin-bottom: 0;
+    }
+
+    h2{
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: white;
+      margin-top: 15px;
+    }
+
+    h3{
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.75);
+      margin-top: 5px;
+    }
+  }
+  .right-box{
+    width: 65%;
+    background-color: white;
+    padding: 8%;
+    position: relative;
+
+    .preloader-wrapper{
+      background-color: rgba(255,255,255,1);
+
+      figure.preloader{
+        margin-bottom: 10px;
+      }
+
+      h4{
+        font-family: $headerFont;
+        font-size: 14px;
+        font-weight: 400;
+        color: $lightgrey;
+        margin: 0;
+      }
+    }
+
+    a{
+      width: 100%;
+      text-decoration: none;
+    }
+  }
+}
+
+.preloader-wrapper{
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.university-wrapper{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0;
+
+  p{
+    margin-bottom: 0;
+
+    font-family: $headerFont;
+    font-size: 16px;
+    color: $darkGrey;
+  }
+
+  &:first-child{
+    margin-bottom: 15px;
+  }
+  &:last-child{
+    margin-top: 15px;
+  }
+
+}

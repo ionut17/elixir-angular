@@ -1,4 +1,4 @@
-app.factory("Courses", ["config", "$resource", function(config, $resource) {
+app.factory("Courses", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "courses", {}, {
         getAll: {
             method: "GET",
@@ -6,7 +6,7 @@ app.factory("Courses", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -16,7 +16,7 @@ app.factory("Courses", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }

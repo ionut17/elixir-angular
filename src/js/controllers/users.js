@@ -1,15 +1,18 @@
 app.config(function($stateProvider) {
-    $stateProvider.state('users', {
+    $stateProvider.state('base.users', {
       template: '<div ui-view></div>'
     });
 });
 
 // Users List
-app.config(function($stateProvider) {
-    $stateProvider.state('users.list', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.users.list', {
         url: '/users/:type',
         templateUrl: 'templates/users-list.html',
         controller: 'UsersListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.users.list
+        },
         params:  {
           type: {
             value: null,
@@ -68,7 +71,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths[1] = {
       'title': 'Users',
       'icon': null,
-      'state': 'users.list',
+      'state': 'base.users.list',
       'params': null
     };
     $rootScope.paths.length = 2;
@@ -76,7 +79,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
       $rootScope.paths[2] = {
         'title': $stateParams.type,
         'icon': null,
-        'state': 'users.list',
+        'state': 'base.users.list',
         'params': {
           'type': $stateParams.type
         }
@@ -146,11 +149,14 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
 }]);
 
 //Users view
-app.config(function($stateProvider) {
-    $stateProvider.state('users.view', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.users.view', {
         url: '/users/:type/:id',
         templateUrl: 'templates/users-view.html',
         controller: 'UsersViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.users.view
+        },
         resolve: {
             resolvedData: ["Students", "Lecturers", "Admins", "$stateParams", function(Students, Lecturers, Admins, $stateParams) {
               var resource;
@@ -172,6 +178,7 @@ app.config(function($stateProvider) {
                 response.hasCourses = $stateParams.type == 'students' || $stateParams.type == 'lecturers' ? true : false;
                 response.hasAttendances = $stateParams.type == 'students' ? true : false;
                 response.hasGrades = $stateParams.type == 'students' ? true : false;
+                response.hasFiles = $stateParams.type == 'students' ? true : false;
                 angular.forEach(response.attendances, function(value, key) {
                   value.activity.type.tag = value.activity.type.name.substring(0,1);
                 });
@@ -200,13 +207,13 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths[1] = {
       'title': 'Users',
       'icon': null,
-      'state': 'users.list',
+      'state': 'base.users.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title':  $scope.user.type,
       'icon': null,
-      'state': 'users.list',
+      'state': 'base.users.list',
       'params': {
         type: $scope.user.type
       }
@@ -214,7 +221,7 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths[3] = {
       'title':  $scope.user.lastName + " " + $scope.user.firstName,
       'icon': null,
-      'state': 'users.view',
+      'state': 'base.users.view',
       'params': {
         type: $scope.user.type,
         id: $scope.user.id

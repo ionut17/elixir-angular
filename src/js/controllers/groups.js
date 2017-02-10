@@ -1,16 +1,19 @@
 app.config(function($stateProvider) {
-    $stateProvider.state('groups', {
+    $stateProvider.state('base.groups', {
       template: '<div ui-view></div>'
     });
 });
 
 // Group list
-app.config(function($stateProvider) {
-    $stateProvider.state('groups.list', {
-        name: 'groups.list',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.groups.list', {
+        name: 'base.groups.list',
         url: '/groups',
         templateUrl: 'templates/groups-list.html',
         controller: 'GroupsListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.groups.list
+        },
         resolve: {
             resolvedData: ["Groups", "$http", "config", function(Groups, $http, config) {
               return Groups.getAll().$promise.then(function(response){
@@ -32,19 +35,22 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
     $rootScope.paths[1] = {
       'title': 'Groups',
       'icon': null,
-      'state': 'groups.list',
+      'state': 'base.groups.list',
       'params': null
     };
     $rootScope.paths.length = 2;
 }]);
 
 //Group view
-app.config(function($stateProvider) {
-    $stateProvider.state('groups.view', {
-        name: 'groups.view',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.groups.view', {
+        name: 'base.groups.view',
         url: '/groups/:id',
         templateUrl: 'templates/groups-view.html',
         controller: 'GroupsViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.groups.view
+        },
         resolve: {
             resolvedData: ["Groups", "$stateParams", function(Groups, $stateParams) {
               return Groups.getById({
@@ -70,13 +76,13 @@ app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 
     $rootScope.paths[1] = {
       'title': 'Groups',
       'icon': null,
-      'state': 'groups.list',
+      'state': 'base.groups.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.group.name,
       'icon': null,
-      'state': 'groups.view',
+      'state': 'base.groups.view',
       'params': {
         id: $scope.group.id
       }

@@ -13,6 +13,37 @@
   <!-- Groups-->
   <div class="row">
     <div ng-if="user.hasAttendances || user.hasGrades" class="col-wrapper col-lg-6 col-md-12">
+      <!-- Files-->
+      <div class="col-md-12 col-sm-12">
+        <div ng-if="user.hasFiles" class="table-wrapper">
+          <div class="table-title">Files</div>
+          <table class="table elixir-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>File</th>
+                <th class="hidden-xs">Name</th>
+                <th>Type</th>
+                <th class="hidden-xs">Date</th>
+                <th>Course</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="file in user.files track by $index" ui-sref="base.activities.view({type: &quot;files&quot;, activity_id: file.activity.id, user_id: file.student.id})">
+                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+                <td class="td-bold td-blue">{{file.fileName+'.'+file.extension}}</td>
+                <td class="hidden-xs td-bold">{{file.activity.name}}</td>
+                <td><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{file.activity.type.name}}</span></td>
+                <td class="hidden-xs td-blue">{{file.activity.date}}</td>
+                <td class="td-bold">{{file.activity.course.title}}</td>
+              </tr>
+              <tr ng-hide="user.files.length" class="hide">
+                <td colspan="6" class="td-empty text-center">No results</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <!-- Attendances-->
       <div class="col-md-12 col-sm-12">
         <div ng-if="user.hasAttendances" class="table-wrapper">
@@ -30,7 +61,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="activities.view({type: &quot;attendances&quot;, activity_id: attendance.activity.id, user_id: attendance.student.id})">
+              <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="base.activities.view({type: &quot;attendances&quot;, activity_id: attendance.activity.id, user_id: attendance.student.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td class="hidden-xs td-bold">{{attendance.activity.name}}</td>
                 <td><span ng-class="activity.tag" ng-attr-title="{{attendance.activity.type.name}}" class="tag tag-auto">{{attendance.activity.type.name}}</span></td>
@@ -59,7 +90,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="grade in user.grades track by $index" ui-sref="activities.view({type: &quot;grades&quot;, activity_id: grade.activity.id, user_id: grade.student.id})">
+              <tr ng-repeat="grade in user.grades track by $index" ui-sref="base.activities.view({type: &quot;grades&quot;, activity_id: grade.activity.id, user_id: grade.student.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td class="td-bold td-lg td-blue"><span class="tag tag-auto tag-grade">{{grade.value}}</span></td>
                 <td class="hidden-xs td-bold">{{grade.activity.name}}</td>
@@ -87,7 +118,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="group in user.groups track by $index" ui-sref="groups.view({id: group.id})">
+              <tr ng-repeat="group in user.groups track by $index" ui-sref="base.groups.view({id: group.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td class="td-bold">{{group.name}}</td>
                 <td class="td-bold">{{group.year}}</td>
@@ -112,7 +143,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="course in user.courses track by $index" ui-sref="courses.view({id: course.id})">
+              <tr ng-repeat="course in user.courses track by $index" ui-sref="base.courses.view({id: course.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td class="td-bold">{{course.title}}</td>
                 <td class="td-bold">{{course.year}}</td>

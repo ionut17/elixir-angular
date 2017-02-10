@@ -1,0 +1,46 @@
+form.eform{
+  width: 100%;
+}
+
+section.eform-group{
+  &:not(:last-child){
+    margin-bottom: 25px;
+  }
+}
+
+label.elabel{
+  font-family: $contentFont;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.6);
+
+  margin-bottom: 0;
+}
+
+label.error{
+  font-family: $contentFont;
+  font-size: 16px;
+  font-weight: 400;
+  color: $lightRed;
+
+  &:not(:last-child){
+    margin-bottom: 0px;
+  }
+}
+
+input.einput{
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-bottom: 3px solid $shadowGrey;
+
+  font-family: $headerFont;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.8);
+
+  &:focus{
+    outline: none;
+  }
+}

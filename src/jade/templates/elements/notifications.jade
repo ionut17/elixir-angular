@@ -1,0 +1,6 @@
+section.notifications-wrapper
+  div.notification(ng-repeat='notification in notifications.active track by $index' ng-class='notification.type')
+    i.material-icons(ng-click='notifications.dismiss($index)') close
+    h2 {{notification.title}}
+    p {{notification.content}}
+    a(ng-href="{{notification.link.href}}" ng-if="notification.link") {{notification.link.text}}

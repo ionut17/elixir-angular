@@ -1,3 +1,50 @@
+figure.logo{
+  width: 100px;
+  height: 100px;
+
+  opacity: 1;
+
+  background: url('../img/white_potion2.svg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding: 0;
+  margin: 0;
+}
+
+figure.preloader{
+  width: $preloaderSize;
+  height: $preloaderSize;
+  position: relative;
+
+  opacity: 0.75;
+
+  background: url('../img/preloader2.gif');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding: 0;
+  margin: 0;
+}
+
+figure.university-logo{
+  width: $fiiLogoSize;
+  height: $fiiLogoSize;
+  position: relative;
+
+  opacity: 0.85;
+
+  background: url('../img/fii.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding: 0;
+  margin: 0;
+}
+
 //Search
 
 figure.search-bar-wrapper{
@@ -146,7 +193,7 @@ span.tag{
     &.disabled{
       color: rgba(0,0,0,0.2);
       cursor: default;
-      
+
       &:hover{
         color: rgba(0,0,0,0.2);
       }
@@ -274,13 +321,10 @@ span.tag{
 
 //Buttons
 
-button.ebutton {
+.ebutton {
   box-shadow: none;
   border: 2px solid rgba(0,0,0,0.1);
-  padding: 3px 15px;
-
-  text-transform: uppercase;
-  font-size: 12px;
+  padding: 7px 20px;
 
   //opacity: 0.8;
   transition: all 200ms cubic-bezier(0.07, 0.97, 0.58, 1);
@@ -288,8 +332,8 @@ button.ebutton {
   color: white;
   font-family: $headerFont;
   font-size: 14px;
-  font-weight: bold;
-  text-transform: capitalize;
+  font-weight: 700;
+  text-transform: uppercase;
 
   border: 1px solid rgba(0, 0, 0, 0.05);
 
@@ -304,12 +348,47 @@ button.ebutton {
   &.green-button{
     color: white;
     background-color: $lightGreen;
+    border-color: $lightGreen;
+    text-decoration: none;
+
+    &:hover{
+      color: white;
+      border-color: darken($lightGreen, 20);
+    }
   }
 
   &.white-button{
     color: rgba(0,0,0,0.5);
     background-color: white;
     border-color: rgba(0,0,0,0.2);
+    text-decoration: none;
+
+    &:hover{
+      color: rgba(0,0,0,0.7);
+      border-color: rgba(0,0,0,0.4);
+    }
+  }
+
+  &.login-button{
+    width: 100%;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    background-color: $lightGreen;
+
+    &:hover{
+      background-color: lighten($lightGreen,10);
+    }
+
+    &.alt-login-button{
+      background-color: white;
+      border: 2px solid $lightGreen;
+      color: $lightGreen;
+
+      &:hover{
+        background-color: $lightGreen;
+        color: white;
+      }
+    }
   }
 }
 
@@ -319,16 +398,45 @@ button.ebutton {
     box-shadow: none;
     border-radius: 0;
 
-    padding: 25px;
+    padding: 0 0;
+
+    .modal-icon{
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      background-color: $sidebarLighter;
+      padding: 20px;
+
+      i{
+        font-size: 40px;
+        color: $lightGreen;
+      }
+
+      h2{
+        font-family: $headerFont;
+        font-size: 16px;
+        font-weight: 400;
+        // text-transform: uppercase;
+
+        color: white;
+
+        margin: 0;
+        margin-top: 10px;
+        padding: 0;
+      }
+    }
 
     .modal-header{
-      padding: 0;
+      padding: 25px;
       padding-bottom: 20px;
 
       h2 {
         font-family: $headerFont;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: 700;
+        line-height: 1.2;
 
         color: rgba(0,0,0,0.5);
 
@@ -341,7 +449,11 @@ button.ebutton {
       justify-content: space-between;
       align-items: center;
 
-      border-bottom: 3px solid rgba(0,0,0,0.1);
+      &.text-center{
+        justify-content: center;
+      }
+
+      border-bottom: 1px solid rgba(0,0,0,0.1);
 
       &:before, &:after{
         display: none;
@@ -349,7 +461,7 @@ button.ebutton {
     }
 
     .modal-body{
-      padding: 25px 0;
+      padding: 25px 25px;
 
       ul {
         list-style-type: none;
@@ -415,7 +527,18 @@ button.ebutton {
 
     .modal-footer{
       padding: 20px 0;
-      padding-bottom: 0;
+      // padding-bottom: 0;
+
+      &.text-center{
+        text-align: center;
+      }
     }
   }
+}
+
+
+//End-notifications
+
+.no-transform{
+  text-transform: none !important;
 }

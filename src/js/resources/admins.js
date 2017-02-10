@@ -1,4 +1,4 @@
-app.factory("Admins", ["config", "$resource", function(config, $resource) {
+app.factory("Admins", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "admins", {}, {
         getAll: {
             method: "GET",
@@ -6,7 +6,7 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -16,7 +16,7 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -26,7 +26,7 @@ app.factory("Admins", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }

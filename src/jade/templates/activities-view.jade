@@ -14,20 +14,21 @@ section.container-content
           tbody
             tr(ng-repeat='extraRow in table.extraRows track by $index')
               th.col-sm-3(scope='row') {{extraRow.title}}
-              td.td-bold
+              td.td-bold(ng-class="{ 'td-spaced': extraRow.hasDownloadButton }")
                 span(ng-class="extraRow.customClass") {{extraRow.value}}
-            tr(ui-sref='users.view({type: activity.user.type+"s", id: activity.user.id})')
+                a.ebutton.white-button(ng-if="extraRow.hasDownloadButton" ng-href="{{table.retrieveLink()}}" target="_blank") Download
+            tr(ui-sref='base.users.view({type: activity.user.type+"s", id: activity.user.id})')
               th.col-sm-3(scope='row') {{table.columns.user}}
               td.td-bold
                 span.tag(ng-class='activity.user.tag') {{activity.user.type}}
                 | {{activity.user.firstName+" "+activity.user.lastName}}
               td.td-blue {{activity.user.email}}
-            tr(ui-sref='activities.sublist({type: activity.type, activity_id: activity.activity.id})')
+            tr(ui-sref='base.activities.sublist({type: activity.type, activity_id: activity.activity.id})')
               th.col-sm-3(scope='row') {{table.columns.activity}}
               td.td-bold
                 span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
                 | {{activity.activity.name}}
               td {{activity.activity.date}}
-            tr(ui-sref='courses.view({id: activity.activity.course.id})')
+            tr(ui-sref='base.courses.view({id: activity.activity.course.id})')
               th.col-sm-3(scope='row') {{table.columns.course}}
               td.td-bold {{activity.activity.course.title}}

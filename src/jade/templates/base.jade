@@ -1,0 +1,77 @@
+// Common elements
+section.main-container
+  // Sidebar
+  section.sidebar-wrapper.hidden-sm.hidden-xs
+    .sidebar-logo
+      figure.logo
+      | 
+    // Navigation
+    nav.sidebar-links
+      ul
+        label Management
+        li(ng-if="isAuthorized(authorizedRoles.dashboard)")
+          a(ui-sref='base.dashboard', ui-sref-active='active')
+            i.fa.fa-tachometer(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') dashboard
+            span Dashboard
+        li(ng-if="isAuthorized(authorizedRoles.activities.list)")
+          a(ui-sref='base.activities.list({type: null})', ng-class="{active:$state.includes('base.activities')}")
+            i.fa.fa-check-square-o(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') assignment
+            span Activities
+        li(ng-if="isAuthorized(authorizedRoles.courses.list)")
+          a(ui-sref='base.courses.list', ng-class="{active:$state.includes('base.courses')}")
+            i.fa.fa-graduation-cap(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') school
+            span Courses
+        li(ng-if="isAuthorized(authorizedRoles.groups.list)")
+          a(ui-sref='base.groups.list', ng-class="{active:$state.includes('base.groups')}")
+            i.fa.fa-book(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') library_books
+            span Groups
+        li(ng-if="isAuthorized(authorizedRoles.users.list)")
+          a(ui-sref='base.users.list({type: null})', ng-class="{active: $state.includes('base.users')}")
+            i.fa.fa-users(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') people
+            span Users
+        label Account
+        li(ng-if="isAuthorized(authorizedRoles.settings)")
+          a(ui-sref='base.settings', ui-sref-active='active')
+            i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') settings
+            span Settings
+        li
+          a(ng-click="modal.confirm.this(logout)")
+            i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') exit_to_app
+            span Logout
+  // Content
+  section.body-container
+    section.container-header
+      ul.breadcrumbs-list
+        li(ng-repeat='path in paths')
+          a(ng-href="{{getPath(path.state, path.params)}}")
+            i.material-icons(ng-show='icons.showMaterial' ng-if='path.icon') {{path.icon}}
+            span(ng-if='path.title') {{path.title}}
+          i.material-icons.breadcrumb-separator(ng-show='icons.showMaterial') chevron_right
+      ul.right-list
+        li
+          a(href="")
+            span.no-transform {{authUser.email}}
+            i.material-icons(ng-show='icons.showMaterial') person
+            //- span Account
+        li
+          a(href="")
+            i.material-icons(ng-show='icons.showMaterial') notifications
+            //- span Notifications
+        li
+          figure.search-bar-wrapper
+            input.search-bar(name="search" type="text" placeholder="Search")
+            i.material-icons(ng-show='icons.showMaterial') search
+    section.container-wrapper
+      div(ui-view='')
+      include elements/notifications
+
+
+//includes
+include modals/confirm

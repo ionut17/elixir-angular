@@ -3,14 +3,16 @@
   min-height: 100vh;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   background-color: #f4f4f4; }
 
 .container-wrapper {
   display: flex;
   flex-grow: 1;
-  overflow: scroll; }
+  overflow: scroll;
+  position: relative;
+  min-height: calc(100% - 70px); }
   .container-wrapper > * {
     width: 100%; }
 
@@ -74,9 +76,7 @@
         display: none; }
 
 .body-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column; }
+  width: 100%; }
 
 .container-title {
   display: flex;
@@ -104,7 +104,7 @@
     font-size: 32px;
     font-weight: 400;
     text-transform: capitalize;
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(0, 0, 0, 0.75);
     margin: 0;
     padding: 0; }
     .page-title-wrapper h2.h2-sm {
@@ -125,6 +125,77 @@
     flex-direction: row;
     justify-content: center;
     align-items: center; }
+
+.notifications-wrapper {
+  width: 300px;
+  max-width: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  bottom: 20px; }
+
+.notification {
+  width: 100%;
+  position: relative;
+  padding: 15px;
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: -1px 2px 5px 0px rgba(0, 0, 0, 0.1);
+  transition: all 100ms ease-in-out; }
+  .notification i.material-icons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 14px;
+    cursor: pointer; }
+    .notification i.material-icons:hover {
+      color: rgba(0, 0, 0, 0.5);
+      font-weight: bold; }
+  .notification h2 {
+    margin-top: 0;
+    font-family: "Titillium Web", Montserrat, Arial;
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.75); }
+    .notification h2:last-child {
+      margin-bottom: 0; }
+  .notification p {
+    font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 0; }
+  .notification a {
+    font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+    font-size: 12px;
+    text-decoration: none;
+    margin-top: 5px;
+    color: #19b5fe; }
+    .notification a:hover {
+      color: #018aca; }
+  .notification.error-notification h2 {
+    color: #e74c3c; }
+  .notification.success-notification h2 {
+    color: #2ecc71; }
+  .notification:hover {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: -1px 2px 5px 0px rgba(0, 0, 0, 0.2); }
+  .notification:not(:last-child) {
+    margin-bottom: 20px; }
+
+.state-transition {
+  transition: all 200ms ease-in-out; }
+  .state-transition.transition-state {
+    margin-left: 100vw;
+    overflow: hidden;
+    opacity: 0.5; }
+
+.modal-dialog {
+  margin-top: 70px; }
 
 ::-webkit-scrollbar {
   display: none; }
@@ -225,12 +296,23 @@ input[type=checkbox].checkbox-hidden {
 .sidebar-links {
   width: 100%;
   height: auto;
-  margin-top: 20px; }
+  margin-top: 30px; }
   .sidebar-links ul {
     list-style-type: none;
     display: flex;
     flex-direction: column;
     padding: 1px 0; }
+  .sidebar-links label {
+    font-family: "Titillium Web", Montserrat, Arial;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 10px;
+    margin-left: 30px; }
+    .sidebar-links label:not(:first-child) {
+      margin-top: 20px; }
   .sidebar-links li {
     width: 100%; }
   .sidebar-links a {
@@ -241,8 +323,8 @@ input[type=checkbox].checkbox-hidden {
     background-color: #333742;
     padding: 15px 30px;
     font-family: "Titillium Web", Montserrat, Arial;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 400;
     text-align: left;
     cursor: pointer;
     text-decoration: none;
@@ -279,10 +361,11 @@ input[type=checkbox].checkbox-hidden {
   align-items: flex-start; }
 
 .table-title {
+  width: 100%;
   background-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-grow: 0;
   padding-bottom: 10px;
@@ -294,8 +377,7 @@ input[type=checkbox].checkbox-hidden {
 
 .elixir-table {
   margin-bottom: 0;
-  box-sizing: border-box;
-  background-color: white; }
+  box-sizing: border-box; }
   .elixir-table tbody, .elixir-table thead {
     background-color: white; }
     .elixir-table tbody tr td, .elixir-table thead tr td {
@@ -316,7 +398,8 @@ input[type=checkbox].checkbox-hidden {
       color: rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(0, 0, 0, 0.03); }
       .elixir-table tbody tr th:first-child, .elixir-table thead tr th:first-child {
-        padding-left: 20px; }
+        padding-left: 20px;
+        padding-right: 20px; }
   .elixir-table thead tr th {
     padding: 20px 15px; }
   .elixir-table tbody tr th {
@@ -327,10 +410,15 @@ input[type=checkbox].checkbox-hidden {
     transition: all 200ms cubic-bezier(0.3, 1.35, 1, 1);
     background-color: rgba(0, 0, 0, 0.03);
     cursor: pointer; }
+  .elixir-table.disable-hover tbody tr:hover {
+    background-color: white;
+    cursor: default; }
 
 .elixir-table-horizontal tbody tr th {
   background-color: rgba(0, 0, 0, 0.1);
-  font-size: 14px; }
+  font-size: 14px;
+  width: auto;
+  width: 30%; }
 
 .elixir-table-horizontal tbody tr td {
   display: block;
@@ -352,6 +440,93 @@ input[type=checkbox].checkbox-hidden {
 
 .td-green {
   color: #2ecc71 !important; }
+
+.td-spaced {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important; }
+
+.td-disabled {
+  color: grey;
+  opacity: 0.5; }
+
+.td-empty {
+  color: black !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  background-color: lightgrey !important;
+  border: none !important;
+  opacity: 0.5 !important; }
+
+form.eform {
+  width: 100%; }
+
+section.eform-group:not(:last-child) {
+  margin-bottom: 25px; }
+
+label.elabel {
+  font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 0; }
+
+label.error {
+  font-family: "Source Sans Pro", Monaco, Georgia, Arial;
+  font-size: 16px;
+  font-weight: 400;
+  color: #e74c3c; }
+  label.error:not(:last-child) {
+    margin-bottom: 0px; }
+
+input.einput {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-bottom: 3px solid #e7e7e7;
+  font-family: "Titillium Web", Montserrat, Arial;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.8); }
+  input.einput:focus {
+    outline: none; }
+
+figure.logo {
+  width: 100px;
+  height: 100px;
+  opacity: 1;
+  background: url("../img/white_potion2.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0; }
+
+figure.preloader {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  opacity: 0.75;
+  background: url("../img/preloader2.gif");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0; }
+
+figure.university-logo {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  opacity: 0.85;
+  background: url("../img/fii.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0; }
 
 figure.search-bar-wrapper {
   display: relative;
@@ -530,54 +705,96 @@ span.tag {
             opacity: 1;
             background-color: #2ecc71; }
 
-button.ebutton {
+.ebutton {
   box-shadow: none;
   border: 2px solid rgba(0, 0, 0, 0.1);
-  padding: 3px 15px;
-  text-transform: uppercase;
-  font-size: 12px;
+  padding: 7px 20px;
   transition: all 200ms cubic-bezier(0.07, 0.97, 0.58, 1);
   color: white;
   font-family: "Titillium Web", Montserrat, Arial;
   font-size: 14px;
-  font-weight: bold;
-  text-transform: capitalize;
+  font-weight: 700;
+  text-transform: uppercase;
   border: 1px solid rgba(0, 0, 0, 0.05); }
-  button.ebutton:hover {
+  .ebutton:hover {
     opacity: 1; }
-  button.ebutton:focus {
+  .ebutton:focus {
     outline: none; }
-  button.ebutton.green-button {
+  .ebutton.green-button {
     color: white;
-    background-color: #2ecc71; }
-  button.ebutton.white-button {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    text-decoration: none; }
+    .ebutton.green-button:hover {
+      color: white;
+      border-color: #1b7943; }
+  .ebutton.white-button {
     color: rgba(0, 0, 0, 0.5);
     background-color: white;
-    border-color: rgba(0, 0, 0, 0.2); }
+    border-color: rgba(0, 0, 0, 0.2);
+    text-decoration: none; }
+    .ebutton.white-button:hover {
+      color: rgba(0, 0, 0, 0.7);
+      border-color: rgba(0, 0, 0, 0.4); }
+  .ebutton.login-button {
+    width: 100%;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    background-color: #2ecc71; }
+    .ebutton.login-button:hover {
+      background-color: #54d98c; }
+    .ebutton.login-button.alt-login-button {
+      background-color: white;
+      border: 2px solid #2ecc71;
+      color: #2ecc71; }
+      .ebutton.login-button.alt-login-button:hover {
+        background-color: #2ecc71;
+        color: white; }
 
 .custom-modal .modal-content {
   box-shadow: none;
   border-radius: 0;
-  padding: 25px; }
+  padding: 0 0; }
+  .custom-modal .modal-content .modal-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #434752;
+    padding: 20px; }
+    .custom-modal .modal-content .modal-icon i {
+      font-size: 40px;
+      color: #2ecc71; }
+    .custom-modal .modal-content .modal-icon h2 {
+      font-family: "Titillium Web", Montserrat, Arial;
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      margin: 0;
+      margin-top: 10px;
+      padding: 0; }
   .custom-modal .modal-content .modal-header {
-    padding: 0;
+    padding: 25px;
     padding-bottom: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 3px solid rgba(0, 0, 0, 0.1); }
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
     .custom-modal .modal-content .modal-header h2 {
       font-family: "Titillium Web", Montserrat, Arial;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
+      line-height: 1.2;
       color: rgba(0, 0, 0, 0.5);
       margin: 0;
       padding: 0; }
+    .custom-modal .modal-content .modal-header.text-center {
+      justify-content: center; }
     .custom-modal .modal-content .modal-header:before, .custom-modal .modal-content .modal-header:after {
       display: none; }
   .custom-modal .modal-content .modal-body {
-    padding: 25px 0;
+    padding: 25px 25px;
     border-bottom: 3px solid rgba(0, 0, 0, 0.1); }
     .custom-modal .modal-content .modal-body ul {
       list-style-type: none;
@@ -621,8 +838,113 @@ button.ebutton {
             outline: none;
             border-color: #7ee2a8; }
   .custom-modal .modal-content .modal-footer {
-    padding: 20px 0;
-    padding-bottom: 0; }
+    padding: 20px 0; }
+    .custom-modal .modal-content .modal-footer.text-center {
+      text-align: center; }
+
+.no-transform {
+  text-transform: none !important; }
+
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #f4f4f4; }
+
+.login-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  min-height: 400px;
+  padding: 0;
+  border: 1px solid #e7e7e7;
+  box-sizing: content-box; }
+  .login-box .left-box, .login-box .right-box {
+    height: inherit;
+    transition: all 300ms ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; }
+  .login-box.loading-state {
+    border: none; }
+    .login-box.loading-state .left-box {
+      transition: all 200ms ease-in-out;
+      width: 0; }
+      .login-box.loading-state .left-box > * {
+        display: none; }
+    .login-box.loading-state .right-box {
+      transition: all 200ms ease-in-out;
+      width: 100%; }
+  .login-box .left-box {
+    width: 35%;
+    background-color: #333742; }
+    .login-box .left-box figure.logo {
+      width: 75px;
+      height: 75px; }
+    .login-box .left-box h2, .login-box .left-box h3 {
+      font-family: "Titillium Web", Montserrat, Arial;
+      margin-bottom: 0; }
+    .login-box .left-box h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: white;
+      margin-top: 15px; }
+    .login-box .left-box h3 {
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 5px; }
+  .login-box .right-box {
+    width: 65%;
+    background-color: white;
+    padding: 8%;
+    position: relative; }
+    .login-box .right-box .preloader-wrapper {
+      background-color: white; }
+      .login-box .right-box .preloader-wrapper figure.preloader {
+        margin-bottom: 10px; }
+      .login-box .right-box .preloader-wrapper h4 {
+        font-family: "Titillium Web", Montserrat, Arial;
+        font-size: 14px;
+        font-weight: 400;
+        color: #c6c5ca;
+        margin: 0; }
+    .login-box .right-box a {
+      width: 100%;
+      text-decoration: none; }
+
+.preloader-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+
+.university-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0; }
+  .university-wrapper p {
+    margin-bottom: 0;
+    font-family: "Titillium Web", Montserrat, Arial;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.5); }
+  .university-wrapper:first-child {
+    margin-bottom: 15px; }
+  .university-wrapper:last-child {
+    margin-top: 15px; }
 
 @media screen and (max-width: 960px) {
   .container {
@@ -641,7 +963,14 @@ button.ebutton {
     height: 100px;
     margin-top: 30px; }
   .logo-text {
-    margin-top: 0; } }
+    margin-top: 0; }
+  .login-box {
+    flex-direction: column;
+    border-left: 0;
+    border-right: 0;
+    height: 700px; }
+    .login-box .left-box, .login-box .right-box {
+      width: 100%; } }
 
 @media screen and (max-width: 400px) {
   .logo-wrapper {

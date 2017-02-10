@@ -1,8 +1,11 @@
-app.config(function($stateProvider) {
-    $stateProvider.state('dashboard', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.dashboard', {
         url: '/dashboard',
         templateUrl: 'templates/dashboard.html',
-        controller: 'DashboardController'
+        controller: 'DashboardController',
+        data: {
+          authorizedRoles: config.authorizedRoles.dashboard
+        }
     });
 });
 

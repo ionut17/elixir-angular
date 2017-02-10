@@ -20,7 +20,7 @@ section.container-content
               th Course
               th Date
           tbody
-            tr(ng-repeat='activity in activities track by $index', ui-sref='activities.view({type: activities.type, activity_id: activity.activity.id, user_id: activity.student.id})')
+            tr(ng-repeat='activity in activities track by $index', ui-sref='base.activities.view({type: activities.type, activity_id: activity.activity.id, user_id: activity.student.id})')
               th.col-sm-1(scope='row') {{$index+1}}
               td
                 span.tag(ng-class='activity.tag') {{activity.activity.type.name}}

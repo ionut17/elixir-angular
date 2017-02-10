@@ -30,79 +30,17 @@ html.no-js(lang='')
     script(src='js/vendor/modernizr-2.8.3.min.js')
     script(src='js/vendor/angular.min.js')
     script(src='js/vendor/angular-ui-router.min.js')
-    // <script src="js/vendor/angular-animate.min.js"></script>
+    //- script(src="js/vendor/angular-animate.min.js")
     script(src='js/vendor/angular-resource.js')
+    script(src='js/vendor/angular-cookies.min.js')
     script(src='js/vendor/bootstrap.min.js')
     // Custom fonts
     link(href='https://fonts.googleapis.com/css?family=Titillium+Web:300,400', rel='stylesheet')
     link(href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700', rel='stylesheet')
     link(href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet")
   body(ng-app='app')
-    // Common elements
-    // <div ng-include="'templates/elements/preloader.html'"></div>
-    section.main-container
-      // Sidebar
-      section.sidebar-wrapper.hidden-sm.hidden-xs
-        .sidebar-logo
-          figure.logo
-          | 
-        // Navigation
-        nav.sidebar-links
-          ul
-            li
-              a(ui-sref='dashboard', ui-sref-active='active')
-                i.fa.fa-tachometer(aria-hidden='true', ng-show='icons.showAwesome')
-                i.material-icons(ng-show='icons.showMaterial') dashboard
-                span Dashboard
-            li
-              a(ui-sref='activities.list({type: null})', ng-class="{active:$state.includes('activities')}")
-                i.fa.fa-check-square-o(aria-hidden='true', ng-show='icons.showAwesome')
-                i.material-icons(ng-show='icons.showMaterial') assignment
-                span Activities
-            li
-              a(ui-sref='courses.list', ng-class="{active:$state.includes('courses')}")
-                i.fa.fa-graduation-cap(aria-hidden='true', ng-show='icons.showAwesome')
-                i.material-icons(ng-show='icons.showMaterial') school
-                span Courses
-            li
-              a(ui-sref='groups.list', ng-class="{active:$state.includes('groups')}")
-                i.fa.fa-book(aria-hidden='true', ng-show='icons.showAwesome')
-                i.material-icons(ng-show='icons.showMaterial') library_books
-                span Groups
-            li
-              a(ui-sref='users.list({type: null})', ng-class="{active: $state.includes('users')}")
-                i.fa.fa-users(aria-hidden='true', ng-show='icons.showAwesome')
-                i.material-icons(ng-show='icons.showMaterial') people
-                span Users
-            li
-              a(ui-sref='settings', ui-sref-active='active')
-                i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
-                i.material-icons(ng-show='icons.showMaterial') settings
-                span Settings
-      // Content
-      section.body-container
-        section.container-header
-          ul.breadcrumbs-list
-            li(ng-repeat='path in paths')
-              a(ng-href="{{getPath(path.state, path.params)}}")
-                i.material-icons(ng-show='icons.showMaterial' ng-if='path.icon') {{path.icon}}
-                span(ng-if='path.title') {{path.title}}
-              i.material-icons.breadcrumb-separator(ng-show='icons.showMaterial') chevron_right
-          ul.right-list
-            li
-              a(href="")
-                i.material-icons(ng-show='icons.showMaterial') person
-                //- span Account
-            li
-              a(href="")
-                i.material-icons(ng-show='icons.showMaterial') notifications
-                //- span Notifications
-            li
-              figure.search-bar-wrapper
-                input.search-bar(name="search" type="text" placeholder="Search")
-                i.material-icons(ng-show='icons.showMaterial') search
-        section.container-wrapper
-          div(ui-view='')
+    //View
+    div(ui-view='')
     // Scripts
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
     script.

@@ -1,0 +1,56 @@
+
+<div id="add-user-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add User</h2>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>
+            <label for="type">Type</label>
+            <select id="type" name="type" ng-model="modal.user.type" placeholder="Select type">
+              <option value="student">Student</option>
+              <option value="lecturer">Lecturer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </li>
+          <li ng-if="modal.user.errors.type" class="error">{{modal.user.errors.type}}</li>
+          <li>
+            <label for="first_name">First Name</label>
+            <input id="first_name" type="input" ng-model="modal.user.firstName" placeholder="Enter first name"/>
+          </li>
+          <li ng-if="modal.user.errors.firstName" class="error">{{modal.user.errors.firstName}}</li>
+          <li>
+            <label for="last_name">Last Name</label>
+            <input id="last_name" type="input" ng-model="modal.user.lastName" placeholder="Enter last name"/>
+          </li>
+          <li ng-if="modal.user.errors.lastName" class="error">{{modal.user.errors.lastName}}</li>
+          <li>
+            <label for="email">Email</label>
+            <input id="email" type="input" ng-model="modal.user.email" placeholder="Enter email"/>
+          </li>
+          <li ng-if="modal.user.errors.email" class="error">{{modal.user.errors.email}}</li>
+          <li>
+            <label for="password">Password</label>
+            <input id="password" type="password" ng-model="modal.user.password" placeholder="Enter password"/>
+          </li>
+          <li ng-if="modal.user.errors.password" class="error">{{modal.user.errors.password}}</li>
+          <li>
+            <label for="rpassword">Repeat Password</label>
+            <input id="rpassword" type="password" ng-model="modal.user.rpassword" placeholder="Confirm password"/>
+          </li>
+          <li ng-if="modal.user.errors.rpassword" class="error">{{modal.user.errors.rpassword}}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">Close</button>
+        <button type="button" ng-click="modal.submit()" class="ebutton green-button">Add User</button>
+      </div>
+    </div>
+    <!-- /.modal-content-->
+  </div>
+  <!-- /.modal-dialog-->
+</div>
+<!-- /.modal-->

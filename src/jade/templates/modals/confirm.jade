@@ -1,0 +1,11 @@
+#confirm-modal.modal.custom-modal.fade(tabindex='-1', role='dialog')
+  .modal-dialog.modal-sm(role='document')
+    .modal-content
+      .modal-icon
+        i.material-icons exit_to_app
+        h2 {{modal.confirm.title}}
+      .modal-header.text-center.hide
+        h2 {{modal.confirm.title}}
+      .modal-footer.text-center
+        button.ebutton.white-button(type='button', data-dismiss='modal') {{modal.confirm.cancel}}
+        button.ebutton.green-button(type='button', ng-click='modal.confirm.action.submit()') {{modal.confirm.submit}}

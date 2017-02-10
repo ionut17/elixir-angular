@@ -20,7 +20,7 @@ section.container-content
               th Email
               th Actions
           tbody
-            tr(ng-repeat='user in course.lecturers track by $index', ui-sref="users.view({type: 'lecturers', id: user.id})")
+            tr(ng-repeat='user in course.lecturers track by $index', ui-sref="base.users.view({type: 'lecturers', id: user.id})")
               th.col-sm-1(scope='row') {{$index+1}}
               td {{user.firstName}}
               td.td-bold {{user.lastName}}
@@ -41,7 +41,7 @@ section.container-content
               th Email
               th Actions
           tbody
-            tr(ng-repeat='user in course.students track by $index', ui-sref="users.view({type: 'students', id: user.id})")
+            tr(ng-repeat='user in course.students track by $index', ui-sref="base.users.view({type: 'students', id: user.id})")
               th.col-sm-1(scope='row') {{$index+1}}
               td {{user.firstName}}
               td.td-bold {{user.lastName}}

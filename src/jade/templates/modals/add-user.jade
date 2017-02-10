@@ -1,0 +1,42 @@
+#add-user-modal.modal.custom-modal.fade(tabindex='-1', role='dialog')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h2 Add User
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+      .modal-body
+        ul
+          li
+            label(for='type') Type
+            select#type(name='type', ng-model='modal.user.type', placeholder='Select type')
+              option(value='student') Student
+              option(value='lecturer') Lecturer
+              option(value='admin') Admin
+          li.error(ng-if='modal.user.errors.type') {{modal.user.errors.type}}
+          li
+            label(for='first_name') First Name
+            input#first_name(type='input', ng-model='modal.user.firstName', placeholder='Enter first name')
+          li.error(ng-if='modal.user.errors.firstName') {{modal.user.errors.firstName}}
+          li
+            label(for='last_name') Last Name
+            input#last_name(type='input', ng-model='modal.user.lastName', placeholder='Enter last name')
+          li.error(ng-if='modal.user.errors.lastName') {{modal.user.errors.lastName}}
+          li
+            label(for='email') Email
+            input#email(type='input', ng-model='modal.user.email', placeholder='Enter email')
+          li.error(ng-if='modal.user.errors.email') {{modal.user.errors.email}}
+          li
+            label(for='password') Password
+            input#password(type='password', ng-model='modal.user.password', placeholder='Enter password')
+          li.error(ng-if='modal.user.errors.password') {{modal.user.errors.password}}
+          li
+            label(for='rpassword') Repeat Password
+            input#rpassword(type='password', ng-model='modal.user.rpassword', placeholder='Confirm password')
+          li.error(ng-if='modal.user.errors.rpassword') {{modal.user.errors.rpassword}}
+      .modal-footer
+        button.ebutton.white-button(type='button', data-dismiss='modal') Close
+        button.ebutton.green-button(type='button', ng-click='modal.submit()') Add User
+    // /.modal-content
+  // /.modal-dialog
+// /.modal

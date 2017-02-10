@@ -25,7 +25,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="group in groups track by $index" ui-sref="groups.view({id: group.id})">
+            <tr ng-repeat="group in groups track by $index" ui-sref="base.groups.view({id: group.id})">
               <th scope="row" class="col-sm-1">{{$index+1}}</th>
               <td class="td-bold">{{group.name}}</td>
               <td class="td-bold">{{group.year}}</td>

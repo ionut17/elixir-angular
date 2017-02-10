@@ -1,4 +1,4 @@
-app.factory("Activities", ["config", "$resource", function(config, $resource) {
+app.factory("Activities", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "activities", {}, {
         getBasic: {
             method: "GET",
@@ -6,7 +6,7 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         },
@@ -17,7 +17,7 @@ app.factory("Activities", ["config", "$resource", function(config, $resource) {
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
-                    return "Bearer ";
+                    return "Bearer "+AuthService.getToken();
                 }
             }
         }

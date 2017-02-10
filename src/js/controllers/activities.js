@@ -1,16 +1,19 @@
 app.config(function($stateProvider) {
-    $stateProvider.state('activities', {
+    $stateProvider.state('base.activities', {
       template: '<div ui-view></div>'
     });
 });
 
 // Actitivities list
-app.config(function($stateProvider) {
-    $stateProvider.state('activities.list', {
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.activities.list', {
         name: 'activities.list',
         url: '/activities/:type',
         templateUrl: 'templates/activities-list.html',
         controller: 'ActivitiesListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.activities.list
+        },
         // params:  {
         //   type: {
         //     value: null,
@@ -76,7 +79,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[1] = {
       'title': 'Activities',
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': {
         'type': null
       }
@@ -86,7 +89,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       $rootScope.paths[2] = {
         'title': $stateParams.type,
         'icon': null,
-        'state': 'activities.list',
+        'state': 'base.activities.list',
         'params': {
           'type': $stateParams.type
         }
@@ -99,12 +102,15 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
 }]);
 
 //Sub-Activities List
-app.config(function($stateProvider) {
-    $stateProvider.state('activities.sublist', {
-        name: 'activities.sublist',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.activities.sublist', {
+        name: 'base.activities.sublist',
         url: '/activities/:type/:activity_id',
         templateUrl: 'templates/activities-sublist.html',
         controller: 'ActivitiesSubListController',
+        data: {
+          authorizedRoles: config.authorizedRoles.activities.sublist
+        },
         resolve: {
             resolvedData: ["Attendances", "Grades", "Files", "$http", "config", "$stateParams", function(Attendances, Grades, Files, $http, config, $stateParams) {
               console.log($stateParams);
@@ -152,13 +158,13 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
     $rootScope.paths[1] = {
       'title': 'Activities',
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.activities.type,
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': {
         type: $scope.activities.type
       }
@@ -168,7 +174,7 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
       $rootScope.paths[3] = {
         'title': $scope.activities[0].activity.name + " ("+$scope.activities[0].activity.course.title+")",
         'icon': null,
-        'state': 'activities.sublist',
+        'state': 'base.activities.sublist',
         'params': {
           type: $scope.activities.type,
           activity_id: $scope.activities.activityId
@@ -182,12 +188,15 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
 }]);
 
 //Activity detail view
-app.config(function($stateProvider) {
-    $stateProvider.state('activities.view', {
-        name: 'activities.view',
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.activities.view', {
+        name: 'base.activities.view',
         url: '/activities/:type/:activity_id/:user_id',
         templateUrl: 'templates/activities-view.html',
         controller: 'ActivitiesViewController',
+        data: {
+          authorizedRoles: config.authorizedRoles.activities.list
+        },
         resolve: {
             resolvedData: ["Attendances", "Grades", "Files", "$stateParams", function(Attendances, Grades, Files, $stateParams) {
               var resource;
@@ -222,7 +231,7 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', 'config', function($scope, $rootScope, resolvedData, config) {
     //Init
     $scope.activity = resolvedData.activity;
     $scope.title = [$scope.activity.user.firstName,$scope.activity.user.lastName,'-',$scope.activity.type.slice(0,-1),'at',$scope.activity.activity.type.name,'(',$scope.activity.activity.course.title,')'].join(' ');
@@ -231,13 +240,13 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[1] = {
       'title': 'Activities',
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': null
     };
     $rootScope.paths[2] = {
       'title': $scope.activity.type,
       'icon': null,
-      'state': 'activities.list',
+      'state': 'base.activities.list',
       'params': {
         type: $scope.activity.type
       }
@@ -245,7 +254,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[3] = {
       'title': $scope.activity.activity.name + " ("+$scope.activity.activity.course.title+")",
       'icon': null,
-      'state': 'activities.sublist',
+      'state': 'base.activities.sublist',
       'params': {
         type: $scope.activity.type,
         activity_id: $scope.activity.id.activityId
@@ -254,7 +263,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths[4] = {
       'title': $scope.activity.user.firstName +' '+ $scope.activity.user.lastName,
       'icon': null,
-      'state': 'activities.view',
+      'state': 'base.activities.view',
       'params': {
         type: $scope.activity.type,
         activity_id: $scope.activity.activity.id,
@@ -272,6 +281,9 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         activity: 'Activity',
         course: 'Course'
       },
+      retrieveLink : function(){
+        return config.apiEndpoint+'storage/retrieve/'+$scope.activity.fileId;
+      },
       extraRows : []
     }
 
@@ -287,6 +299,17 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         ]
         break;
       case 'files':
+        $scope.table.extraRows = [{
+            title : 'File',
+            value : $scope.activity.fileName+'.'+$scope.activity.extension,
+            customClass : '',
+            hasDownloadButton: true,
+          },{
+            title: 'Type',
+            value : $scope.activity.extension,
+            customClass : 'tag tag-auto tag-file'
+          }
+        ]
         break;
     }
 }]);
