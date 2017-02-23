@@ -2,18 +2,48 @@ section.container-title
   // Header
   .row
     .col-md-12
+      span.td-subtitle {{user.email}}
       .page-title-wrapper
+        .title-section
           h2 {{title}}
+          span.tag.tag-auto(ng-class='user.tag.class') {{user.tag.name}}
+  .row.container-title-nav
+    .col-md-12
+      .page-title-wrapper
+        ul.tabs-wrapper
+          li(ui-sref='base.users.view({detail: null})', ng-class='{active: user.detail=="overview"}') Overview
+          li(ui-sref='base.users.view({detail: "attendances"})', ng-class='{active: user.detail=="attendances"}', ng-if='user.type=="students"') Attendances
+          li(ui-sref='base.users.view({detail: "grades"})', ng-class='{active: user.detail=="grades"}', ng-if='user.type=="students"') Grades
+          li(ui-sref='base.users.view({detail: "files"})', ng-class='{active: user.detail=="files"}', ng-if='user.type=="students"') Files
+          li(ui-sref='base.users.view({detail: "groups"})', ng-class='{active: user.detail=="groups"}', ng-if='user.type=="students"') Groups
+          li(ui-sref='base.users.view({detail: "courses"})', ng-class='{active: user.detail=="courses"}', ng-if='user.type=="students" || user.type=="lecturers"') Courses
 
 section.container-content
-  // Groups
-  .row
-    .col-wrapper.col-lg-6.col-md-12(ng-if='user.hasAttendances || user.hasGrades')
+  .row(ng-if='user.detail=="overview"')
+    .col-md-12.coverbox-wrapper
+        div.coverbox(ng-if='user.hasAttendances', ui-sref='base.users.view({detail: "attendances"})')
+          h2 {{user.attendances.length}}
+          h3 Attendances
+        div.coverbox(ng-if='user.hasGrades', ui-sref='base.users.view({detail: "grades"})')
+          h2 {{user.grades.length}}
+          h3 Grades
+        div.coverbox(ng-if='user.hasFiles', ui-sref='base.users.view({detail: "files"})')
+          h2 {{user.files.length}}
+          h3 Files
+        div.coverbox(ng-if='user.hasGroups', ui-sref='base.users.view({detail: "groups"})')
+          h2 {{user.groups.length}}
+          h3 Groups
+        div.coverbox(ng-if='user.hasCourses', ui-sref='base.users.view({detail: "courses"})')
+          h2 {{user.courses.length}}
+          h3 Courses
+  .row(ng-if='user.detail!="overview"')
+    .col-wrapper.col-md-12(ng-if='user.hasAttendances || user.hasGrades || user.hasFiles' ng-class="{'col-lg-12': user.detail!='overview', 'col-lg-6': user.detail=='overview'}")
       // Files
-      .col-md-12.col-sm-12
-        .table-wrapper(ng-if='user.hasFiles')
+      .col-md-12.col-sm-12(ng-if='user.hasFiles')
+        .table-wrapper
           .table-title
-            | Files
+            include elements/pagination
+            include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -32,14 +62,14 @@ section.container-content
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{grade.activity.type.name}}') {{file.activity.type.name}}
                 td.hidden-xs.td-blue {{file.activity.date}}
                 td.td-bold {{file.activity.course.title}}
-              tr.hide(ng-hide='user.files.length')
-                td.td-empty.text-center(colspan='6') No results
+              tr.disable-hover(ng-if='!user.files.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
       // Attendances
-      .col-md-12.col-sm-12
-        .table-wrapper(ng-if='user.hasAttendances')
+      .col-md-12.col-sm-12(ng-if='user.hasAttendances')
+        .table-wrapper
           .table-title
-            | Attendances
-            button.ebutton.green-button(data-toggle='modal', data-target='#add-course-modal', ng-click='modal.open()' ng-show="settings.editButtons") Add Attendance
+            include elements/pagination
+            include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -56,12 +86,14 @@ section.container-content
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{attendance.activity.type.name}}') {{attendance.activity.type.name}}
                 td.td-blue {{attendance.activity.date}}
                 td.td-bold {{attendance.activity.course.title}}
+              tr.disable-hover(ng-if='!user.attendances.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
       // Grades
-      .col-md-12.col-sm-12
-        .table-wrapper(ng-if='user.hasGrades')
+      .col-md-12.col-sm-12(ng-if='user.hasGrades')
+        .table-wrapper
           .table-title
-            | Grades
-            button.ebutton.green-button(data-toggle='modal', data-target='#add-course-modal', ng-click='modal.open()' ng-show="settings.editButtons") Add Grade
+            include elements/pagination
+            include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -81,12 +113,15 @@ section.container-content
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{grade.activity.type.name}}') {{grade.activity.type.name}}
                 td.hidden-xs.td-blue {{grade.activity.date}}
                 td.td-bold {{grade.activity.course.title}}
-    .col-wrapper.col-lg-6.col-md-12(ng-if='user.hasGroups || user.hasCourses')
-      .col-md-12.col-sm-12
-        .table-wrapper(ng-if='user.hasGroups')
+              tr.disable-hover(ng-if='!user.grades.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
+    .col-wrapper.col-md-12(ng-if='user.hasGroups || user.hasCourses' ng-class="{'col-lg-12': user.detail!='overview', 'col-lg-6': user.detail=='overview'}")
+      // Groups
+      .col-md-12.col-sm-12(ng-if='user.hasGroups')
+        .table-wrapper
           .table-title
-            | Groups
-            button.ebutton.green-button(data-toggle='modal', data-target='#add-group-modal', ng-click='modal.open()' ng-show="settings.editButtons") Add Group
+            include elements/pagination
+            include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -98,12 +133,14 @@ section.container-content
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.td-bold {{group.name}}
                 td.td-bold {{group.year}}
+              tr.disable-hover(ng-if='!user.groups.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
       // Courses
-      .col-md-12.col-sm-12
-        .table-wrapper(ng-if='user.hasCourses')
+      .col-md-12.col-sm-12(ng-if='user.hasCourses')
+        .table-wrapper
           .table-title
-            | Courses
-            button.ebutton.green-button(data-toggle='modal', data-target='#add-course-modal', ng-click='modal.open()' ng-show="settings.editButtons") Add Course
+            include elements/pagination
+            include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -117,6 +154,8 @@ section.container-content
                 td.td-bold {{course.title}}
                 td.td-bold {{course.year}}
                 td.td-bold {{course.semester}}
+              tr.disable-hover(ng-if='!user.courses.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
               
 //Modals
 #add-group-modal.modal.custom-modal.fade(tabindex='-1', role='dialog')

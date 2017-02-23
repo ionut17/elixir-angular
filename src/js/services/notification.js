@@ -3,8 +3,9 @@ app.factory('NotificationService', ['$http', '$rootScope', '$state', '$cookies',
 
   notificationService.push = function (notification) {
     var index = $rootScope.notifications.append(notification);
+    //TODO remove doesn't work because the index is changing if a previous one is removed (try remove by unique key)
     $timeout(function(){
-      $rootScope.notifications.dismiss(index);
+      $rootScope.notifications.dismiss();
     }, config.notifications.autoDismissTime);
   };
 

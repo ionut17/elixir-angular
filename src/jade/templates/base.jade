@@ -1,11 +1,12 @@
 // Common elements
 section.main-container
   // Sidebar
-  section.sidebar-wrapper.hidden-sm.hidden-xs
+  section.sidebar-wrapper
     .sidebar-logo
       figure.logo
       | 
     // Navigation
+    span.tag.tag-full.tag-lg(ng-class='authUser.class') {{authUser.type}}
     nav.sidebar-links
       ul
         label Management
@@ -35,6 +36,11 @@ section.main-container
             i.material-icons(ng-show='icons.showMaterial') people
             span Users
         label Account
+        li.hide(ng-if="isAuthorized(authorizedRoles.myAccount)")
+          a(ui-sref='base.users.view({type: authUser.type, id: authUser.id, detail: null})', ui-sref-active='active')
+            i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
+            i.material-icons(ng-show='icons.showMaterial') person
+            span My Account
         li(ng-if="isAuthorized(authorizedRoles.settings)")
           a(ui-sref='base.settings', ui-sref-active='active')
             i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
@@ -48,6 +54,8 @@ section.main-container
   // Content
   section.body-container
     section.container-header
+      figure.menu-toggle(ng-click="toggleMenu()")
+        i.material-icons menu
       ul.breadcrumbs-list
         li(ng-repeat='path in paths')
           a(ng-href="{{getPath(path.state, path.params)}}")
@@ -55,20 +63,19 @@ section.main-container
             span(ng-if='path.title') {{path.title}}
           i.material-icons.breadcrumb-separator(ng-show='icons.showMaterial') chevron_right
       ul.right-list
-        li
-          a(href="")
-            span.no-transform {{authUser.email}}
-            i.material-icons(ng-show='icons.showMaterial') person
-            //- span Account
-        li
+        li.hide
           a(href="")
             i.material-icons(ng-show='icons.showMaterial') notifications
-            //- span Notifications
-        li
+            span Notifications
+        li.hide
           figure.search-bar-wrapper
             input.search-bar(name="search" type="text" placeholder="Search")
             i.material-icons(ng-show='icons.showMaterial') search
-    section.container-wrapper
+        li
+          a(ui-sref='base.users.view({type: authUser.group, id: authUser.id, detail: null})')
+            i.material-icons person
+            span.no-transform {{authUser.email}}
+    section.container-wrapper(ng-class="{loading: loading}")
       div(ui-view='')
       include elements/notifications
 

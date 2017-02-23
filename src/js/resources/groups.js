@@ -2,7 +2,7 @@ app.factory("Groups", ["config", "$resource", "AuthService", function(config, $r
     return $resource(config.apiEndpoint + "groups", {}, {
         getAll: {
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {

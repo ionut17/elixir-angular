@@ -2,7 +2,7 @@ app.factory("Courses", ["config", "$resource", "AuthService", function(config, $
     return $resource(config.apiEndpoint + "courses", {}, {
         getAll: {
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -12,6 +12,36 @@ app.factory("Courses", ["config", "$resource", "AuthService", function(config, $
         },
         getById: {
             url: config.apiEndpoint + "courses/:id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getLecturers: {
+            url: config.apiEndpoint + "courses/:id/lecturers",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getStudents: {
+            url: config.apiEndpoint + "courses/:id/students",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getActivities: {
+            url: config.apiEndpoint + "courses/:id/activities",
             method: "GET",
             headers: {
                 'Accept': 'application/json',

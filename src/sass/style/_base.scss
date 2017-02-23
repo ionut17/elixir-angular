@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start;
 
   // background: linear-gradient(to bottom, $backgroundColor 0%, darken($backgroundColor, 5) 100%);
   background-color: $backgroundColor;
@@ -17,10 +17,20 @@
   overflow: scroll;
   position: relative;
 
-  min-height: calc(100% - #{$logoWrapperHeight});
+  background-color: $backgroundColor;
+
+  min-height: calc(100% - #{$logoWrapperHeight+1px});
 
   & > * {
     width: 100%;
+  }
+
+  &.loading{
+    .container-content{
+      &:before, &:after{
+        display: block;
+      }
+    }
   }
 }
 
@@ -31,11 +41,12 @@
   border-bottom: 2px solid rgba(255,255,255,0.3);
 
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 
   // padding: 20px 40px;
   padding: 0 40px;
+  padding-left: 0;
 
   h2{
     font-family: $headerFont;
@@ -49,6 +60,34 @@
   box-sizing: border-box;
   border-bottom: 1px solid $shadowGrey;
 
+  .menu-toggle{
+    width: $logoWrapperHeight;
+    min-width: $logoWrapperHeight;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-right: 1px solid rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.5);
+
+    margin: 0;
+    padding: 0;
+    margin-right: 20px;
+
+    transition: all 200ms ease-in-out;
+
+    cursor: pointer;
+    &:hover{
+      color: rgba(0,0,0,0.7);
+      background-color: rgba(0,0,0,0.05);
+    }
+    &:active{
+      color: $lightGreen;
+    }
+  }
+
   ul{
     margin: 0;
     padding: 0;
@@ -58,12 +97,17 @@
     flex-direction: row;
 
     &.breadcrumbs-list{
+      flex-grow: 1;
       li:not(:last-child){
         margin-right: 10px;
       }
       li span{
-        font-size: 14px;
+        // font-size: 14px;
       }
+    }
+
+    &.right-list{
+      flex-grow: 0;
     }
 
     li{
@@ -88,7 +132,7 @@
         color: rgba(0,0,0,0.5);
 
         span{
-          font-size: 14px;
+          font-size: 15px;
         }
 
         text-decoration: none;
@@ -125,6 +169,14 @@
 
 .body-container{
   width: 100%;
+  margin-left: $sidebarWidth;
+  z-index: 1;
+
+  transition: all 200ms ease-in-out;
+
+  &.menu-off{
+    margin-left: 0;
+  }
   // display: flex;
   // flex-direction: column;
 }
@@ -146,17 +198,59 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   padding: 40px;
   padding-top: 30px;
   // padding-top: 20px;
 
+  &:before, &:after{
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    display: none;
+  }
+
+  &:after{
+    width: $preloaderSize;
+    height: $preloaderSize;
+    // top: calc(50% - #{$preloaderSize/2});
+    top: 100px;
+    left: calc(50% - #{$preloaderSize/2});
+
+    opacity: 0.75;
+
+    background: url('../img/preloader3.gif');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 2;
+  }
+
+  &:before{
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: $backgroundColor;
+    z-index: 1;
+  }
 }
 
 .page-title-wrapper{
   // margin: 10px 0;
   // margin-bottom: 20px;
   // padding-bottom: 10px;
+
+  .title-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    & > *:not(:last-child){
+      margin-right: 20px;
+    }
+  }
 
   h2 {
     font-family: $headerFont;
@@ -209,6 +303,14 @@
   justify-content: space-between;
   align-items: center;
 
+  &:not(:first-child){
+    margin-top: 5px;
+  }
+
+  &:not(:last-child){
+    margin-bottom: 5px;
+  }
+
   // border-bottom: 5px solid rgba(0,0,0,0.1);
 }
 
@@ -224,11 +326,15 @@
   top: 20px;
   right: 40px;
   bottom: 20px;
+
+  z-index: 0;
+  pointer-events: none;
 }
 
 .notification{
   width: 100%;
   position: relative;
+  pointer-events: all;
 
   padding: 15px;
 
@@ -273,6 +379,15 @@
     font-size: 14px;
     color: $darkGrey;
     margin-bottom: 0;
+  }
+
+  span{
+    font-family: $contentFont;
+    font-size: 12px;
+    text-decoration: none;
+
+    margin-bottom: 5px;
+    color: $lightgrey;
   }
 
   a{

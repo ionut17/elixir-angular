@@ -36,7 +36,7 @@ app.run(function($rootScope, $timeout, $state, $cookies, config) {
   $rootScope.paths = [{
     'title': '',
     'icon': 'dashboard',
-    'state': 'dashboard',
+    'state': 'base.dashboard',
     'params': null
   }];
   $rootScope.getPath = function(state, paramObj){
@@ -49,11 +49,25 @@ app.run(function($rootScope, $timeout, $state, $cookies, config) {
     'showMaterial' : config.icons != 'awesome'
   }
 
+  $rootScope.search = {
+    value: null,
+    go: function(){
+      $scope.refresh();
+    },
+    clear: function(){
+      this.value = null;
+      this.go();
+    }
+  };
+
   //Notifications wrapper
   $rootScope.notifications = {
     active: [],
+    showDate: config.notifications.showDate,
     append: function(notification){
+      var dateObj = new Date();
       $rootScope.notifications.active.push({
+        date: [dateObj.getHours(),dateObj.getMinutes()].join(':'),
         title: notification.title,
         content: notification.content,
         link: notification.link,
@@ -62,7 +76,11 @@ app.run(function($rootScope, $timeout, $state, $cookies, config) {
       return $rootScope.notifications.active.length-1;
     },
     dismiss: function(index){
-      $rootScope.notifications.active.splice(index,1);
+      if (index){
+        $rootScope.notifications.active.splice(index,1);
+      } else{
+        $rootScope.notifications.active.splice(0,1);
+      }
     }
   };
 
@@ -92,7 +110,20 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
   $scope.loading = false;
   $scope.authUser = {
     username: $rootScope.authUser.user.firstName+' '+$rootScope.authUser.user.lastName,
-    email: $rootScope.authUser.user.email
+    email: $rootScope.authUser.user.email,
+    type: $rootScope.authUser.user.type,
+    group: $rootScope.authUser.user.type+'s',
+    id: $rootScope.authUser.user.id,
+    class: 'tag-'+$rootScope.authUser.user.type
+  }
+
+  $scope.toggleMenu = function(){
+    var body = angular.element('.body-container');
+    if (body.hasClass('menu-off')){
+      body.removeClass('menu-off');
+    } else{
+      body.addClass('menu-off');
+    }
   }
 
   $scope.modal = {
@@ -126,6 +157,22 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
       type: NOTIFICATIONS_TYPES.error
     });
   });
+  $scope.$on('not-found', function (event) {
+    NotificationService.push({
+      title: 'Not found',
+      content: 'You are not allowed to view the requested resource.',
+      link: null,
+      type: NOTIFICATIONS_TYPES.error
+    });
+  });
+  //Loading listener
+  $scope.loading = false;
+  $scope.$on('start-loading', function (event) {
+    $scope.loading = true;
+  });
+  $scope.$on('stop-loading', function (event) {
+    $scope.loading = false;
+  });
 
 
   //TODO insert restrictions based on role (pending api restrictions based on token)
@@ -146,12 +193,14 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
           $rootScope.$broadcast("not-authenticated");
         }
       } else{
-        $scope.loading = true;
+        // $rootScope.$broadcast("start-loading");
       }
     }
   });
   $rootScope.$on('$stateChangeSuccess', function(event, toState){
-    $scope.loading = false;
+    // $timeout(function(){
+    //   $rootScope.$broadcast("stop-loading");
+    // }, 500);
   });
 
   //TODO insert middleware to handle authentication filtering

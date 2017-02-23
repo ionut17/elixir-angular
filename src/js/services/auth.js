@@ -21,7 +21,6 @@ app.factory('AuthService', ['$http', '$rootScope', '$state', '$cookies', '$q', '
 
   authService.logout = function(){
     $cookies.remove('authUser');
-    console.log($cookies.getObject('authUser'));
     $rootScope.authUser.token = null;
     $rootScope.authUser.user = null;
     $state.go('login');

@@ -3,11 +3,12 @@ app.constant("config", {
     icons: "material", //'material' or 'awesome'
 
     preloader: {
-      artificialTime: 2500
+      artificialTime: 500 //milliseconds
     },
 
     notifications: {
-      autoDismissTime: 10000,
+      showDate: false,
+      autoDismissTime: 8000, //milliseconds
     },
 
     authorizedRoles: {
@@ -18,13 +19,14 @@ app.constant("config", {
       },
       courses: {
         list: ['*'],
-        view: ['ADMIN', 'LECTURER']
+        view: ['*']
       },
       dashboard: ['*'],
       groups: {
         list: ['*'],
         view: ['ADMIN', 'LECTURER']
       },
+      myAccount: ['*'],
       settings: ['*'],
       users: {
         list: ['ADMIN'],

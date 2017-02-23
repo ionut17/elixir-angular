@@ -9,7 +9,7 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('DashboardController', ['$scope','$rootScope', function($scope, $rootScope) {
+app.controller('DashboardController', ['$scope','$rootScope','AuthService','config', function($scope, $rootScope, AuthService, config) {
     //Add path to breadcrums list
     $rootScope.paths[1] = {
       'title': 'Dashboard',
@@ -20,4 +20,6 @@ app.controller('DashboardController', ['$scope','$rootScope', function($scope, $
 
     //Logic
     $scope.title = 'Dashboard';
+    $scope.isAuthorized = AuthService.isAuthorized;
+    $scope.authorizedRoles = config.authorizedRoles;
 }]);

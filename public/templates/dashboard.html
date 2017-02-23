@@ -9,4 +9,21 @@
     </div>
   </div>
 </section>
-<section class="container-content"></section>
+<section class="container-content">
+  <div class="row">
+    <div class="col-md-12 coverbox-wrapper">
+      <div ui-sref="base.activities.list({type: null})" ng-if="isAuthorized(authorizedRoles.activities.list)" class="coverbox"><i class="material-icons">assignment</i>
+        <h3>Activities</h3>
+      </div>
+      <div ui-sref="base.courses.list" ng-if="isAuthorized(authorizedRoles.courses.list)" class="coverbox"><i class="material-icons">school</i>
+        <h3>Courses</h3>
+      </div>
+      <div ui-sref="base.groups.list" ng-if="isAuthorized(authorizedRoles.groups.list)" class="coverbox"><i class="material-icons">library_books</i>
+        <h3>Groups</h3>
+      </div>
+      <div ui-sref="base.users.list({type: null})" ng-if="isAuthorized(authorizedRoles.users.list)" class="coverbox"><i class="material-icons">people</i>
+        <h3>Users</h3>
+      </div>
+    </div>
+  </div>
+</section>

@@ -13,7 +13,7 @@ app.factory("Activities", ["config", "$resource", "AuthService", function(config
         getAll: {
             url: config.apiEndpoint + "activities/join",
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {

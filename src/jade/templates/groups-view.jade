@@ -2,6 +2,7 @@ section.container-title
   // Header
   .row
     .col-md-12
+      span.td-subtitle Year {{group.year}} ( {{group.students.length}} Students )
       .page-title-wrapper
           h2 {{title}}
 
@@ -28,3 +29,5 @@ section.container-content
               td.td-blue {{user.email}}
               td
                 i.fa.fa-times(aria-hidden='true')
+            tr.disable-hover(ng-if='!group.students.length')
+              td.td-disabled.text-center(colspan='6') No results have been found

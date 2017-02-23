@@ -2,7 +2,7 @@ app.factory("Attendances", ["config", "$resource", "AuthService", function(confi
     return $resource(config.apiEndpoint + "attendances", {}, {
         getAll: {
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -23,7 +23,7 @@ app.factory("Attendances", ["config", "$resource", "AuthService", function(confi
         getByActivityId: {
             url: config.apiEndpoint + "attendances/:activity_id",
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {

@@ -2,7 +2,7 @@ app.factory("Grades", ["config", "$resource", "AuthService", function(config, $r
     return $resource(config.apiEndpoint + "grades", {}, {
         getAll: {
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -23,7 +23,7 @@ app.factory("Grades", ["config", "$resource", "AuthService", function(config, $r
         getByActivityId: {
             url: config.apiEndpoint + "grades/:activity_id",
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {

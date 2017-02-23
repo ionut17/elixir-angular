@@ -30,7 +30,16 @@ app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthSer
             });
           }, function(response){
             $scope.form.loading = false;
-            $scope.form.errors = response.errors;
+            if (response == null){
+              NotificationService.push({
+                title: 'Server connection failed',
+                content: 'We couldn\'t connect to the server. Try again later.',
+                link: null,
+                type: NOTIFICATIONS_TYPES.error
+              });
+            } else{
+              $scope.form.errors = response.errors ? response.errors : null;
+            }
           });
         }, config.preloader.artificialTime);
       }

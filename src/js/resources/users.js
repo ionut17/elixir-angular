@@ -2,7 +2,7 @@ app.factory("Users", ["config", "$resource", "AuthService", function(config, $re
     return $resource(config.apiEndpoint + "users", {}, {
         getAll: {
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

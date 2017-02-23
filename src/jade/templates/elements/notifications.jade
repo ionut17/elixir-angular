@@ -1,5 +1,6 @@
 section.notifications-wrapper
   div.notification(ng-repeat='notification in notifications.active track by $index' ng-class='notification.type')
+    span(ng-if="notifications.showDate") {{notification.date}}
     i.material-icons(ng-click='notifications.dismiss($index)') close
     h2 {{notification.title}}
     p {{notification.content}}

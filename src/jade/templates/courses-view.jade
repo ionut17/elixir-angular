@@ -2,49 +2,97 @@ section.container-title
   // Header
   .row
     .col-md-12
+      span.td-subtitle Year {{course.year}} / Semester {{course.semester}}
       .page-title-wrapper
           h2 {{title}}
+  .row.container-title-nav
+    .col-md-12
+      .page-title-wrapper
+        ul.tabs-wrapper
+          li(ui-sref='base.courses.view({detail: null})', ng-class='{active: course.detail=="overview"}') Overview
+          li(ui-sref='base.courses.view({detail: "lecturers"})', ng-class='{active: course.detail=="lecturers"}') Lecturers
+          li(ui-sref='base.courses.view({detail: "students"})', ng-class='{active: course.detail=="students"}', ng-if="authUser.type!='student'") Students
+          li(ui-sref='base.courses.view({detail: "activities"})', ng-class='{active: course.detail=="activities"}', ng-if="authUser.type!='student'") Activities
 
+//TODO hide the students/activities for student account
 section.container-content
-  .row
-    .col-md-6
-      .table-wrapper
-        .table-title
-          | Lecturers
-        table.table.elixir-table
-          thead
-            tr
-              th #
-              th First Name
-              th Last Name
-              th Email
-              th Actions
-          tbody
-            tr(ng-repeat='user in course.lecturers track by $index', ui-sref="base.users.view({type: 'lecturers', id: user.id})")
-              th.col-sm-1(scope='row') {{$index+1}}
-              td {{user.firstName}}
-              td.td-bold {{user.lastName}}
-              td.td-blue {{user.email}}
-              td
-                i.fa.fa-times(aria-hidden='true')
-  .row
-    .col-md-6
-      .table-wrapper
-        .table-title
-          | Students
-        table.table.elixir-table
-          thead
-            tr
-              th #
-              th First Name
-              th Last Name
-              th Email
-              th Actions
-          tbody
-            tr(ng-repeat='user in course.students track by $index', ui-sref="base.users.view({type: 'students', id: user.id})")
-              th.col-sm-1(scope='row') {{$index+1}}
-              td {{user.firstName}}
-              td.td-bold {{user.lastName}}
-              td.td-blue {{user.email}}
-              td
-                i.fa.fa-times(aria-hidden='true')
+  .row(ng-if="course.detail=='overview'")
+    .col-md-12.coverbox-wrapper
+        div.coverbox(ui-sref='base.courses.view({detail: "lecturers"})')
+          h2 {{course.lecturers.length}}
+          h3 Lecturers
+        div.coverbox(ui-sref='base.courses.view({detail: "students"})' ng-if="authUser.type!='student'")
+          h2 {{course.students.length}}
+          h3 Students
+        div.coverbox(ui-sref='base.courses.view({detail: "activities"})' ng-if="authUser.type!='student'")
+          h2 {{course.activities.length}}
+          h3 Activities
+          
+  .row(ng-if="course.detail!='overview'")
+    .col-wrapper.col-md-12(ng-if="course.hasLecturers || course.hasStudents")
+      // Lecturers
+      .col-md-12(ng-if="course.hasLecturers")
+        .table-wrapper
+          .table-title
+            include elements/pagination
+            include elements/search-bar
+          table.table.elixir-table
+            thead
+              tr
+                th #
+                th First Name
+                th Last Name
+                th Email
+            tbody
+              tr(ng-repeat='user in course.lecturers track by $index', ui-sref="base.users.view({type: 'lecturers', id: user.id})")
+                th.col-sm-1(scope='row') {{$index+1}}
+                td {{user.firstName}}
+                td.td-bold {{user.lastName}}
+                td.td-blue {{user.email}}
+              tr.disable-hover(ng-if='!course.lecturers.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
+      //Student
+      .col-md-12(ng-if="course.hasStudents && authUser.type!='student'")
+        .table-wrapper
+          .table-title
+            include elements/pagination
+            include elements/search-bar
+          table.table.elixir-table
+            thead
+              tr
+                th #
+                th First Name
+                th Last Name
+                th Email
+            tbody
+              tr(ng-repeat='user in course.students track by $index', ui-sref="base.users.view({type: 'students', id: user.id})")
+                th.col-sm-1(scope='row') {{$index+1}}
+                td {{user.firstName}}
+                td.td-bold {{user.lastName}}
+                td.td-blue {{user.email}}
+              tr.disable-hover(ng-if='!course.students.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
+    .col-wrapper.col-md-12(ng-if="course.hasActivities")
+      // Activities
+      .col-md-12(ng-if="course.hasActivities && authUser.type!='student'")
+        .table-wrapper
+          .table-title
+            include elements/pagination
+            include elements/search-bar
+          table.table.elixir-table
+            thead
+              tr
+                th #
+                th Type
+                th Name
+                th Date
+            tbody
+              tr(ng-repeat='activity in course.activities track by $index', ui-sref='base.activities.view({type: course.activity.role+"s", activity_id: course.activity.activity.id, user_id: course.activity.user.id})')
+                th.col-sm-1(scope='row') {{$index+1}}
+                td
+                  span.tag(ng-class='activity.tag') {{activity.type.name}}
+                td {{activity.name}}
+                td.td-blue {{activity.date}}
+              tr.disable-hover(ng-if='!course.activities.length')
+                td.td-disabled.text-center(colspan='6') No results have been found
+  

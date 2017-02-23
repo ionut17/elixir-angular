@@ -6,3 +6,17 @@ section.container-title
           h2 {{title}}
 
 section.container-content
+  .row
+    .col-md-12.coverbox-wrapper
+        div.coverbox(ui-sref='base.activities.list({type: null})' ng-if="isAuthorized(authorizedRoles.activities.list)")
+          i.material-icons assignment
+          h3 Activities
+        div.coverbox(ui-sref='base.courses.list' ng-if="isAuthorized(authorizedRoles.courses.list)")
+          i.material-icons school
+          h3 Courses
+        div.coverbox(ui-sref='base.groups.list' ng-if="isAuthorized(authorizedRoles.groups.list)")
+          i.material-icons library_books
+          h3 Groups
+        div.coverbox(ui-sref='base.users.list({type: null})' ng-if="isAuthorized(authorizedRoles.users.list)")
+          i.material-icons people
+          h3 Users

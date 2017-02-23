@@ -7,7 +7,7 @@ app.config(function($stateProvider, config) {
           authorizedRoles: config.authorizedRoles.settings
         },
         resolve: {
-            resolvedData: ["Students", "Lecturers", "Admins", "$rootScope", function(Students, Lecturers, Admins, $rootScope) {
+            resolvedData: ["Students", "Lecturers", "Admins", "$rootScope", "$q", function(Students, Lecturers, Admins, $rootScope, $q) {
               var resource;
               var type = $rootScope.authUser.user.type;
               switch(type){
@@ -35,6 +35,8 @@ app.config(function($stateProvider, config) {
                 };
               }, function(response){
                 console.log(response);
+                $rootScope.$broadcast("not-authorized");
+                return $q.reject("Rejection message!");
               });
             }]
         }
@@ -53,7 +55,7 @@ app.controller('SettingsController', ['$scope', '$rootScope', 'resolvedData', fu
     $rootScope.paths[1] = {
       'title': 'Settings',
       'icon': null,
-      'state': 'settings',
+      'state': 'base.settings',
       'params': null
     };
     $rootScope.paths.length = 2;

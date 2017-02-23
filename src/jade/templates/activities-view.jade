@@ -14,9 +14,10 @@ section.container-content
           tbody
             tr(ng-repeat='extraRow in table.extraRows track by $index')
               th.col-sm-3(scope='row') {{extraRow.title}}
-              td.td-bold(ng-class="{ 'td-spaced': extraRow.hasDownloadButton }")
+              td.td-bold(ng-class="{ 'td-spaced disable-hover': extraRow.hasDownloadButton }")
                 span(ng-class="extraRow.customClass") {{extraRow.value}}
-                a.ebutton.white-button(ng-if="extraRow.hasDownloadButton" ng-href="{{table.retrieveLink()}}" target="_blank") Download
+                a.ebutton.white-button.icon-button(ng-if="extraRow.hasDownloadButton" ng-href="{{table.retrieveLink()}}" target="_blank")
+                  i.material-icons get_app
             tr(ui-sref='base.users.view({type: activity.user.type+"s", id: activity.user.id})')
               th.col-sm-3(scope='row') {{table.columns.user}}
               td.td-bold

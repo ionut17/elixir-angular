@@ -2,7 +2,7 @@
 <section class="container-title">
   <!-- Header-->
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12"><span class="td-subtitle">Year {{group.year}} ( {{group.students.length}} Students )</span>
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
       </div>
@@ -32,6 +32,9 @@
               <td class="td-bold">{{user.lastName}}</td>
               <td class="td-blue">{{user.email}}</td>
               <td><i aria-hidden="true" class="fa fa-times"></i></td>
+            </tr>
+            <tr ng-if="!group.students.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">No results have been found</td>
             </tr>
           </tbody>
         </table>

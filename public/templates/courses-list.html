@@ -14,6 +14,18 @@
   <div class="row">
     <div class="col-md-12">
       <div class="table-wrapper">
+        <div class="table-title">
+          <div class="pagination-wrapper">
+            <ul class="pagination">
+              <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
+            </ul>
+          </div>
+          <figure class="search-bar-wrapper">
+            <div class="search-bar">
+              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+            </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
+          </figure>
+        </div>
         <table class="table elixir-table">
           <thead>
             <tr>
@@ -26,11 +38,14 @@
           </thead>
           <tbody>
             <tr ng-repeat="course in courses track by $index" ui-sref="base.courses.view({id: course.id})">
-              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
               <td class="td-bold">{{course.title}}</td>
               <td class="td-bold">{{course.year}}</td>
               <td class="td-bold">{{course.semester}}</td>
               <td class="td-blue">{{course.lecturers.length}}</td>
+            </tr>
+            <tr ng-if="!courses.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">No results have been found</td>
             </tr>
           </tbody>
         </table>

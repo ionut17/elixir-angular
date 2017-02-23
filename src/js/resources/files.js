@@ -2,7 +2,7 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
     return $resource(config.apiEndpoint + "files", {}, {
         getAll: {
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -23,7 +23,7 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
         getByActivityId: {
             url: config.apiEndpoint + "files/:activity_id",
             method: "GET",
-            isArray: true,
+            // isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {

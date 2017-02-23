@@ -1,0 +1,3 @@
+.pagination-wrapper
+  ul.pagination
+    li(ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)") {{$index+1}}

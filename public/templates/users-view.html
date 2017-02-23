@@ -2,21 +2,71 @@
 <section class="container-title">
   <!-- Header-->
   <div class="row">
+    <div class="col-md-12"><span class="td-subtitle">{{user.email}}</span>
+      <div class="page-title-wrapper">
+        <div class="title-section">
+          <h2>{{title}}</h2><span ng-class="user.tag.class" class="tag tag-auto">{{user.tag.name}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row container-title-nav">
     <div class="col-md-12">
       <div class="page-title-wrapper">
-        <h2>{{title}}</h2>
+        <ul class="tabs-wrapper">
+          <li ui-sref="base.users.view({detail: null})" ng-class="{active: user.detail==&quot;overview&quot;}">Overview</li>
+          <li ui-sref="base.users.view({detail: &quot;attendances&quot;})" ng-class="{active: user.detail==&quot;attendances&quot;}" ng-if="user.type==&quot;students&quot;">Attendances</li>
+          <li ui-sref="base.users.view({detail: &quot;grades&quot;})" ng-class="{active: user.detail==&quot;grades&quot;}" ng-if="user.type==&quot;students&quot;">Grades</li>
+          <li ui-sref="base.users.view({detail: &quot;files&quot;})" ng-class="{active: user.detail==&quot;files&quot;}" ng-if="user.type==&quot;students&quot;">Files</li>
+          <li ui-sref="base.users.view({detail: &quot;groups&quot;})" ng-class="{active: user.detail==&quot;groups&quot;}" ng-if="user.type==&quot;students&quot;">Groups</li>
+          <li ui-sref="base.users.view({detail: &quot;courses&quot;})" ng-class="{active: user.detail==&quot;courses&quot;}" ng-if="user.type==&quot;students&quot; || user.type==&quot;lecturers&quot;">Courses</li>
+        </ul>
       </div>
     </div>
   </div>
 </section>
 <section class="container-content">
-  <!-- Groups-->
-  <div class="row">
-    <div ng-if="user.hasAttendances || user.hasGrades" class="col-wrapper col-lg-6 col-md-12">
+  <div ng-if="user.detail==&quot;overview&quot;" class="row">
+    <div class="col-md-12 coverbox-wrapper">
+      <div ng-if="user.hasAttendances" ui-sref="base.users.view({detail: &quot;attendances&quot;})" class="coverbox">
+        <h2>{{user.attendances.length}}</h2>
+        <h3>Attendances</h3>
+      </div>
+      <div ng-if="user.hasGrades" ui-sref="base.users.view({detail: &quot;grades&quot;})" class="coverbox">
+        <h2>{{user.grades.length}}</h2>
+        <h3>Grades</h3>
+      </div>
+      <div ng-if="user.hasFiles" ui-sref="base.users.view({detail: &quot;files&quot;})" class="coverbox">
+        <h2>{{user.files.length}}</h2>
+        <h3>Files</h3>
+      </div>
+      <div ng-if="user.hasGroups" ui-sref="base.users.view({detail: &quot;groups&quot;})" class="coverbox">
+        <h2>{{user.groups.length}}</h2>
+        <h3>Groups</h3>
+      </div>
+      <div ng-if="user.hasCourses" ui-sref="base.users.view({detail: &quot;courses&quot;})" class="coverbox">
+        <h2>{{user.courses.length}}</h2>
+        <h3>Courses</h3>
+      </div>
+    </div>
+  </div>
+  <div ng-if="user.detail!=&quot;overview&quot;" class="row">
+    <div ng-if="user.hasAttendances || user.hasGrades || user.hasFiles" ng-class="{'col-lg-12': user.detail!='overview', 'col-lg-6': user.detail=='overview'}" class="col-wrapper col-md-12">
       <!-- Files-->
-      <div class="col-md-12 col-sm-12">
-        <div ng-if="user.hasFiles" class="table-wrapper">
-          <div class="table-title">Files</div>
+      <div ng-if="user.hasFiles" class="col-md-12 col-sm-12">
+        <div class="table-wrapper">
+          <div class="table-title">
+            <div class="pagination-wrapper">
+              <ul class="pagination">
+                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
+              </ul>
+            </div>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
+          </div>
           <table class="table elixir-table">
             <thead>
               <tr>
@@ -37,18 +87,27 @@
                 <td class="hidden-xs td-blue">{{file.activity.date}}</td>
                 <td class="td-bold">{{file.activity.course.title}}</td>
               </tr>
-              <tr ng-hide="user.files.length" class="hide">
-                <td colspan="6" class="td-empty text-center">No results</td>
+              <tr ng-if="!user.files.length" class="disable-hover">
+                <td colspan="6" class="td-disabled text-center">No results have been found</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
       <!-- Attendances-->
-      <div class="col-md-12 col-sm-12">
-        <div ng-if="user.hasAttendances" class="table-wrapper">
-          <div class="table-title">Attendances
-            <button data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()" ng-show="settings.editButtons" class="ebutton green-button">Add Attendance</button>
+      <div ng-if="user.hasAttendances" class="col-md-12 col-sm-12">
+        <div class="table-wrapper">
+          <div class="table-title">
+            <div class="pagination-wrapper">
+              <ul class="pagination">
+                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
+              </ul>
+            </div>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -68,15 +127,27 @@
                 <td class="td-blue">{{attendance.activity.date}}</td>
                 <td class="td-bold">{{attendance.activity.course.title}}</td>
               </tr>
+              <tr ng-if="!user.attendances.length" class="disable-hover">
+                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
       <!-- Grades-->
-      <div class="col-md-12 col-sm-12">
-        <div ng-if="user.hasGrades" class="table-wrapper">
-          <div class="table-title">Grades
-            <button data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()" ng-show="settings.editButtons" class="ebutton green-button">Add Grade</button>
+      <div ng-if="user.hasGrades" class="col-md-12 col-sm-12">
+        <div class="table-wrapper">
+          <div class="table-title">
+            <div class="pagination-wrapper">
+              <ul class="pagination">
+                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
+              </ul>
+            </div>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -98,16 +169,29 @@
                 <td class="hidden-xs td-blue">{{grade.activity.date}}</td>
                 <td class="td-bold">{{grade.activity.course.title}}</td>
               </tr>
+              <tr ng-if="!user.grades.length" class="disable-hover">
+                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-    <div ng-if="user.hasGroups || user.hasCourses" class="col-wrapper col-lg-6 col-md-12">
-      <div class="col-md-12 col-sm-12">
-        <div ng-if="user.hasGroups" class="table-wrapper">
-          <div class="table-title">Groups
-            <button data-toggle="modal" data-target="#add-group-modal" ng-click="modal.open()" ng-show="settings.editButtons" class="ebutton green-button">Add Group</button>
+    <div ng-if="user.hasGroups || user.hasCourses" ng-class="{'col-lg-12': user.detail!='overview', 'col-lg-6': user.detail=='overview'}" class="col-wrapper col-md-12">
+      <!-- Groups-->
+      <div ng-if="user.hasGroups" class="col-md-12 col-sm-12">
+        <div class="table-wrapper">
+          <div class="table-title">
+            <div class="pagination-wrapper">
+              <ul class="pagination">
+                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
+              </ul>
+            </div>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -123,15 +207,27 @@
                 <td class="td-bold">{{group.name}}</td>
                 <td class="td-bold">{{group.year}}</td>
               </tr>
+              <tr ng-if="!user.groups.length" class="disable-hover">
+                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
       <!-- Courses-->
-      <div class="col-md-12 col-sm-12">
-        <div ng-if="user.hasCourses" class="table-wrapper">
-          <div class="table-title">Courses
-            <button data-toggle="modal" data-target="#add-course-modal" ng-click="modal.open()" ng-show="settings.editButtons" class="ebutton green-button">Add Course</button>
+      <div ng-if="user.hasCourses" class="col-md-12 col-sm-12">
+        <div class="table-wrapper">
+          <div class="table-title">
+            <div class="pagination-wrapper">
+              <ul class="pagination">
+                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
+              </ul>
+            </div>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -148,6 +244,9 @@
                 <td class="td-bold">{{course.title}}</td>
                 <td class="td-bold">{{course.year}}</td>
                 <td class="td-bold">{{course.semester}}</td>
+              </tr>
+              <tr ng-if="!user.courses.length" class="disable-hover">
+                <td colspan="6" class="td-disabled text-center">No results have been found</td>
               </tr>
             </tbody>
           </table>

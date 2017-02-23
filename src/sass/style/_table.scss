@@ -117,6 +117,13 @@
 
 }
 
+.disable-hover{
+  &:hover{
+    background-color: white !important;
+    cursor: default !important;
+  }
+}
+
 .elixir-table-horizontal{
   tbody{
     tr{
@@ -155,6 +162,14 @@
   color: $lightBlue !important;
 }
 
+.td-subtitle{
+  // text-transform: uppercase;
+  // font-weight: bold;
+  font-size: 16px;
+  font-family: $headerFont;
+  color: #9a9a9a;
+}
+
 .td-green{
   color: $lightGreen !important;
 }
@@ -166,8 +181,9 @@
 }
 
 .td-disabled{
-  color: grey;
-  opacity: 0.5;
+  color: $lightgrey !important;
+  // opacity: 0.5;
+  background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
 .td-empty{

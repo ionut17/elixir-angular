@@ -1,6 +1,6 @@
 
 <section class="notifications-wrapper">
-  <div ng-repeat="notification in notifications.active track by $index" ng-class="notification.type" class="notification"><i ng-click="notifications.dismiss($index)" class="material-icons">close</i>
+  <div ng-repeat="notification in notifications.active track by $index" ng-class="notification.type" class="notification"><span ng-if="notifications.showDate">{{notification.date}}</span><i ng-click="notifications.dismiss($index)" class="material-icons">close</i>
     <h2>{{notification.title}}</h2>
     <p>{{notification.content}}</p><a ng-href="{{notification.link.href}}" ng-if="notification.link">{{notification.link.text}}</a>
   </div>

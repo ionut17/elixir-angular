@@ -18,6 +18,9 @@ section.container-content
   .row
     .col-md-12
       .table-wrapper
+        .table-title
+          include elements/pagination
+          include elements/search-bar
         table.table.elixir-table
           thead
             tr
@@ -30,7 +33,7 @@ section.container-content
               th Date
           tbody
             tr(ng-repeat='activity in activities track by $index', ui-sref='base.activities.view({type: activity.role+"s", activity_id: activity.activity.id, user_id: activity.user.id})')
-              th.col-sm-1(scope='row') {{$index+1}}
+              th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
               td
                 span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
               td(ng-hide="activities.singleType")
@@ -39,3 +42,5 @@ section.container-content
               td.td-bold {{activity.user.firstName + ' ' + activity.user.lastName}}
               td.td-blue {{activity.activity.course.title}}
               td.td-blue {{activity.activity.date}}
+            tr.disable-hover(ng-if='!activities.length')
+              td.td-disabled.text-center(colspan='6') No results have been found
