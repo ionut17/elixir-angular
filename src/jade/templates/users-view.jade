@@ -12,11 +12,11 @@ section.container-title
       .page-title-wrapper
         ul.tabs-wrapper
           li(ui-sref='base.users.view({detail: null})', ng-class='{active: user.detail=="overview"}') Overview
-          li(ui-sref='base.users.view({detail: "attendances"})', ng-class='{active: user.detail=="attendances"}', ng-if='user.type=="students"') Attendances
-          li(ui-sref='base.users.view({detail: "grades"})', ng-class='{active: user.detail=="grades"}', ng-if='user.type=="students"') Grades
-          li(ui-sref='base.users.view({detail: "files"})', ng-class='{active: user.detail=="files"}', ng-if='user.type=="students"') Files
-          li(ui-sref='base.users.view({detail: "groups"})', ng-class='{active: user.detail=="groups"}', ng-if='user.type=="students"') Groups
-          li(ui-sref='base.users.view({detail: "courses"})', ng-class='{active: user.detail=="courses"}', ng-if='user.type=="students" || user.type=="lecturers"') Courses
+          li(ui-sref='base.users.view({detail: "attendances", page: 0})', ng-class='{active: user.detail=="attendances"}', ng-if='user.type=="students"') Attendances
+          li(ui-sref='base.users.view({detail: "grades", page: 0})', ng-class='{active: user.detail=="grades"}', ng-if='user.type=="students"') Grades
+          li(ui-sref='base.users.view({detail: "files", page: 0})', ng-class='{active: user.detail=="files"}', ng-if='user.type=="students"') Files
+          li(ui-sref='base.users.view({detail: "groups", page: 0})', ng-class='{active: user.detail=="groups"}', ng-if='user.type=="students"') Groups
+          li(ui-sref='base.users.view({detail: "courses", page: 0})', ng-class='{active: user.detail=="courses"}', ng-if='user.type=="students" || user.type=="lecturers"') Courses
 
 section.container-content
   .row(ng-if='user.detail=="overview"')
@@ -43,7 +43,7 @@ section.container-content
         .table-wrapper
           .table-title
             include elements/pagination
-            include elements/search-bar
+            //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -69,7 +69,7 @@ section.container-content
         .table-wrapper
           .table-title
             include elements/pagination
-            include elements/search-bar
+            //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -93,7 +93,7 @@ section.container-content
         .table-wrapper
           .table-title
             include elements/pagination
-            include elements/search-bar
+            //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -121,7 +121,7 @@ section.container-content
         .table-wrapper
           .table-title
             include elements/pagination
-            include elements/search-bar
+            //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
@@ -140,7 +140,7 @@ section.container-content
         .table-wrapper
           .table-title
             include elements/pagination
-            include elements/search-bar
+            //- include elements/search-bar
           table.table.elixir-table
             thead
               tr

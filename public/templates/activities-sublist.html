@@ -15,6 +15,7 @@
       <div class="table-wrapper">
         <div class="table-title">
           <div class="pagination-wrapper">
+            <h4>Page</h4>
             <ul class="pagination">
               <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
             </ul>
@@ -30,7 +31,6 @@
             <tr>
               <th>#</th>
               <th>Type</th>
-              <th>Student</th>
               <th ng-show="table.showGrades">Grade</th>
               <th>Name</th>
               <th>Course</th>
@@ -38,14 +38,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="activity in activities track by $index" ui-sref="base.activities.view({type: activities.type, activity_id: activity.activity.id, user_id: activity.student.id})">
-              <th scope="row" class="col-sm-1">{{$index+1}}</th>
-              <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
-              <td class="td-bold">{{activity.student.firstName + ' ' + activity.student.lastName}}</td>
+            <tr ng-repeat="activity in activities track by $index" ui-sref="base.activities.view({type: activities.type, activity_id: activity.id, user_id: activity.student.id})">
+              <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
+              <td><span ng-class="activity.tag" class="tag">{{activity.type.name}}</span></td>
               <td ng-show="table.showGrades"><span class="tag tag-auto tag-grade">{{activity.value}}</span></td>
-              <td>{{activity.activity.name}}</td>
-              <td class="td-blue">{{activity.activity.course.title}</td>
-              <td class="td-blue">{{activity.activity.date}}</td>
+              <td>{{activity.name}}</td>
+              <td class="td-blue">{{course.title}}</td>
+              <td class="td-blue">{{activity.date}}</td>
             </tr>
             <tr ng-if="!activities.length" class="disable-hover">
               <td colspan="6" class="td-disabled text-center">No results have been found</td>

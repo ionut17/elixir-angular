@@ -115,6 +115,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  h5{
+    font-family: $headerFont;
+    font-size: 14px;
+    color: grey;
+  }
 }
 
 .university-wrapper{

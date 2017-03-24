@@ -4,7 +4,6 @@ section.main-container
   section.sidebar-wrapper
     .sidebar-logo
       figure.logo
-      | 
     // Navigation
     span.tag.tag-full.tag-lg(ng-class='authUser.class') {{authUser.type}}
     nav.sidebar-links
@@ -16,7 +15,7 @@ section.main-container
             i.material-icons(ng-show='icons.showMaterial') dashboard
             span Dashboard
         li(ng-if="isAuthorized(authorizedRoles.activities.list)")
-          a(ui-sref='base.activities.list({type: null})', ng-class="{active:$state.includes('base.activities')}")
+          a(ui-sref='base.activities.list({type: null, course_id: null, activity_id: null})', ng-class="{active:$state.includes('base.activities')}")
             i.fa.fa-check-square-o(aria-hidden='true', ng-show='icons.showAwesome')
             i.material-icons(ng-show='icons.showMaterial') assignment
             span Activities
@@ -79,6 +78,7 @@ section.main-container
       div(ui-view='')
       include elements/notifications
 
-
-//includes
+//- Modals
 include modals/confirm
+include modals/add-activity
+include modals/add-file

@@ -4,14 +4,14 @@
   <!-- Sidebar-->
   <section class="sidebar-wrapper">
     <div class="sidebar-logo">
-      <figure class="logo"></figure> 
+      <figure class="logo"></figure>
     </div>
     <!-- Navigation--><span ng-class="authUser.class" class="tag tag-full tag-lg">{{authUser.type}}</span>
     <nav class="sidebar-links">
       <ul>
         <label>Management</label>
         <li ng-if="isAuthorized(authorizedRoles.dashboard)"><a ui-sref="base.dashboard" ui-sref-active="active"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-tachometer"></i><i ng-show="icons.showMaterial" class="material-icons">dashboard</i><span>Dashboard</span></a></li>
-        <li ng-if="isAuthorized(authorizedRoles.activities.list)"><a ui-sref="base.activities.list({type: null})" ng-class="{active:$state.includes('base.activities')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-check-square-o"></i><i ng-show="icons.showMaterial" class="material-icons">assignment</i><span>Activities</span></a></li>
+        <li ng-if="isAuthorized(authorizedRoles.activities.list)"><a ui-sref="base.activities.list({type: null, course_id: null, activity_id: null})" ng-class="{active:$state.includes('base.activities')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-check-square-o"></i><i ng-show="icons.showMaterial" class="material-icons">assignment</i><span>Activities</span></a></li>
         <li ng-if="isAuthorized(authorizedRoles.courses.list)"><a ui-sref="base.courses.list" ng-class="{active:$state.includes('base.courses')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-graduation-cap"></i><i ng-show="icons.showMaterial" class="material-icons">school</i><span>Courses</span></a></li>
         <li ng-if="isAuthorized(authorizedRoles.groups.list)"><a ui-sref="base.groups.list" ng-class="{active:$state.includes('base.groups')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-book"></i><i ng-show="icons.showMaterial" class="material-icons">library_books</i><span>Groups</span></a></li>
         <li ng-if="isAuthorized(authorizedRoles.users.list)"><a ui-sref="base.users.list({type: null})" ng-class="{active: $state.includes('base.users')}"><i aria-hidden="true" ng-show="icons.showAwesome" class="fa fa-users"></i><i ng-show="icons.showMaterial" class="material-icons">people</i><span>Users</span></a></li>
@@ -50,7 +50,6 @@
     </section>
   </section>
 </section>
-<!--includes-->
 <div id="confirm-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
   <div role="document" class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -63,6 +62,101 @@
       <div class="modal-footer text-center">
         <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal.confirm.cancel}}</button>
         <button type="button" ng-click="modal.confirm.action.submit()" class="ebutton green-button">{{modal.confirm.submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="add-activity" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">library_add</i>
+        <h2>{{modal['add-activity'].title}}</h2>
+      </div>
+      <div class="modal-header hide">
+        <h2>Add Activity</h2>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"></button><span aria-hidden="true">×</span>
+      </div>
+      <div class="modal-body">
+        <div ng-show="modal['add-activity'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>Adăugare activitate</h5>
+        </div>
+        <ul ng-hide="modal['add-activity'].loading">
+          <li>
+            <label for="course">Course</label>
+            <select id="type" name="course" ng-model="modal.local.courseId" ng-options="course.id as course.title for course in modal['add-activity'].data.courses track by course.id" placeholder="Select course" required="required">
+              <option selected="selected" disabled="disabled" value="">Select course</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.course" class="error">{{modal.user.errors.course}}</li>
+          <li>
+            <label for="type">Type</label>
+            <select id="type" name="type" ng-model="modal.local.typeId" ng-options="type.id as type.name for type in modal['add-activity'].data.types track by type.id" placeholder="Select type" required="required">
+              <option selected="selected" disabled="disabled" value="">Select type</option>
+            </select>
+          </li>
+          <li>
+            <label for="name">Name</label>
+            <input name="name" type="input" ng-model="modal.local.name" placeholder="Enter name of activity (e.g Laborator 2)" required="required"/>
+          </li>
+          <li>
+            <label for="date">Date</label>
+            <input id="add-activity-datepicker" name="date" type="text" ng-model="modal.local.date" placeholder="Enter date of activity" required="required"/>
+          </li>
+        </ul>
+      </div>
+      <div ng-hide="modal['add-activity'].loading" class="modal-footer text-center">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal['add-activity'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-activity&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-activity'].submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="add-file" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">file_upload</i>
+        <h2>{{modal['add-file'].title}}</h2>
+      </div>
+      <div class="modal-header hide">
+        <h2>{{modal['add-file'].title}}</h2>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"></button><span aria-hidden="true">×</span>
+      </div>
+      <div class="modal-body">
+        <div ng-show="modal['add-file'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>Încărcare fișier</h5>
+        </div>
+        <ul ng-hide="modal['add-file'].loading">
+          <li>
+            <label for="course">Course</label>
+            <select name="course" ng-model="modal.local.courseId" ng-change="modal[&quot;add-file&quot;].refreshActivities()" ng-disabled="modal.local.courseDisabled" ng-options="course as course.title for course in modal['add-file'].data.courses track by course.id" placeholder="Select course" required="required">
+              <option selected="selected" disabled="disabled" value="">Select course</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.course" class="error">{{modal.user.errors.course}}</li>
+          <li>
+            <label for="activity">Activity</label>
+            <select name="activity" ng-model="modal.local.activityId" ng-disabled="modal.local.activityDisabled" ng-options="activity.id as activity.name for activity in modal['add-file'].data.activities track by activity.id" placeholder="Select activity" required="required">
+              <option selected="selected" disabled="disabled" value="">Select activity</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.activity" class="error">{{modal.user.errors.activity}}</li>
+          <li>
+            <label for="file_name">File Name</label>
+            <input name="file_name" type="input" ng-model="modal.local.fileName" placeholder="Enter file name" required="required" class="no-transform"/>
+          </li>
+          <li ng-if="modal.local.errors.fileName" class="error">{{modal.user.errors.fileName}}</li>
+          <li>
+            <label for="file">File</label>
+            <input id="upload-file" name="file" type="file" ng-model="modal.local.file" placeholder="Choose File" required="required"/>
+          </li>
+          <li ng-if="modal.local.errors.file" class="error">{{modal.user.errors.file}}</li>
+        </ul>
+      </div>
+      <div ng-hide="modal['add-file'].loading" class="modal-footer text-center">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal['add-file'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-file&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-file'].submit}}</button>
       </div>
     </div>
   </div>

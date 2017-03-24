@@ -114,7 +114,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
     };
 
     $scope.search = $rootScope.search;
-    $rootScope.search.go = function(){
+    $scope.search.go = function(){
       $scope.refresh();
     }
     document.getElementById("search-bar-input").addEventListener("keydown", function (e) {

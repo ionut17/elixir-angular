@@ -1,0 +1,47 @@
+
+<div id="add-activity" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">library_add</i>
+        <h2>{{modal['add-activity'].title}}</h2>
+      </div>
+      <div class="modal-header hide">
+        <h2>Add Activity</h2>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"></button><span aria-hidden="true">×</span>
+      </div>
+      <div class="modal-body">
+        <div ng-show="modal['add-activity'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>Adăugare activitate</h5>
+        </div>
+        <ul ng-hide="modal['add-activity'].loading">
+          <li>
+            <label for="course">Course</label>
+            <select id="type" name="course" ng-model="modal.local.courseId" ng-options="course.id as course.title for course in modal['add-activity'].data.courses track by course.id" placeholder="Select course" required="required">
+              <option selected="selected" disabled="disabled" value="">Select course</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.course" class="error">{{modal.user.errors.course}}</li>
+          <li>
+            <label for="type">Type</label>
+            <select id="type" name="type" ng-model="modal.local.typeId" ng-options="type.id as type.name for type in modal['add-activity'].data.types track by type.id" placeholder="Select type" required="required">
+              <option selected="selected" disabled="disabled" value="">Select type</option>
+            </select>
+          </li>
+          <li>
+            <label for="name">Name</label>
+            <input name="name" type="input" ng-model="modal.local.name" placeholder="Enter name of activity (e.g Laborator 2)" required="required"/>
+          </li>
+          <li>
+            <label for="date">Date</label>
+            <input id="add-activity-datepicker" name="date" type="text" ng-model="modal.local.date" placeholder="Enter date of activity" required="required"/>
+          </li>
+        </ul>
+      </div>
+      <div ng-hide="modal['add-activity'].loading" class="modal-footer text-center">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal['add-activity'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-activity&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-activity'].submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>

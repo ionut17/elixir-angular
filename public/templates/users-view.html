@@ -15,11 +15,11 @@
       <div class="page-title-wrapper">
         <ul class="tabs-wrapper">
           <li ui-sref="base.users.view({detail: null})" ng-class="{active: user.detail==&quot;overview&quot;}">Overview</li>
-          <li ui-sref="base.users.view({detail: &quot;attendances&quot;})" ng-class="{active: user.detail==&quot;attendances&quot;}" ng-if="user.type==&quot;students&quot;">Attendances</li>
-          <li ui-sref="base.users.view({detail: &quot;grades&quot;})" ng-class="{active: user.detail==&quot;grades&quot;}" ng-if="user.type==&quot;students&quot;">Grades</li>
-          <li ui-sref="base.users.view({detail: &quot;files&quot;})" ng-class="{active: user.detail==&quot;files&quot;}" ng-if="user.type==&quot;students&quot;">Files</li>
-          <li ui-sref="base.users.view({detail: &quot;groups&quot;})" ng-class="{active: user.detail==&quot;groups&quot;}" ng-if="user.type==&quot;students&quot;">Groups</li>
-          <li ui-sref="base.users.view({detail: &quot;courses&quot;})" ng-class="{active: user.detail==&quot;courses&quot;}" ng-if="user.type==&quot;students&quot; || user.type==&quot;lecturers&quot;">Courses</li>
+          <li ui-sref="base.users.view({detail: &quot;attendances&quot;, page: 0})" ng-class="{active: user.detail==&quot;attendances&quot;}" ng-if="user.type==&quot;students&quot;">Attendances</li>
+          <li ui-sref="base.users.view({detail: &quot;grades&quot;, page: 0})" ng-class="{active: user.detail==&quot;grades&quot;}" ng-if="user.type==&quot;students&quot;">Grades</li>
+          <li ui-sref="base.users.view({detail: &quot;files&quot;, page: 0})" ng-class="{active: user.detail==&quot;files&quot;}" ng-if="user.type==&quot;students&quot;">Files</li>
+          <li ui-sref="base.users.view({detail: &quot;groups&quot;, page: 0})" ng-class="{active: user.detail==&quot;groups&quot;}" ng-if="user.type==&quot;students&quot;">Groups</li>
+          <li ui-sref="base.users.view({detail: &quot;courses&quot;, page: 0})" ng-class="{active: user.detail==&quot;courses&quot;}" ng-if="user.type==&quot;students&quot; || user.type==&quot;lecturers&quot;">Courses</li>
         </ul>
       </div>
     </div>
@@ -57,15 +57,11 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
+              <h4>Page</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
             </div>
-            <figure class="search-bar-wrapper">
-              <div class="search-bar">
-                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
-              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
-            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -99,15 +95,11 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
+              <h4>Page</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
             </div>
-            <figure class="search-bar-wrapper">
-              <div class="search-bar">
-                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
-              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
-            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -139,15 +131,11 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
+              <h4>Page</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
             </div>
-            <figure class="search-bar-wrapper">
-              <div class="search-bar">
-                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
-              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
-            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -183,15 +171,11 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
+              <h4>Page</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
             </div>
-            <figure class="search-bar-wrapper">
-              <div class="search-bar">
-                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
-              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
-            </figure>
           </div>
           <table class="table elixir-table">
             <thead>
@@ -219,15 +203,11 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
+              <h4>Page</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
             </div>
-            <figure class="search-bar-wrapper">
-              <div class="search-bar">
-                <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
-              </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
-            </figure>
           </div>
           <table class="table elixir-table">
             <thead>

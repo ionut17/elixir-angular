@@ -8,15 +8,17 @@ app.config(function($stateProvider) {
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.groups.list', {
         name: 'base.groups.list',
-        url: '/groups',
+        url: '/groups?page&search',
         templateUrl: 'templates/groups-list.html',
         controller: 'GroupsListController',
         data: {
           authorizedRoles: config.authorizedRoles.groups.list
         },
         resolve: {
-            resolvedData: ["Groups", "$http", "config", "$rootScope", "$q", function(Groups, $http, config, $rootScope, $q) {
-              return Groups.getAll().$promise.then(function(response){
+            resolvedData: ["Groups", "$http", "config", "$rootScope", "$q", "$stateParams", function(Groups, $http, config, $rootScope, $q, $stateParams) {
+              search = $stateParams.search ? $stateParams.search : null;
+              page = $stateParams.page ? parseInt($stateParams.page) : 0;
+              return Groups.getAll({'page':page, 'search':search}).$promise.then(function(response){
                 response.pager.pages = new Array(response.pager.totalPages);
                 return {
                   groups: response.content,
@@ -32,7 +34,7 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Groups', function($scope, $rootScope, resolvedData, $state, Groups) {
+app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Groups', '$stateParams', function($scope, $rootScope, resolvedData, $state, Groups, $stateParams) {
     //Init
     $scope.title = 'Groups';
     $scope.groups = resolvedData.groups;
@@ -40,25 +42,23 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
 
     console.log($scope.groups);
 
-    $scope.refresh = function(index){
-      if (!index){
-        index = 0;
-      }
-      Groups.getAll({'page':index}).$promise.then(function(response){
-        response.pager.pages = new Array(response.pager.totalPages);
-        //return
-        $scope.groups = response.content;
-        $scope.pager = response.pager;
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
-      });
-    }
-
-    //Get specific page
     $scope.pager.getPage = function(index){
-      $scope.refresh(index);
+      $stateParams.page = index;
+      $state.go('base.groups.list', $stateParams, {reload: true});
     };
+
+    // Search
+    $scope.search = $rootScope.search;
+    $scope.search.go = function(){
+      $stateParams.page = 0;
+      $stateParams.search = $scope.search.value;
+      $state.go('base.groups.list', $stateParams, {reload: true});
+    }
+    document.getElementById("search-bar-input").addEventListener("keydown", function (e) {
+      if (e.keyCode === 13) {
+        $rootScope.search.go();
+      }
+    });
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {

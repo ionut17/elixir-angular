@@ -2,36 +2,53 @@
 <section class="container-title">
   <!-- Header-->
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12"><span ng-if="subtitle" class="td-subtitle">{{subtitle}}</span>
       <div class="page-title-wrapper">
-        <h2>{{title}}</h2>
-        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add Activity</button>
+        <div class="page-title-item">
+          <h2>{{title}}</h2>
+        </div>
+        <button ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)" class="ebutton green-button">Add Activity</button>
+        <button ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)" class="ebutton green-button">Upload File</button>
       </div>
     </div>
   </div>
-  <div class="row container-title-nav">
+  <div ng-if="singleActivity" class="row container-title-nav">
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <ul class="tabs-wrapper">
-          <li ui-sref="base.activities.list({type: null})" ng-class="{active: activities.type==&quot;activities&quot;}">All Activities</li>
-          <li ui-sref="base.activities.list({type: &quot;attendances&quot;})" ng-class="{active: activities.type==&quot;attendances&quot;}">Attendances</li>
-          <li ui-sref="base.activities.list({type: &quot;grades&quot;})" ng-class="{active: activities.type==&quot;grades&quot;}">Grades</li>
-          <li ui-sref="base.activities.list({type: &quot;files&quot;})" ng-class="{active: activities.type==&quot;files&quot;}">Files</li>
+          <li ui-sref="base.activities.list({type: null, page: 0})" ng-class="{active: activities.type==&quot;activities&quot;}" ng-if="singleActivity">All Activities</li>
+          <li ui-sref="base.activities.list({type: &quot;attendances&quot;, page: 0})" ng-class="{active: activities.type==&quot;attendances&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">Attendances</li>
+          <li ui-sref="base.activities.list({type: &quot;grades&quot;, page: 0})" ng-class="{active: activities.type==&quot;grades&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">Grades</li>
+          <li ui-sref="base.activities.list({type: &quot;files&quot;, page: 0})" ng-class="{active: activities.type==&quot;files&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">Files</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
+<section class="container-tools">
+  <h3>Tools</h3>
+  <button ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)" class="ebutton green-button">Add Activity</button>
+  <button ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)" class="ebutton green-button">Upload File</button>
+</section>
 <section class="container-content">
   <div class="row">
+    <div class="col-lg-3 col-md-4 coverbox-wrapper vertical hide">
+      <div ui-sref="base.activities.list({type: null, course_id: course.id, page: 0})" ng-if="!singleCourse" ng-repeat="course in courses track by course.id" class="coverbox coverbox-sm">
+        <h3>{{course.title}}</h3>
+      </div>
+    </div>
     <div class="col-md-12">
       <div class="table-wrapper">
         <div class="table-title">
           <div class="pagination-wrapper">
+            <h4>Page</h4>
             <ul class="pagination">
               <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
             </ul>
           </div>
+          <select name="course" ng-model="selectedCourse" ng-options="course.id as course.title for course in courses track by course.id" ng-change="changeCourse(selectedCourse)" ng-if="!singleActivity" class="large-select">
+            <option value="">All Courses</option>
+          </select>
           <figure class="search-bar-wrapper">
             <div class="search-bar">
               <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
@@ -42,23 +59,25 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Type</th>
-              <th ng-hide="activities.singleType">Role</th>
+              <th ng-show="singleActivity &amp;&amp; activities.type=='activities'">Role</th>
+              <th ng-hide="singleCourse" class="col-sm-2">Course</th>
+              <th class="col-sm-1">Type</th>
               <th>Name</th>
-              <th>User</th>
-              <th>Course</th>
-              <th>Date</th>
+              <th ng-if="activities.type!=='files'" class="col-sm-2">Activity Date</th>
+              <th ng-if="activities.type==='files'" class="col-sm-2">Upload Date</th>
+              <th ng-show="singleActivity">Student</th>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="activity in activities track by $index" ui-sref="base.activities.view({type: activity.role+&quot;s&quot;, activity_id: activity.activity.id, user_id: activity.user.id})">
+            <tr ng-repeat="activity in activities track by $index" ng-click="goTo(activity)">
               <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
+              <td ng-show="singleActivity &amp;&amp; activities.type=='activities'"><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
+              <td ng-hide="singleCourse" class="td-blue">{{activity.activity.course.title}}</td>
               <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
-              <td ng-hide="activities.singleType"><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
               <td>{{activity.activity.name}}</td>
-              <td class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
-              <td class="td-blue">{{activity.activity.course.title}}</td>
-              <td class="td-blue">{{activity.activity.date}}</td>
+              <td ng-if="activities.type!=='files'" class="td-blue">{{activity.activity.date}}</td>
+              <th ng-if="activities.type==='files'" class="td-blue">{{activity.uploadDate}}</th>
+              <td ng-show="singleActivity" class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
             </tr>
             <tr ng-if="!activities.length" class="disable-hover">
               <td colspan="6" class="td-disabled text-center">No results have been found</td>

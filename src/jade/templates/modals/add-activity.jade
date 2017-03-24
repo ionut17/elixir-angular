@@ -1,0 +1,33 @@
+#add-activity.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		.modal-content
+			.modal-icon
+				i.material-icons library_add
+				h2 {{modal['add-activity'].title}}
+			.modal-header.hide
+				h2 Add Activity
+				button.close(type='button', data-dismiss='modal', aria-label='Close')
+				span(aria-hidden='true') ×
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['add-activity'].loading")
+					figure.preloader
+					h5 Adăugare activitate
+				ul(ng-hide="modal['add-activity'].loading")
+					li
+						label(for='course') Course
+						select#type(name='course', ng-model='modal.local.courseId', ng-options="course.id as course.title for course in modal['add-activity'].data.courses track by course.id", placeholder='Select course' required)
+							option(selected disabled value='') Select course
+					li.error(ng-if='modal.local.errors.course') {{modal.user.errors.course}}
+					li
+						label(for='type') Type
+						select#type(name='type', ng-model='modal.local.typeId', ng-options="type.id as type.name for type in modal['add-activity'].data.types track by type.id", placeholder='Select type' required)
+							option(selected disabled value='') Select type
+					li
+						label(for='name') Name
+						input(name='name' type='input' ng-model='modal.local.name' placeholder='Enter name of activity (e.g Laborator 2)' required)
+					li
+						label(for='date') Date
+						input#add-activity-datepicker(name='date' type='text' ng-model='modal.local.date' placeholder='Enter date of activity' required)
+			.modal-footer.text-center(ng-hide="modal['add-activity'].loading")
+				button.ebutton.white-button(type='button', data-dismiss='modal') {{modal['add-activity'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["add-activity"].action.submit(modal.local)') {{modal['add-activity'].submit}}

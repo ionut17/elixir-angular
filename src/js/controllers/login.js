@@ -22,12 +22,12 @@ app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthSer
             "email": $scope.form.email,
             "password": $scope.form.password
           }).then(function(response){
-            NotificationService.push({
-              title: 'Logged in',
-              content: 'You have successfully logged in your account.',
-              link: null,
-              type: NOTIFICATIONS_TYPES.success
-            });
+            // NotificationService.push({
+            //   title: 'Logged in',
+            //   content: 'You have successfully logged in your account.',
+            //   link: null,
+            //   type: NOTIFICATIONS_TYPES.success
+            // });
           }, function(response){
             $scope.form.loading = false;
             if (response == null){

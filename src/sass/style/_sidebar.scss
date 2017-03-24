@@ -127,6 +127,9 @@
 			&:hover i{
 				color: white;
 			}
+			&:visited{
+				color: white;
+			}
 		}
 
 		i{
@@ -152,6 +155,10 @@
 			opacity: 1;
 			background-color: $lightGreen;
 	    border-right: 1px solid rgba(255,255,255,0.2);
+		}
+
+		&:visited{
+			color: white;
 		}
 	}
 }

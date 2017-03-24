@@ -17,21 +17,19 @@ section.container-content
             tr
               th #
               th Type
-              th Student
               th(ng-show="table.showGrades") Grade
               th Name
               th Course
               th Date
           tbody
-            tr(ng-repeat='activity in activities track by $index', ui-sref='base.activities.view({type: activities.type, activity_id: activity.activity.id, user_id: activity.student.id})')
-              th.col-sm-1(scope='row') {{$index+1}}
+            tr(ng-repeat='activity in activities track by $index', ui-sref='base.activities.view({type: activities.type, activity_id: activity.id, user_id: activity.student.id})')
+              th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
               td
-                span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
-              td.td-bold {{activity.student.firstName + ' ' + activity.student.lastName}}
+                span.tag(ng-class='activity.tag') {{activity.type.name}}
               td(ng-show="table.showGrades")
                 span.tag.tag-auto.tag-grade {{activity.value}}
-              td {{activity.activity.name}}
-              td.td-blue {{activity.activity.course.title}
-              td.td-blue {{activity.activity.date}}
+              td {{activity.name}}
+              td.td-blue {{course.title}}
+              td.td-blue {{activity.date}}
             tr.disable-hover(ng-if='!activities.length')
               td.td-disabled.text-center(colspan='6') No results have been found

@@ -1,5 +1,7 @@
 app.constant("config", {
+    development: true,
     apiEndpoint: "http://localhost:8080/api/",
+    // apiEndpoint: "http://elixir.ionutrobert.com:8080/elixir-api/api/",
     icons: "material", //'material' or 'awesome'
 
     preloader: {
@@ -14,8 +16,12 @@ app.constant("config", {
     authorizedRoles: {
       activities: {
         list: ['*'],
-        sublist: ['ADMIN', 'LECTURER'],
-        view: ['*']
+        sublist: ['*'],
+        view: ['*'],
+        create: ['ADMIN', 'LECTURER']
+      },
+      files: {
+        create: ['STUDENT']
       },
       courses: {
         list: ['*'],

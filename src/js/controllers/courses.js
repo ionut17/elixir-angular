@@ -8,15 +8,17 @@ app.config(function($stateProvider) {
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.courses.list', {
         name: 'base.courses.list',
-        url: '/courses',
+        url: '/courses?page&search',
         templateUrl: 'templates/courses-list.html',
         controller: 'CoursesListController',
         data: {
           authorizedRoles: config.authorizedRoles.courses.list
         },
         resolve: {
-            resolvedData: ["Courses", "$http", "config", "$rootScope", "$q", function(Courses, $http, config, $rootScope, $q) {
-              return Courses.getAll().$promise.then(function(response){
+            resolvedData: ["Courses", "$http", "config", "$rootScope", "$q", "$stateParams", function(Courses, $http, config, $rootScope, $q, $stateParams) {
+              search = $stateParams.search ? $stateParams.search : null;
+              page = $stateParams.page ? parseInt($stateParams.page) : 0;
+              return Courses.getAll({'page':page, 'search':search}).$promise.then(function(response){
                 console.log(response);
                 response.pager.pages = new Array(response.pager.totalPages);
                 return {
@@ -33,31 +35,29 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', function($scope, $rootScope, resolvedData, $state, Courses) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams', function($scope, $rootScope, resolvedData, $state, Courses, $stateParams) {
     //Init
     $scope.title = 'Courses';
     $scope.courses = resolvedData.courses;
     $scope.pager = resolvedData.pager;
 
-    $scope.refresh = function(index){
-      if (!index){
-        index = 0;
-      }
-      Courses.getAll({'page':index}).$promise.then(function(response){
-        response.pager.pages = new Array(response.pager.totalPages);
-        //return
-        $scope.courses = response.content;
-        $scope.pager = response.pager;
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
-      });
-    }
-
-    //Get specific page
     $scope.pager.getPage = function(index){
-      $scope.refresh(index);
+      $stateParams.page = index;
+      $state.go('base.courses.list', $stateParams, {reload: true});
     };
+
+    // Search
+    $scope.search = $rootScope.search;
+    $scope.search.go = function(){
+      $stateParams.page = 0;
+      $stateParams.search = $scope.search.value;
+      $state.go('base.courses.list', $stateParams, {reload: true});
+    }
+    document.getElementById("search-bar-input").addEventListener("keydown", function (e) {
+      if (e.keyCode === 13) {
+        $rootScope.search.go();
+      }
+    });
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -147,6 +147,7 @@ app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData',
     };
     $scope.title = $scope.course.title;
     $scope.authUser = $rootScope.authUser.user;
+
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {

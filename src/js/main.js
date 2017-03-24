@@ -60,6 +60,28 @@ app.run(function($rootScope, $timeout, $state, $cookies, config) {
     }
   };
 
+  if (!config.development){
+    $rootScope.$on('$stateChangeSuccess', function(event, toState){
+      var stateName = $state.current.name;
+      if (stateName.substring(0,5) === 'base.'){
+        stateName = stateName.substring(5);
+      }
+      // console.log(stateName);
+      if ($rootScope.authUser.user){
+        mixpanel.identify($rootScope.authUser.user.type+$rootScope.authUser.user.id);
+        mixpanel.people.set({
+            "$first_name": $rootScope.authUser.user.firstName,
+            "$last_name": $rootScope.authUser.user.lastName,
+            "$created": new Date().getDate(),
+            "$email": $rootScope.authUser.user.email
+        });
+      }
+      mixpanel.track("Page Visit", {
+        "Page": stateName
+      });
+    });
+  }
+
   //Notifications wrapper
   $rootScope.notifications = {
     active: [],
@@ -94,7 +116,8 @@ app.config(function($stateProvider) {
   });
 });
 
-app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', function($scope, $rootScope, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService) {
+app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', 'Courses', 'Activities', 'Files',
+      function($scope, $rootScope, $q, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService, Courses, Activities, Files) {
   $scope.logout = function(){
     AuthService.logout();
     NotificationService.push({
@@ -126,25 +149,6 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
     }
   }
 
-  $scope.modal = {
-    confirm: {
-      action: {
-        value: null,
-        submit: function(){
-          angular.element('#confirm-modal').modal('hide');
-          angular.element('.modal-backdrop').remove();
-          $scope.modal.confirm.action.value();
-        }
-      },
-      title: 'Logout confirmation?',
-      cancel: 'Cancel',
-      submit: 'Logout',
-      this: function(callback){
-        angular.element('#confirm-modal').modal('show');
-        $scope.modal.confirm.action.value = callback;
-      }
-    }
-  };
 
   //Notifications wrapper
   $scope.notifications = $rootScope.notifications;
@@ -193,13 +197,16 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
           $rootScope.$broadcast("not-authenticated");
         }
       } else{
-        // $rootScope.$broadcast("start-loading");
+        $rootScope.$broadcast("start-loading");
       }
     }
   });
   $rootScope.$on('$stateChangeSuccess', function(event, toState){
     // $timeout(function(){
-    //   $rootScope.$broadcast("stop-loading");
+      $rootScope.$broadcast("stop-loading");
+      // mixpanel.track("Video play", {
+      //   "Page":
+      // });
     // }, 500);
   });
 
@@ -214,6 +221,182 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
     $state.go('login');
   };
 
+  $rootScope.modal = {
+    'local': {},
+    'confirm': {
+      action: {
+        value: null,
+        submit: function(){
+          angular.element('#confirm-modal').modal('hide');
+          angular.element('.modal-backdrop').remove();
+          $scope.modal.confirm.action.value();
+        }
+      },
+      title: 'Logout confirmation?',
+      cancel: 'Cancel',
+      submit: 'Logout',
+      data: {},
+      loading: false,
+      this: function(callback){
+        angular.element('#confirm-modal').modal('show');
+        $scope.modal.confirm.action.value = callback;
+      }
+    },
+    'add-activity': {
+      action: {
+        value: function(){},
+        submit: function(data){
+          $scope.modal["add-activity"].loading = true;
+          //Parse submit action here
+          data.date = $('#add-activity-datepicker').datepicker().data('datepicker').currentDate.getTime();
+          //Data
+          Activities.addActivity(data).$promise.then(function(response){
+            angular.element('#add-activity').modal('hide');
+            angular.element('.modal-backdrop').remove();
+            $scope.modal["add-activity"].loading = false;
+            $state.reload();
+            //Send success notification
+            console.log('activity response',response);
+            NotificationService.push({
+              title: 'Activity Created',
+              content: ['You have successfully created the activity ',data.name,'.'].join(''),
+              link: null,
+              type: NOTIFICATIONS_TYPES.success
+            });
+          }, function(response){
+            console.log(response);
+            $scope.modal["add-activity"].loading = false;
+          });
+        }
+      },
+      title: 'Add Activity',
+      cancel: 'Cancel',
+      submit: 'Add Activity',
+      data: {},
+      loading: false,
+      this: function(targetCourse){
+          $scope.modal["add-activity"].loading = true;
+          //Getting dependencies
+          $q.all([
+            Courses.getAllUnpaged().$promise,
+            Activities.getTypes().$promise
+          ]).then(function(response){
+            //Modify course titles
+            angular.forEach(response[0], function(value, key) {
+               value.title = [Array(value.year+1).join('I'),value.semester,' - ',value.title].join('');
+            });
+            response[0].sort( function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);} );
+            //Append data
+            $scope.modal["add-activity"].data.courses = response[0];
+            $scope.modal["add-activity"].data.types = response[1];
+            //Set start date
+            var currentDate = new Date();
+            currentDate.setMinutes(0);
+            currentDate.setSeconds(0);
+            currentDate.setMilliseconds(0);
+            $('#add-activity-datepicker').datepicker({
+              language: 'ro',
+              position: 'bottom left',
+              minDate: currentDate,
+              startDate: currentDate,
+              timepicker: 'true',
+              minutesStep: 10
+            });
+            //Set default selected course if applicable
+            $scope.modal.local.courseId = targetCourse !== undefined ? targetCourse.id : undefined;
+            $scope.modal["add-activity"].loading = false;
+          });
+          //Got dependencies
+          angular.element('#add-activity').modal('show');
+      }
+    },
+    'add-file': {
+      action: {
+        value: function(){},
+        submit: function(data){
+          $scope.modal["add-file"].loading = true;
+          //Parsing data
+          data.file = document.getElementById('upload-file').files[0];
+          console.log(data);
+          var formData = new FormData();
+          formData.append('file', data.file);
+          formData.append('activityId', data.activityId.id);
+          formData.append('fileName', data.fileName);
+          //Sending data
+          Files.addFile(formData).$promise.then(function(response){
+            console.log(response);
+            angular.element('#add-file').modal('hide');
+            angular.element('.modal-backdrop').remove();
+            $scope.modal["add-file"].loading = true;
+            $state.reload();
+            //Send success notification
+            NotificationService.push({
+              title: 'File uploaded',
+              content: ['You have successfully uploaded the file ',data.fileName,'.'].join(''),
+              link: null,
+              type: NOTIFICATIONS_TYPES.success
+            });
+          }, function(error){
+            console.log(error);
+            $scope.modal["add-file"].loading = false;
+          });
+        }
+      },
+      title: 'Upload File',
+      cancel: 'Cancel',
+      submit: 'Upload',
+      data: {},
+      loading: false,
+      refreshActivities: function(){
+        if ($scope.modal.local.courseId){
+          angular.forEach($scope.modal['add-file'].data.courses, function(course, key){
+            // console.log($scope.modal.local.courseId);
+            if (course.id === $scope.modal.local.courseId.id){
+              $scope.modal['add-file'].data.activities = course.activities;
+            }
+          });
+        }
+      },
+      this: function(target){
+          $scope.modal["add-file"].loading = true;
+          //Get dependencies
+          $q.all([
+            Courses.getAllUnpaged().$promise
+          ]).then(function(response){
+            //Modify course titles
+            angular.forEach(response[0], function(value, key) {
+               value.title = [Array(value.year+1).join('I'),value.semester,' - ',value.title].join('');
+            });
+            response[0].sort( function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);} );
+            //Append data
+            $scope.modal["add-file"].data.courses = response[0];
+            //Set default selected course if applicable
+            $scope.modal.local.courseId = undefined;
+            $scope.modal.local.activityId = undefined;
+            if (target !== undefined && 'course' in target){
+              $scope.modal.local.courseId = target.course;
+              $scope.modal.local.activityId = target;
+              $scope.modal.local.courseDisabled = true;
+              $scope.modal.local.activityDisabled = true;
+              $scope.modal["add-file"].refreshActivities();
+            } else if (target !== undefined){
+              $scope.modal.local.courseId = target;
+              $scope.modal.local.courseDisabled = true;
+              $scope.modal.local.activityDisabled = false;
+              $scope.modal["add-file"].refreshActivities();
+            } else{
+              $scope.modal.local.courseDisabled = false;
+              $scope.modal.local.activityDisabled = false;
+            }
+            $scope.modal["add-file"].loading = false;
+          });
+          //Got dependencies
+          angular.element('#add-file').modal('show');
+      }
+    }
+  };
+  $scope.modal = $rootScope.modal;
+
 }]);
 
 app.constant('NOTIFICATIONS_TYPES', {
@@ -221,16 +404,3 @@ app.constant('NOTIFICATIONS_TYPES', {
   error: 'error-notification',
   success: 'success-notification'
 });
-
-//Sample notification
-/*
-{
-  title: 'Notification 1',
-  type: 'default-notification',
-  content: 'Where the f**k is all this text coming from? Someone damaged the content pipe or smth? Stop it now pls.',
-  link: {
-    text: 'Read more',
-    href: '#'
-  }
-}
-*/

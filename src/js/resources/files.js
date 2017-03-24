@@ -11,7 +11,7 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
             }
         },
         getById: {
-            url: config.apiEndpoint + "files/:activity_id/:student_id",
+            url: config.apiEndpoint + "files/file/:file_id",
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -30,6 +30,26 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
                     return "Bearer "+AuthService.getToken();
                 }
             }
-        }
+        },
+        getByActivityIdStudentId: {
+            url: config.apiEndpoint + "files/:activity_id/:student_id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        addFile: {
+            url: config.apiEndpoint + "storage/upload",
+            method: "POST",
+            headers: {
+                "Content-Type": undefined,
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
     });
 }]);

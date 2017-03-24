@@ -60,6 +60,28 @@ app.run(function($rootScope, $timeout, $state, $cookies, config) {
     }
   };
 
+  if (!config.development){
+    $rootScope.$on('$stateChangeSuccess', function(event, toState){
+      var stateName = $state.current.name;
+      if (stateName.substring(0,5) === 'base.'){
+        stateName = stateName.substring(5);
+      }
+      // console.log(stateName);
+      if ($rootScope.authUser.user){
+        mixpanel.identify($rootScope.authUser.user.type+$rootScope.authUser.user.id);
+        mixpanel.people.set({
+            "$first_name": $rootScope.authUser.user.firstName,
+            "$last_name": $rootScope.authUser.user.lastName,
+            "$created": new Date().getDate(),
+            "$email": $rootScope.authUser.user.email
+        });
+      }
+      mixpanel.track("Page Visit", {
+        "Page": stateName
+      });
+    });
+  }
+
   //Notifications wrapper
   $rootScope.notifications = {
     active: [],
@@ -94,7 +116,8 @@ app.config(function($stateProvider) {
   });
 });
 
-app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', function($scope, $rootScope, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService) {
+app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', 'Courses', 'Activities', 'Files',
+      function($scope, $rootScope, $q, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService, Courses, Activities, Files) {
   $scope.logout = function(){
     AuthService.logout();
     NotificationService.push({
@@ -126,25 +149,6 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
     }
   }
 
-  $scope.modal = {
-    confirm: {
-      action: {
-        value: null,
-        submit: function(){
-          angular.element('#confirm-modal').modal('hide');
-          angular.element('.modal-backdrop').remove();
-          $scope.modal.confirm.action.value();
-        }
-      },
-      title: 'Logout confirmation?',
-      cancel: 'Cancel',
-      submit: 'Logout',
-      this: function(callback){
-        angular.element('#confirm-modal').modal('show');
-        $scope.modal.confirm.action.value = callback;
-      }
-    }
-  };
 
   //Notifications wrapper
   $scope.notifications = $rootScope.notifications;
@@ -193,13 +197,16 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
           $rootScope.$broadcast("not-authenticated");
         }
       } else{
-        // $rootScope.$broadcast("start-loading");
+        $rootScope.$broadcast("start-loading");
       }
     }
   });
   $rootScope.$on('$stateChangeSuccess', function(event, toState){
     // $timeout(function(){
-    //   $rootScope.$broadcast("stop-loading");
+      $rootScope.$broadcast("stop-loading");
+      // mixpanel.track("Video play", {
+      //   "Page":
+      // });
     // }, 500);
   });
 
@@ -214,6 +221,182 @@ app.controller('BaseController', ['$scope', '$rootScope', 'AuthService', '$state
     $state.go('login');
   };
 
+  $rootScope.modal = {
+    'local': {},
+    'confirm': {
+      action: {
+        value: null,
+        submit: function(){
+          angular.element('#confirm-modal').modal('hide');
+          angular.element('.modal-backdrop').remove();
+          $scope.modal.confirm.action.value();
+        }
+      },
+      title: 'Logout confirmation?',
+      cancel: 'Cancel',
+      submit: 'Logout',
+      data: {},
+      loading: false,
+      this: function(callback){
+        angular.element('#confirm-modal').modal('show');
+        $scope.modal.confirm.action.value = callback;
+      }
+    },
+    'add-activity': {
+      action: {
+        value: function(){},
+        submit: function(data){
+          $scope.modal["add-activity"].loading = true;
+          //Parse submit action here
+          data.date = $('#add-activity-datepicker').datepicker().data('datepicker').currentDate.getTime();
+          //Data
+          Activities.addActivity(data).$promise.then(function(response){
+            angular.element('#add-activity').modal('hide');
+            angular.element('.modal-backdrop').remove();
+            $scope.modal["add-activity"].loading = false;
+            $state.reload();
+            //Send success notification
+            console.log('activity response',response);
+            NotificationService.push({
+              title: 'Activity Created',
+              content: ['You have successfully created the activity ',data.name,'.'].join(''),
+              link: null,
+              type: NOTIFICATIONS_TYPES.success
+            });
+          }, function(response){
+            console.log(response);
+            $scope.modal["add-activity"].loading = false;
+          });
+        }
+      },
+      title: 'Add Activity',
+      cancel: 'Cancel',
+      submit: 'Add Activity',
+      data: {},
+      loading: false,
+      this: function(targetCourse){
+          $scope.modal["add-activity"].loading = true;
+          //Getting dependencies
+          $q.all([
+            Courses.getAllUnpaged().$promise,
+            Activities.getTypes().$promise
+          ]).then(function(response){
+            //Modify course titles
+            angular.forEach(response[0], function(value, key) {
+               value.title = [Array(value.year+1).join('I'),value.semester,' - ',value.title].join('');
+            });
+            response[0].sort( function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);} );
+            //Append data
+            $scope.modal["add-activity"].data.courses = response[0];
+            $scope.modal["add-activity"].data.types = response[1];
+            //Set start date
+            var currentDate = new Date();
+            currentDate.setMinutes(0);
+            currentDate.setSeconds(0);
+            currentDate.setMilliseconds(0);
+            $('#add-activity-datepicker').datepicker({
+              language: 'ro',
+              position: 'bottom left',
+              minDate: currentDate,
+              startDate: currentDate,
+              timepicker: 'true',
+              minutesStep: 10
+            });
+            //Set default selected course if applicable
+            $scope.modal.local.courseId = targetCourse !== undefined ? targetCourse.id : undefined;
+            $scope.modal["add-activity"].loading = false;
+          });
+          //Got dependencies
+          angular.element('#add-activity').modal('show');
+      }
+    },
+    'add-file': {
+      action: {
+        value: function(){},
+        submit: function(data){
+          $scope.modal["add-file"].loading = true;
+          //Parsing data
+          data.file = document.getElementById('upload-file').files[0];
+          console.log(data);
+          var formData = new FormData();
+          formData.append('file', data.file);
+          formData.append('activityId', data.activityId.id);
+          formData.append('fileName', data.fileName);
+          //Sending data
+          Files.addFile(formData).$promise.then(function(response){
+            console.log(response);
+            angular.element('#add-file').modal('hide');
+            angular.element('.modal-backdrop').remove();
+            $scope.modal["add-file"].loading = true;
+            $state.reload();
+            //Send success notification
+            NotificationService.push({
+              title: 'File uploaded',
+              content: ['You have successfully uploaded the file ',data.fileName,'.'].join(''),
+              link: null,
+              type: NOTIFICATIONS_TYPES.success
+            });
+          }, function(error){
+            console.log(error);
+            $scope.modal["add-file"].loading = false;
+          });
+        }
+      },
+      title: 'Upload File',
+      cancel: 'Cancel',
+      submit: 'Upload',
+      data: {},
+      loading: false,
+      refreshActivities: function(){
+        if ($scope.modal.local.courseId){
+          angular.forEach($scope.modal['add-file'].data.courses, function(course, key){
+            // console.log($scope.modal.local.courseId);
+            if (course.id === $scope.modal.local.courseId.id){
+              $scope.modal['add-file'].data.activities = course.activities;
+            }
+          });
+        }
+      },
+      this: function(target){
+          $scope.modal["add-file"].loading = true;
+          //Get dependencies
+          $q.all([
+            Courses.getAllUnpaged().$promise
+          ]).then(function(response){
+            //Modify course titles
+            angular.forEach(response[0], function(value, key) {
+               value.title = [Array(value.year+1).join('I'),value.semester,' - ',value.title].join('');
+            });
+            response[0].sort( function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);} );
+            //Append data
+            $scope.modal["add-file"].data.courses = response[0];
+            //Set default selected course if applicable
+            $scope.modal.local.courseId = undefined;
+            $scope.modal.local.activityId = undefined;
+            if (target !== undefined && 'course' in target){
+              $scope.modal.local.courseId = target.course;
+              $scope.modal.local.activityId = target;
+              $scope.modal.local.courseDisabled = true;
+              $scope.modal.local.activityDisabled = true;
+              $scope.modal["add-file"].refreshActivities();
+            } else if (target !== undefined){
+              $scope.modal.local.courseId = target;
+              $scope.modal.local.courseDisabled = true;
+              $scope.modal.local.activityDisabled = false;
+              $scope.modal["add-file"].refreshActivities();
+            } else{
+              $scope.modal.local.courseDisabled = false;
+              $scope.modal.local.activityDisabled = false;
+            }
+            $scope.modal["add-file"].loading = false;
+          });
+          //Got dependencies
+          angular.element('#add-file').modal('show');
+      }
+    }
+  };
+  $scope.modal = $rootScope.modal;
+
 }]);
 
 app.constant('NOTIFICATIONS_TYPES', {
@@ -222,24 +405,10 @@ app.constant('NOTIFICATIONS_TYPES', {
   success: 'success-notification'
 });
 
-//Sample notification
-/*
-{
-  title: 'Notification 1',
-  type: 'default-notification',
-  content: 'Where the f**k is all this text coming from? Someone damaged the content pipe or smth? Stop it now pls.',
-  link: {
-    text: 'Read more',
-    href: '#'
-  }
-}
-*/
-
 app.factory("Activities", ["config", "$resource", "AuthService", function(config, $resource, AuthService) {
     return $resource(config.apiEndpoint + "activities", {}, {
         getBasic: {
             method: "GET",
-            isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -257,7 +426,49 @@ app.factory("Activities", ["config", "$resource", "AuthService", function(config
                     return "Bearer "+AuthService.getToken();
                 }
             }
-        }
+        },
+        getTypes: {
+            url: config.apiEndpoint + "activities/types",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getDetails: {
+            url: config.apiEndpoint + "activities/details/:id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getByActivityId: {
+            url: config.apiEndpoint + "activities/join/:activity_id",
+            method: "GET",
+            // isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        addActivity: {
+            url: config.apiEndpoint + "activities",
+            method: "POST",
+            headers: {
+                'Content': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
     });
 }]);
 
@@ -344,6 +555,17 @@ app.factory("Courses", ["config", "$resource", "AuthService", function(config, $
                 }
             }
         },
+        getAllUnpaged: {
+            url: config.apiEndpoint + "courses/all",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         getById: {
             url: config.apiEndpoint + "courses/:id",
             method: "GET",
@@ -400,7 +622,7 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
             }
         },
         getById: {
-            url: config.apiEndpoint + "files/:activity_id/:student_id",
+            url: config.apiEndpoint + "files/file/:file_id",
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -419,7 +641,27 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
                     return "Bearer "+AuthService.getToken();
                 }
             }
-        }
+        },
+        getByActivityIdStudentId: {
+            url: config.apiEndpoint + "files/:activity_id/:student_id",
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        addFile: {
+            url: config.apiEndpoint + "storage/upload",
+            method: "POST",
+            headers: {
+                "Content-Type": undefined,
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
     });
 }]);
 
@@ -656,7 +898,9 @@ app.factory("Users", ["config", "$resource", "AuthService", function(config, $re
 }]);
 
 app.constant("config", {
+    development: true,
     apiEndpoint: "http://localhost:8080/api/",
+    // apiEndpoint: "http://elixir.ionutrobert.com:8080/elixir-api/api/",
     icons: "material", //'material' or 'awesome'
 
     preloader: {
@@ -671,8 +915,12 @@ app.constant("config", {
     authorizedRoles: {
       activities: {
         list: ['*'],
-        sublist: ['ADMIN', 'LECTURER'],
-        view: ['*']
+        sublist: ['*'],
+        view: ['*'],
+        create: ['ADMIN', 'LECTURER']
+      },
+      files: {
+        create: ['STUDENT']
       },
       courses: {
         list: ['*'],
@@ -703,63 +951,130 @@ app.config(function($stateProvider) {
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.activities.list', {
         name: 'activities.list',
-        url: '/activities/:type',
+        url: '/activities/:course_id/:activity_id/:type?page&search',
         templateUrl: 'templates/activities-list.html',
         controller: 'ActivitiesListController',
         data: {
           authorizedRoles: config.authorizedRoles.activities.list
         },
-        // params:  {
-        //   type: {
-        //     value: null,
-        //     squash: true
-        //   }
-        // },
+        params:  {
+          type: {
+            value: null,
+            squash: true
+          },
+          activity_id: {
+            value: null,
+            squash: true
+          },
+          course_id: {
+            value: null,
+            squash: true,
+          }
+        },
         resolve: {
-            resolvedData: ["Activities", "Attendances", "Grades", "Files", "$http", "config", "$stateParams", "$rootScope", "$q", function(Activities, Attendances, Grades, Files, $http, config, $stateParams, $rootScope, $q) {
+            resolvedData: ["Activities", "Attendances", "Grades", "Files", "$http", "config", "$stateParams", "$rootScope", "$q", 'Courses', function(Activities, Attendances, Grades, Files, $http, config, $stateParams, $rootScope, $q, Courses) {
               var resource = null, role = null;
+              var course_id = $stateParams.course_id !== null && $stateParams.course_id == parseInt($stateParams.course_id) ? parseInt($stateParams.course_id) : undefined;
+              $stateParams.activity_id = course_id!==undefined ? $stateParams.activity_id : undefined;
+
+              var id = $stateParams.activity_id !== null && $stateParams.activity_id == parseInt($stateParams.activity_id) ? parseInt($stateParams.activity_id) : undefined;
+              // $stateParams.id = id;
+              $stateParams.type = id!==undefined ? $stateParams.type : '';
+              params = {
+                'activity_id': id
+              };
               switch($stateParams.type){
                 case 'attendances':
-                  resource = Attendances;
+                  resource = id === undefined ? Attendances.getAll : Attendances.getByActivityId;
                   role = 'attendances';
                   break;
                 case 'grades':
-                  resource = Grades;
+                  resource = id === undefined ? Grades.getAll : Grades.getByActivityId;
                   role = 'grades';
                   break;
                 case 'files':
-                  resource = Files;
+                  resource = id === undefined ? Files.getAll : Files.getByActivityId;
                   role = 'files';
                   break;
                 default:
-                  resource = Activities;
+                  resource = course_id === undefined ? Activities.getBasic : id === undefined ? Courses.getActivities : Activities.getByActivityId;
+                  if (course_id !== undefined && id === undefined){
+                    params.id = course_id;
+                    delete params.activity_id;
+                  }
                   role = 'activities';
                   break;
               }
+              page = $stateParams.page ? parseInt($stateParams.page) : 0;
+              search = $stateParams.search ? $stateParams.search : null;
+              params.page = page;
+              params.search = search;
               //In case of no parameters, return default view
-              return resource.getAll().$promise.then(function(response){
-                //Insert appropiate tag
+              return resource(params).$promise.then(function(response){
+                // Insert appropiate tag
                 angular.forEach(response.content, function(value, key) {
-                  value.tag = "tag-"+value.activity.type.name;
-                  value.roleTag = "tag-"+value.role;
-                  if (!value.role){
-                    value.role = role.slice(0,-1);
-                  }
-                  if (value.student){
-                    value.user = value.student;
-                    delete value.student;
+                  if (!id){
+                    value.activity = value;
+                  } else{
+                    value.tag = value.activity ? "tag-"+value.activity.type.name : '';
+                    value.roleTag = "tag-"+value.role;
+                    if (!value.role){
+                      value.role = role.slice(0,-1);
+                    }
+                    if (value.student){
+                      value.user = value.student;
+                      delete value.student;
+                    }
                   }
                 });
                 response.content.type = role;
                 response.content.singleType = role == 'activities' ? false : true;
                 response.pager.pages = new Array(response.pager.totalPages);
                 //Return response
-                return {
-                  activities: response.content,
-                  pager: response.pager,
-                  resource : resource,
-                  role: role
-                };
+                if (course_id){
+                  return Courses.getById({'id':course_id}).$promise.then(function(innerResponse){
+                    if (id){
+                      return Activities.getDetails({'id':id}).$promise.then(function(innerResponse2){
+                        return {
+                          activity: innerResponse2,
+                          course: innerResponse,
+                          activities: response.content,
+                          pager: response.pager,
+                          resource : resource,
+                          role: role
+                        };
+                      }, function(innerResponse2){
+                        // console.log(innerResponse2);
+                        console.log(innerResponse2);
+                        $rootScope.$broadcast("not-authorized");
+                        return $q.reject("Rejection message!");
+                      });
+                    } else{
+                      return {
+                        activity: undefined,
+                        course: innerResponse,
+                        activities: response.content,
+                        pager: response.pager,
+                        resource : resource,
+                        role: role
+                      };
+                    }
+                  }, function(innerResponse){
+                    // console.log(innerResponse);
+                    console.log(innerResponse);
+                    $rootScope.$broadcast("not-authorized");
+                    return $q.reject("Rejection message!");
+                  });
+                } else{
+                  return {
+                    activity: undefined,
+                    course: undefined,
+                    activities: response.content,
+                    pager: response.pager,
+                    resource : resource,
+                    role: role
+                  };
+                }
               }, function(response){
                 // console.log(response);
                 console.log(response);
@@ -771,48 +1086,78 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", "Activities", "Attendances", "Grades", "Files", function($scope, $rootScope, resolvedData, $state, $stateParams, Activities, Attendances, Grades, Files) {
+app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", "Activities", "Attendances", "Grades", "Files", "AuthService", "Courses",
+        function($scope, $rootScope, resolvedData, $state, $stateParams, Activities, Attendances, Grades, Files, AuthService, Courses) {
     //Init
+    $scope.singleActivity = resolvedData.activity;
+    $scope.singleCourse = resolvedData.course;
     $scope.activities = resolvedData.activities;
     $scope.pager = resolvedData.pager;
     $scope.title = $scope.activities.type;
+    $scope.subtitle = $scope.singleActivity ? [$scope.singleActivity.name, $scope.singleActivity.course.title].join(' / ') : $scope.singleCourse ? $scope.singleCourse.title : 'All Courses';
+    $scope.isAuthorized = AuthService.isAuthorized;
 
-    $scope.refresh = function(index){
-      if (!index){
-        index = 0;
-      }
-      resolvedData.resource.getAll({'page':index}).$promise.then(function(response){
-        //Insert appropiate tag
-        angular.forEach(response.content, function(value, key) {
-          value.tag = "tag-"+value.activity.type.name;
-          value.roleTag = "tag-"+value.role;
-          if (!value.role){
-            value.role = role.slice(0,-1);
-          }
-          if (value.student){
-            value.user = value.student;
-            delete value.student;
-          }
-        });
-        response.content.type = resolvedData.role;
-        response.content.singleType = role == 'activities' ? false : true;
-        response.pager.pages = new Array(response.pager.totalPages);
-        //Return response
-        $scope.activities = response.content;
-        $scope.pager = response.pager;
-        //Get specific page
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
-      }, function(response){
-        console.log(response);
-        return [];
-      });
-    };
     //Get specific page
+    var previousType = null;
     $scope.pager.getPage = function(index){
-      $scope.refresh(index);
+      $stateParams.page = index;
+      $state.go('base.activities.list', $stateParams, {reload: true});
     };
+    $scope.goTo = function(activity){
+      var params = {
+        type: activity.role !== undefined ? activity.role+'s' : undefined,
+        course_id: activity.activity.course.id,
+        activity_id: activity.activity.id
+      };
+      if ($scope.singleActivity){
+        params.user_id = activity.user.id;
+        params.file_id = activity.extraId >= 0 ? activity.extraId : undefined;
+        params.file_id = activity.id !== undefined ? activity.id : params.file_id;
+        $state.go('base.activities.view', params, {reload: true});
+      } else{
+        params.page = 0;
+        $state.go('base.activities.list', params, {reload: true});
+      }
+    };
+
+    // Search
+    $scope.search = $rootScope.search;
+    $scope.search.go = function(){
+      $stateParams.page = 0;
+      $stateParams.search = $scope.search.value;
+      $state.go('base.activities.list', $stateParams, {reload: true});
+    }
+    document.getElementById("search-bar-input").addEventListener("keydown", function (e) {
+      if (e.keyCode === 13) {
+        $rootScope.search.go();
+      }
+    });
+
+    //Courses
+    $scope.selectedCourse = $scope.singleCourse;
+    $scope.courses = undefined;
+    if ($scope.singleActivity === undefined){
+      Courses.getAllUnpaged().$promise.then(function(response){
+        $scope.courses = response;
+      }, function(response){});
+    };
+    $scope.changeCourse = function(course){
+      var params = {
+        type: undefined,
+        course_id: course,
+        activity_id: undefined,
+        page: 0
+      };
+      $state.go('base.activities.list', params, {reload: true});
+    };
+
+    //Buttons
+    $scope.titleButton = {
+      text: 'Add Activity'
+    }
+
+    //Modals
+    $scope.modal = $rootScope.modal;
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -820,72 +1165,85 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       'icon': null,
       'state': 'base.activities.list',
       'params': {
-        'type': null
+        'type': null,
+        'course_id': null,
+        'activity_id': null
       }
     };
     $rootScope.paths.length = 2;
-    if($stateParams.type){
+    if ($scope.singleCourse){
       $rootScope.paths[2] = {
-        'title': $stateParams.type,
+        'title': $scope.singleCourse.title,
         'icon': null,
         'state': 'base.activities.list',
         'params': {
-          'type': $stateParams.type
+          'type': null,
+          'course_id': $scope.singleCourse.id,
+          'activity_id': null,
         }
       };
       $rootScope.paths.length = 3;
+      if ($scope.singleActivity){
+        $rootScope.paths[3] = {
+          'title': $scope.singleActivity.name,
+          'icon': null,
+          'state': 'base.activities.list',
+          'params': {
+            'type': null,
+            'course_id': $scope.singleCourse.id,
+            'activity_id': $scope.singleActivity.id
+          }
+        };
+        $rootScope.paths.length = 4;
+      }
+      if($stateParams.type){
+        $rootScope.paths[4] = {
+          'title': $stateParams.type,
+          'icon': null,
+          'state': 'base.activities.list',
+          'params': {
+            'type': $stateParams.type,
+            'course_id': $scope.singleCourse.id,
+            'activity_id': $scope.singleActivity.id
+          }
+        };
+        $rootScope.paths.length = 5;
+      }
     }
 
     //Logic
-    console.log(resolvedData);
+    // console.log(resolvedData);
 }]);
 
 //Sub-Activities List
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.activities.sublist', {
         name: 'base.activities.sublist',
-        url: '/activities/:type/:activity_id',
+        url: '/activities/course/:course_id/:activity_id/:type?page',
         templateUrl: 'templates/activities-sublist.html',
         controller: 'ActivitiesSubListController',
         data: {
           authorizedRoles: config.authorizedRoles.activities.sublist
         },
         resolve: {
-            resolvedData: ["Attendances", "Grades", "Files", "$http", "config", "$stateParams", "$rootScope", "$q", function(Attendances, Grades, Files, $http, config, $stateParams, $rootScope, $q) {
+            resolvedData: ["Attendances", "Grades", "Files", "$http", "config", "$stateParams", "$rootScope", "$q", "Courses", function(Attendances, Grades, Files, $http, config, $stateParams, $rootScope, $q, Courses) {
               console.log($stateParams);
-              var resource = null, role = null;
-              switch($stateParams.type){
-                case 'attendances':
-                  resource = Attendances;
-                  role = 'attendance';
-                  break;
-                case 'grades':
-                  resource = Grades;
-                  role = 'grade';
-                  break;
-                case 'files':
-                  resource = Files;
-                  role = 'file';
-                  break;
-              }
-              return resource.getByActivityId({
-                activity_id: $stateParams.activity_id,
+              return Courses.getById({
+                id: $stateParams.course_id
               }).$promise.then(function(response){
-                response.content.type = $stateParams.type;
-                response.content.activityId = $stateParams.activity_id;
-                response.content.typeAll = false;
-                response.pager.pages = new Array(response.pager.totalPages);
-                return {
-                  activities: response.content,
-                  pager: response.pager,
-                  resource: resource,
-                  role: role
-                };
-              }, function(response){
-                console.log(response);
-                $rootScope.$broadcast("not-authorized");
-                return $q.reject("Rejection message!");
-              });
+                page = $stateParams.page ? parseInt($stateParams.page) : 0;
+                return Courses.getActivities({'id':$stateParams.course_id, 'page':page}).$promise.then(function(innerResponse){
+                  innerResponse.pager.pages = new Array(innerResponse.pager.totalPages > 0 ? innerResponse.pager.totalPages : 1);
+                  return {
+                    course: response,
+                    activities: innerResponse.content,
+                    pager: innerResponse.pager
+                  };
+                }, function(innerResponse){
+                  $rootScope.$broadcast("not-authorized");
+                  return $q.reject("Rejection message!");
+                });
+              }, function(response){});
             }]
         }
     });
@@ -893,9 +1251,10 @@ app.config(function($stateProvider, config) {
 
 app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", function($scope, $rootScope, resolvedData, $state, $stateParams) {
     //Init
+    $scope.course = resolvedData.course;
     $scope.activities = resolvedData.activities;
     $scope.pager = resolvedData.pager;
-    $scope.title = [$scope.activities.typeAll ? $scope.activities.type : $scope.activities[0].activity.name,"(",$scope.activities[0].activity.course.title,")"].join(" ");
+    $scope.title = $scope.course.title + ' - Activities';
     $scope.table = {
       showGrades : $scope.activities.type === 'grades'
     }
@@ -924,7 +1283,8 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
     }
     //Get specific page
     $scope.pager.getPage = function(index){
-      $scope.refresh(index);
+      $stateParams.page = index;
+      $state.go('base.activities.sublist', $stateParams, {reload: true});
     };
 
     //Add path to breadcrums list
@@ -935,26 +1295,14 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
       'params': null
     };
     $rootScope.paths[2] = {
-      'title': $scope.activities.type,
+      'title': $scope.course.title,
       'icon': null,
-      'state': 'base.activities.list',
+      'state': 'base.activities.sublist',
       'params': {
-        type: $scope.activities.type
+        course_id: $scope.course.id
       }
     };
     $rootScope.paths.length = 3;
-    if (!$scope.activities.typeAll){
-      $rootScope.paths[3] = {
-        'title': $scope.activities[0].activity.name + " ("+$scope.activities[0].activity.course.title+")",
-        'icon': null,
-        'state': 'base.activities.sublist',
-        'params': {
-          type: $scope.activities.type,
-          activity_id: $scope.activities.activityId
-        }
-      };
-      $rootScope.paths.length = 4;
-    }
 
     //Logic
     console.log(resolvedData);
@@ -964,30 +1312,61 @@ app.controller('ActivitiesSubListController', ['$scope', '$rootScope', 'resolved
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.activities.view', {
         name: 'base.activities.view',
-        url: '/activities/:type/:activity_id/:user_id',
+        url: '/activities/:course_id/:activity_id/:type/:user_id/:file_id',
         templateUrl: 'templates/activities-view.html',
         controller: 'ActivitiesViewController',
         data: {
           authorizedRoles: config.authorizedRoles.activities.list
         },
+        params:  {
+          course_id: {
+            value: null,
+            squash: true
+          },
+          activity_id: {
+            value: null,
+            squash: true
+          },
+          type: {
+            value: null,
+            squash: true,
+          },
+          user_id: {
+            value: null,
+            squash: true,
+          },
+          file_id: {
+            value: null,
+            squash: true,
+          }
+        },
         resolve: {
             resolvedData: ["Attendances", "Grades", "Files", "$stateParams", "$rootScope", "$q", function(Attendances, Grades, Files, $stateParams, $rootScope, $q) {
               var resource;
+              var params;
               switch($stateParams.type){
                 case 'attendances':
                   resource = Attendances;
+                  params = {
+                    student_id: $stateParams.user_id,
+                    activity_id: $stateParams.activity_id,
+                  };
                   break;
                 case 'grades':
                   resource = Grades;
+                  params = {
+                    student_id: $stateParams.user_id,
+                    activity_id: $stateParams.activity_id,
+                  };
                   break;
                 case 'files':
                   resource = Files;
+                  params = {
+                    file_id: $stateParams.file_id,
+                  };
                   break;
               }
-              return resource.getById({
-                student_id: $stateParams.user_id,
-                activity_id: $stateParams.activity_id,
-              }).$promise.then(function(response){
+              return resource.getById(params).$promise.then(function(response){
                 response.type = $stateParams.type;
                 response.user = response.student;
                 response.user.type = 'student';
@@ -1035,20 +1414,62 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         activity_id: $scope.activity.id.activityId
       }
     };
-    $rootScope.paths[4] = {
-      'title': $scope.activity.user.firstName +' '+ $scope.activity.user.lastName,
+
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': 'Activities',
       'icon': null,
-      'state': 'base.activities.view',
+      'state': 'base.activities.list',
       'params': {
-        type: $scope.activity.type,
-        activity_id: $scope.activity.activity.id,
-        user_id: $scope.activity.user.id
+        'type': null,
+        'course_id': null,
+        'activity_id': null
       }
     };
-    $rootScope.paths.length = 5;
+    $rootScope.paths[2] = {
+        'title': $scope.activity.activity.course.title,
+        'icon': null,
+        'state': 'base.activities.list',
+        'params': {
+          'type': null,
+          'course_id': $scope.activity.activity.course.id,
+          'activity_id': null,
+        }
+      };
+    $rootScope.paths[3] = {
+        'title': $scope.activity.activity.name,
+        'icon': null,
+        'state': 'base.activities.list',
+        'params': {
+          'type': null,
+          'course_id': $scope.activity.activity.course.id,
+          'activity_id': $scope.activity.activity.id
+        }
+      };
+    $rootScope.paths[4] = {
+        'title': $scope.activity.type,
+        'icon': null,
+        'state': 'base.activities.list',
+        'params': {
+          'type': $scope.activity.type,
+          'course_id': $scope.activity.activity.course.id,
+          'activity_id': $scope.activity.activity.id
+        }
+      };
+    $rootScope.paths[5] = {
+        'title': $scope.activity.user.firstName +' '+ $scope.activity.user.lastName,
+        'icon': null,
+        'state': 'base.activities.view',
+        'params': {
+          'type': $scope.activity.type,
+          'course_id': $scope.activity.activity.course.id,
+          'activity_id': $scope.activity.activity.id,
+          'user_id': $scope.activity.user.id
+        }
+      };
+    $rootScope.paths.length = 6;
 
     //Logic
-    console.log($scope.activity);
     $scope.table = {
       title : $scope.activity.type.slice(0,-1) + " Details",
       columns : {
@@ -1057,7 +1478,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         course: 'Course'
       },
       retrieveLink : function(){
-        return config.apiEndpoint+'storage/retrieve/'+$scope.activity.fileId+'?k='+$rootScope.authUser.token;
+        return config.apiEndpoint+'storage/retrieve/'+$scope.activity.id+'?k='+$rootScope.authUser.token;
       },
       extraRows : []
     }
@@ -1099,15 +1520,17 @@ app.config(function($stateProvider) {
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.courses.list', {
         name: 'base.courses.list',
-        url: '/courses',
+        url: '/courses?page&search',
         templateUrl: 'templates/courses-list.html',
         controller: 'CoursesListController',
         data: {
           authorizedRoles: config.authorizedRoles.courses.list
         },
         resolve: {
-            resolvedData: ["Courses", "$http", "config", "$rootScope", "$q", function(Courses, $http, config, $rootScope, $q) {
-              return Courses.getAll().$promise.then(function(response){
+            resolvedData: ["Courses", "$http", "config", "$rootScope", "$q", "$stateParams", function(Courses, $http, config, $rootScope, $q, $stateParams) {
+              search = $stateParams.search ? $stateParams.search : null;
+              page = $stateParams.page ? parseInt($stateParams.page) : 0;
+              return Courses.getAll({'page':page, 'search':search}).$promise.then(function(response){
                 console.log(response);
                 response.pager.pages = new Array(response.pager.totalPages);
                 return {
@@ -1124,31 +1547,29 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', function($scope, $rootScope, resolvedData, $state, Courses) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams', function($scope, $rootScope, resolvedData, $state, Courses, $stateParams) {
     //Init
     $scope.title = 'Courses';
     $scope.courses = resolvedData.courses;
     $scope.pager = resolvedData.pager;
 
-    $scope.refresh = function(index){
-      if (!index){
-        index = 0;
-      }
-      Courses.getAll({'page':index}).$promise.then(function(response){
-        response.pager.pages = new Array(response.pager.totalPages);
-        //return
-        $scope.courses = response.content;
-        $scope.pager = response.pager;
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
-      });
-    }
-
-    //Get specific page
     $scope.pager.getPage = function(index){
-      $scope.refresh(index);
+      $stateParams.page = index;
+      $state.go('base.courses.list', $stateParams, {reload: true});
     };
+
+    // Search
+    $scope.search = $rootScope.search;
+    $scope.search.go = function(){
+      $stateParams.page = 0;
+      $stateParams.search = $scope.search.value;
+      $state.go('base.courses.list', $stateParams, {reload: true});
+    }
+    document.getElementById("search-bar-input").addEventListener("keydown", function (e) {
+      if (e.keyCode === 13) {
+        $rootScope.search.go();
+      }
+    });
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -1239,6 +1660,7 @@ app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData',
     $scope.title = $scope.course.title;
     $scope.authUser = $rootScope.authUser.user;
 
+
     //Add path to breadcrums list
     $rootScope.paths[1] = {
       'title': 'Courses',
@@ -1307,15 +1729,17 @@ app.config(function($stateProvider) {
 app.config(function($stateProvider, config) {
     $stateProvider.state('base.groups.list', {
         name: 'base.groups.list',
-        url: '/groups',
+        url: '/groups?page&search',
         templateUrl: 'templates/groups-list.html',
         controller: 'GroupsListController',
         data: {
           authorizedRoles: config.authorizedRoles.groups.list
         },
         resolve: {
-            resolvedData: ["Groups", "$http", "config", "$rootScope", "$q", function(Groups, $http, config, $rootScope, $q) {
-              return Groups.getAll().$promise.then(function(response){
+            resolvedData: ["Groups", "$http", "config", "$rootScope", "$q", "$stateParams", function(Groups, $http, config, $rootScope, $q, $stateParams) {
+              search = $stateParams.search ? $stateParams.search : null;
+              page = $stateParams.page ? parseInt($stateParams.page) : 0;
+              return Groups.getAll({'page':page, 'search':search}).$promise.then(function(response){
                 response.pager.pages = new Array(response.pager.totalPages);
                 return {
                   groups: response.content,
@@ -1331,7 +1755,7 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Groups', function($scope, $rootScope, resolvedData, $state, Groups) {
+app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Groups', '$stateParams', function($scope, $rootScope, resolvedData, $state, Groups, $stateParams) {
     //Init
     $scope.title = 'Groups';
     $scope.groups = resolvedData.groups;
@@ -1339,25 +1763,23 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
 
     console.log($scope.groups);
 
-    $scope.refresh = function(index){
-      if (!index){
-        index = 0;
-      }
-      Groups.getAll({'page':index}).$promise.then(function(response){
-        response.pager.pages = new Array(response.pager.totalPages);
-        //return
-        $scope.groups = response.content;
-        $scope.pager = response.pager;
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
-      });
-    }
-
-    //Get specific page
     $scope.pager.getPage = function(index){
-      $scope.refresh(index);
+      $stateParams.page = index;
+      $state.go('base.groups.list', $stateParams, {reload: true});
     };
+
+    // Search
+    $scope.search = $rootScope.search;
+    $scope.search.go = function(){
+      $stateParams.page = 0;
+      $stateParams.search = $scope.search.value;
+      $state.go('base.groups.list', $stateParams, {reload: true});
+    }
+    document.getElementById("search-bar-input").addEventListener("keydown", function (e) {
+      if (e.keyCode === 13) {
+        $rootScope.search.go();
+      }
+    });
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -1444,12 +1866,12 @@ app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthSer
             "email": $scope.form.email,
             "password": $scope.form.password
           }).then(function(response){
-            NotificationService.push({
-              title: 'Logged in',
-              content: 'You have successfully logged in your account.',
-              link: null,
-              type: NOTIFICATIONS_TYPES.success
-            });
+            // NotificationService.push({
+            //   title: 'Logged in',
+            //   content: 'You have successfully logged in your account.',
+            //   link: null,
+            //   type: NOTIFICATIONS_TYPES.success
+            // });
           }, function(response){
             $scope.form.loading = false;
             if (response == null){
@@ -1697,7 +2119,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
     };
 
     $scope.search = $rootScope.search;
-    $rootScope.search.go = function(){
+    $scope.search.go = function(){
       $scope.refresh();
     }
     document.getElementById("search-bar-input").addEventListener("keydown", function (e) {
@@ -2082,6 +2504,7 @@ app.factory('AuthService', ['$http', '$rootScope', '$state', '$cookies', '$q', '
 
   return authService;
 }])
+
 
 app.factory('NotificationService', ['$http', '$rootScope', '$state', '$cookies', '$q', 'config', '$timeout', function ($http, $rootScope, $state, $cookies, $q, config, $timeout) {
   var notificationService = {};
