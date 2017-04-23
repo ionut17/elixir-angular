@@ -2,7 +2,7 @@
 <section class="container-title">
   <!-- Header-->
   <div class="row">
-    <div class="col-md-12"><span class="td-subtitle">Year {{group.year}} ( {{group.students.length}} Students )</span>
+    <div class="col-md-12"><span class="td-subtitle">{{labels.table.year}} {{group.year}} ( {{group.students.length}} {{labels.table.students}} )</span>
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
       </div>
@@ -14,15 +14,15 @@
   <div class="row">
     <div class="col-md-6">
       <div class="table-wrapper">
-        <div class="table-title">Students</div>
+        <div class="table-title">{{labels.table.students}}</div>
         <table class="table elixir-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email</th>
-              <th>Actions</th>
+              <th>{{labels.table.firstName}}</th>
+              <th>{{labels.table.lastName}}</th>
+              <th>{{labels.table.email}}</th>
+              <th>{{labels.table.actions}}</th>
             </tr>
           </thead>
           <tbody>
@@ -34,7 +34,7 @@
               <td><i aria-hidden="true" class="fa fa-times"></i></td>
             </tr>
             <tr ng-if="!group.students.length" class="disable-hover">
-              <td colspan="6" class="td-disabled text-center">No results have been found</td>
+              <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
             </tr>
           </tbody>
         </table>

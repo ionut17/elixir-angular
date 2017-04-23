@@ -10,6 +10,9 @@
   align-items: flex-start;
 
   // border: 1px solid rgba(0,0,0,0.03);
+  &.modal-table{
+    margin-bottom: 0;
+  }
 }
 
 .table-title{
@@ -73,6 +76,7 @@
       &:first-child{
         padding-left: 20px;
         padding-right: 20px;
+        text-align: center;
       }
     }
 
@@ -148,6 +152,88 @@
   }
 }
 
+.modal-table {
+  table{
+    display: block;
+
+    thead, tbody{
+      display: block;
+      width: 100%;
+
+      tr{
+        display: table;
+        width: 100%;
+      }
+    }
+
+    tbody{
+      max-height: 400px;
+      overflow: scroll;
+    }
+  }
+}
+
+.modal-table .elixir-table tbody tr{
+  td, th{
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+.checker, .grader{
+  padding: 0 !important;
+  width: 70px !important;
+  max-width: 70px !important;
+  color: grey !important;
+  text-align: center;
+  background-color: $backgroundColor;
+}
+.checker.checked{
+  background-color: $lightGreen;
+}
+
+.grader{
+  width: 100px;
+  background-color: $backgroundColor;
+  input{
+    width: 100px;
+    max-width: 100px;
+    margin: 0;
+    text-align: center;
+    border: none;
+    color: $darkGrey;
+    background-color: $backgroundColor;
+    padding: 2px 0;
+
+    font-size: 20px;
+
+    &:focus{
+      background-color: white;
+      outline: none;
+    }
+  }
+}
+.grader.graded{
+  background-color: $lightGreen;
+  input{
+    background-color: $lightGreen;
+    color: white;
+  }
+}
+
+
+.td-actions{
+  width: 91px;
+  text-align: center;
+
+  padding: 0 10px !important;
+  & > *{
+    float: left;
+  }
+  & > *:not(:last-child){
+    margin-right: 10px;
+  }
+}
 
 //Cells extra styles
 .td-bold{
@@ -184,6 +270,15 @@
   color: $lightgrey !important;
   // opacity: 0.5;
   background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.td-fit{
+  width: 1%;
+  white-space: nowrap;
+}
+
+.td-break{
+  word-break: break-word;
 }
 
 .td-empty{

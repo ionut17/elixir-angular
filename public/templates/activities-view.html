@@ -18,7 +18,7 @@
           <tbody>
             <tr ng-repeat="extraRow in table.extraRows track by $index">
               <th scope="row" class="col-sm-3">{{extraRow.title}}</th>
-              <td ng-class="{ 'td-spaced disable-hover': extraRow.hasDownloadButton }" class="td-bold"><span ng-class="extraRow.customClass">{{extraRow.value}}</span><a ng-if="extraRow.hasDownloadButton" ng-href="{{table.retrieveLink()}}" target="_blank" class="ebutton white-button icon-button"><i class="material-icons">get_app</i></a></td>
+              <td ng-class="{ 'td-spaced disable-hover': extraRow.hasDownloadButton }" class="td-bold"><span ng-class="extraRow.customClass">{{extraRow.value}}</span><a ng-if="extraRow.hasDownloadButton" ng-href="{{table.retrieveLink()}}" target="_blank" class="ebutton icon-button"><i class="material-icons">get_app</i></a></td>
             </tr>
             <tr ui-sref="base.users.view({type: activity.user.type+&quot;s&quot;, id: activity.user.id})">
               <th scope="row" class="col-sm-3">{{table.columns.user}}</th>

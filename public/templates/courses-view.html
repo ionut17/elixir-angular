@@ -2,7 +2,7 @@
 <section class="container-title">
   <!-- Header-->
   <div class="row">
-    <div class="col-md-12"><span class="td-subtitle">Year {{course.year}} / Semester {{course.semester}}</span>
+    <div class="col-md-12"><span class="td-subtitle">{{labels.table.year}} {{course.year}} / {{labels.table.semester}} {{course.semester}}</span>
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
       </div>
@@ -12,10 +12,10 @@
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <ul class="tabs-wrapper">
-          <li ui-sref="base.courses.view({detail: null})" ng-class="{active: course.detail==&quot;overview&quot;}">Overview</li>
-          <li ui-sref="base.courses.view({detail: &quot;lecturers&quot;, page: 0})" ng-class="{active: course.detail==&quot;lecturers&quot;}">Lecturers</li>
-          <li ui-sref="base.courses.view({detail: &quot;students&quot;, page: 0})" ng-class="{active: course.detail==&quot;students&quot;}" ng-if="authUser.type!='student'">Students</li>
-          <li ui-sref="base.courses.view({detail: &quot;activities&quot;, page: 0})" ng-class="{active: course.detail==&quot;activities&quot;}" ng-if="authUser.type!='student'">Activities</li>
+          <li ui-sref="base.courses.view({detail: null})" ng-class="{active: course.detail==&quot;overview&quot;}">{{labels.table.overview}}</li>
+          <li ui-sref="base.courses.view({detail: &quot;lecturers&quot;, page: 0})" ng-class="{active: course.detail==&quot;lecturers&quot;}">{{labels.table.lecturers}}</li>
+          <li ui-sref="base.courses.view({detail: &quot;students&quot;, page: 0})" ng-class="{active: course.detail==&quot;students&quot;}" ng-if="authUser.type!='student'">{{labels.table.students}}</li>
+          <li ui-sref="base.courses.view({detail: &quot;activities&quot;, page: 0})" ng-class="{active: course.detail==&quot;activities&quot;}" ng-if="authUser.type!='student'">{{labels.table.activities}}</li>
         </ul>
       </div>
     </div>
@@ -26,15 +26,15 @@
     <div class="col-md-12 coverbox-wrapper">
       <div ui-sref="base.courses.view({detail: &quot;lecturers&quot;})" class="coverbox">
         <h2>{{course.lecturers.length}}</h2>
-        <h3>Lecturers</h3>
+        <h3>{{labels.table.lecturers}}</h3>
       </div>
       <div ui-sref="base.courses.view({detail: &quot;students&quot;})" ng-if="authUser.type!='student'" class="coverbox">
         <h2>{{course.students.length}}</h2>
-        <h3>Students</h3>
+        <h3>{{labels.table.students}}</h3>
       </div>
       <div ui-sref="base.courses.view({detail: &quot;activities&quot;})" ng-if="authUser.type!='student'" class="coverbox">
         <h2>{{course.activities.length}}</h2>
-        <h3>Activities</h3>
+        <h3>{{labels.table.activities}}</h3>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -55,9 +55,9 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
+                <th>{{labels.table.firstName}}</th>
+                <th>{{labels.table.lastName}}</th>
+                <th>{{labels.table.email}}</th>
               </tr>
             </thead>
             <tbody>
@@ -68,7 +68,7 @@
                 <td class="td-blue">{{user.email}}</td>
               </tr>
               <tr ng-if="!course.lecturers.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>
@@ -79,7 +79,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -89,9 +89,9 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
+                <th>{{labels.table.firstName}}</th>
+                <th>{{labels.table.lastName}}</th>
+                <th>{{labels.table.email}}</th>
               </tr>
             </thead>
             <tbody>
@@ -102,7 +102,7 @@
                 <td class="td-blue">{{user.email}}</td>
               </tr>
               <tr ng-if="!course.students.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>
@@ -115,7 +115,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -125,20 +125,20 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Date</th>
+                <th>{{labels.table.type}}</th>
+                <th>{{labels.table.name}}</th>
+                <th>{{labels.table.date}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="activity in course.activities track by $index" ui-sref="base.activities.view({type: course.activity.role+&quot;s&quot;, activity_id: course.activity.activity.id, user_id: course.activity.user.id})">
+              <tr ng-repeat="activity in course.activities track by $index" ui-sref="base.activities.list({activity_id: activity.id, course_id: course.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td><span ng-class="activity.tag" class="tag">{{activity.type.name}}</span></td>
                 <td>{{activity.name}}</td>
                 <td class="td-blue">{{activity.date}}</td>
               </tr>
               <tr ng-if="!course.activities.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>

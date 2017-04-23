@@ -1,0 +1,49 @@
+#add-course-students.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		//TODO Add steps to modals and make option to select multiple users to add attendance for them
+		.modal-content
+			.modal-icon-titled
+				section
+					i.material-icons event
+					h2 {{modal['add-course-students'].title}}
+				section.left-aligned
+					h1 {{modal['add-course-students'].step.current+'. '+modal['add-course-students'].step.title}}
+					p(ng-show='modal["add-course-students"].step.details.length' ng-repeat="detail in modal['add-course-students'].step.details" ng-class="detail.class") {{detail.content}}
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['add-course-students'].loading")
+					figure.preloader
+					h5 {{modal['add-course-students'].loadingMessage}}
+				ul(ng-hide="modal['add-course-students'].loading || modal['add-course-students'].step.current!==1")
+					li
+						label(for='course') {{modal['add-course-students'].labels.table.course}}
+						select(name='course', ng-model='modal.local.courseId', ng-change='modal["add-course-students"].refreshActivities()', ng-disabled='modal.local.courseDisabled', ng-options="course as course.title for course in modal['add-course-students'].data.courses track by course.id", placeholder='Select course' required)
+							option(selected disabled value='') {{modal['add-course-students'].labels.placeholders.selectCourse}}
+					li.error(ng-if='modal.local.errors.course') {{modal.local.errors.course}}
+				ul(ng-hide="modal['add-course-students'].loading || modal['add-course-students'].step.current!==2")
+					li.filters
+						select.sm-select(name='group', ng-model='modal.local.groupId', ng-change='modal["add-course-students"].filterStudents()', ng-options="group as group.name for group in modal['add-course-students'].data.groups track by group.id", placeholder='Select group' required)
+							option(selected value='') {{modal['add-course-students'].labels.table.allGroups}}
+						figure.search-bar-wrapper
+							.search-bar
+								input#search-bar-input(name="search" type="text" ng-model="modal['add-course-students'].search.value" placeholder="{{modal['add-course-students'].labels.table.search}}")
+								i.material-icons(ng-click="modal['add-course-students'].search.clear()" ng-show="modal['add-course-students'].search.value") close
+							a.search-button(ng-click="modal['add-course-students'].filterStudents()")
+								i.material-icons search
+						li.error.no-margin(ng-if='modal.local.errors.student') {{modal.local.errors.student}}
+			.table-wrapper.modal-table(ng-hide="modal['add-course-students'].loading || modal['add-course-students'].step.current!==2")
+				table.table.elixir-table
+					thead
+						tr
+							th.col-sm-1 #
+							th Student
+							th.col-sm-1.checker {{modal['add-course-students'].labels.add}}
+					tbody
+						tr(ng-repeat='student in modal.local.students track by $index' ng-show="student.visible" ng-click="modal['add-course-students'].toggleCheck($index)")
+							th.col-sm-1(scope='row') {{student.index}}
+							td.td-bold {{student.lastName+' '+student.firstName}}
+							td.col-sm-1.checker(ng-class="{'checked': student.checked}")
+						tr.disable-hover(ng-if='!modal.local.students.length')
+							td.td-disabled.text-center(colspan='6') {{modal['add-course-students'].errors.noResults}}
+			.modal-footer.text-center(ng-hide="modal['add-course-students'].loading")
+				button.ebutton.white-button(type='button', ng-click='modal["add-course-students"].action.cancel(modal.local)') {{modal['add-course-students'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["add-course-students"].action.submit(modal.local)') {{modal['add-course-students'].submit}}

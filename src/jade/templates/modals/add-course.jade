@@ -1,0 +1,27 @@
+#add-course.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		.modal-content
+			.modal-icon
+				i.material-icons school
+				h2 {{modal['add-course'].title}}
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['add-course'].loading")
+					figure.preloader
+					h5 Adăugare curs
+				ul(ng-hide="modal['add-course'].loading")
+					li
+						label(for='title') Course
+						input(type='text' name='title' ng-model='modal.local.title', placeholder='Enter course title' required)
+					li.error(ng-if='modal.local.errors.title') {{modal.local.errors.title}}
+					li
+						label(for='year') Year
+						input(type='number' min=0 name='year' ng-model='modal.local.year', placeholder='Enter course year' required)
+					li.error(ng-if='modal.local.errors.year') {{modal.local.errors.year}}
+					li
+						label(for='semester') Semester
+						button.ebutton.radio-button(type='button' ng-click='modal.local.semester=1' ng-class='{"checked": modal.local.semester===1}') Semester 1
+						button.ebutton.radio-button(type='button' ng-click='modal.local.semester=2' ng-class='{"checked": modal.local.semester===2}') Semester 2
+					li.error(ng-if='modal.local.errors.semester') {{modal.local.errors.semester}}
+			.modal-footer.text-center(ng-hide="modal['add-course'].loading")
+				button.ebutton.white-button(type='button', data-dismiss='modal') {{modal['add-course'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["add-course"].action.submit(modal.local)') {{modal['add-course'].submit}}

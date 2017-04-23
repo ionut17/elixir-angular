@@ -6,7 +6,8 @@ app.config(function($stateProvider) {
     });
 });
 
-app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthService', 'config', '$rootScope', 'NOTIFICATIONS_TYPES', 'NotificationService', function($scope, $q, $state, $timeout, AuthService, config, $rootScope, NOTIFICATIONS_TYPES, NotificationService) {
+app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthService', 'config', '$rootScope', 'NOTIFICATIONS_TYPES', 'NotificationService', 'languageTranslator',
+      function($scope, $q, $state, $timeout, AuthService, config, $rootScope, NOTIFICATIONS_TYPES, NotificationService, languageTranslator) {
     $scope.title = 'Login';
     $scope.form = {
       loading: false,
@@ -32,8 +33,8 @@ app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthSer
             $scope.form.loading = false;
             if (response == null){
               NotificationService.push({
-                title: 'Server connection failed',
-                content: 'We couldn\'t connect to the server. Try again later.',
+                title: languageTranslator.pages.login.notificationError.title[$rootScope.language],
+                content: languageTranslator.pages.login.notificationError.content[$rootScope.language],
                 link: null,
                 type: NOTIFICATIONS_TYPES.error
               });
@@ -43,6 +44,13 @@ app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthSer
           });
         }, config.preloader.artificialTime);
       }
+    };
+
+    $scope.labels = {
+      login: $rootScope.getTranslatedObject(languageTranslator.pages.login),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders)
     };
 
     //Notifications wrapper

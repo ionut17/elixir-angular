@@ -1,52 +1,64 @@
 
-<div id="add-user-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+<div id="add-user" tabindex="-1" role="dialog" class="modal custom-modal fade">
   <div role="document" class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h2>Add User</h2>
-        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+      <div class="modal-icon-titled">
+        <section><i class="material-icons">person_add</i>
+          <h2>{{modal['add-user'].title}}</h2>
+        </section>
+        <section class="left-aligned">
+          <h1>{{modal['add-user'].step.current+'. '+modal['add-user'].step.title}}</h1>
+          <p ng-show="modal[&quot;add-user&quot;].step.details.length" ng-repeat="detail in modal['add-user'].step.details" ng-class="detail.class">{{detail.content}}</p>
+        </section>
       </div>
       <div class="modal-body">
-        <ul>
+        <div ng-show="modal['add-user'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>{{modal['add-user'].labels.loading}}</h5>
+        </div>
+        <ul ng-hide="modal['add-user'].loading || modal['add-user'].step.current!==1">
           <li>
-            <label for="type">Type</label>
-            <select id="type" name="type" ng-model="modal.user.type" placeholder="Select type">
-              <option value="student">Student</option>
-              <option value="lecturer">Lecturer</option>
-              <option value="admin">Admin</option>
+            <label for="type">{{modal['add-attendance'].labels.table.type}}</label>
+            <select id="type" name="type" ng-model="modal.local.type" placeholder="Select type">
+              <option selected="selected" disabled="disabled" value="">{{modal['add-user'].labels.placeholders.selectUserType}}</option>
+              <option value="student">{{modal['add-user'].labels.table.student}}</option>
+              <option value="lecturer" disabled="disabled">{{modal['add-user'].labels.table.lecturer}}</option>
+              <option value="admin" disabled="disabled">{{modal['add-user'].labels.table.admin}}</option>
             </select>
           </li>
-          <li ng-if="modal.user.errors.type" class="error">{{modal.user.errors.type}}</li>
+          <li ng-if="modal.local.errors.type" class="error">{{modal.local.errors.type}}</li>
           <li>
-            <label for="first_name">First Name</label>
-            <input id="first_name" type="input" ng-model="modal.user.firstName" placeholder="Enter first name"/>
+            <label for="first_name">{{modal['add-attendance'].labels.table.firstName}}</label>
+            <input id="first_name" type="input" ng-model="modal.local.firstName" placeholder="Enter first name"/>
           </li>
-          <li ng-if="modal.user.errors.firstName" class="error">{{modal.user.errors.firstName}}</li>
+          <li ng-if="modal.local.errors.firstName" class="error">{{modal.local.errors.firstName}}</li>
           <li>
-            <label for="last_name">Last Name</label>
-            <input id="last_name" type="input" ng-model="modal.user.lastName" placeholder="Enter last name"/>
+            <label for="last_name">{{modal['add-attendance'].labels.table.lastName}}</label>
+            <input id="last_name" type="input" ng-model="modal.local.lastName" placeholder="Enter last name"/>
           </li>
-          <li ng-if="modal.user.errors.lastName" class="error">{{modal.user.errors.lastName}}</li>
+          <li ng-if="modal.local.errors.lastName" class="error">{{modal.local.errors.lastName}}</li>
+        </ul>
+        <ul ng-hide="modal['add-user'].loading || modal['add-user'].step.current!==2">
           <li>
-            <label for="email">Email</label>
-            <input id="email" type="input" ng-model="modal.user.email" placeholder="Enter email"/>
+            <label for="email">{{modal['add-attendance'].labels.table.email}}</label>
+            <input id="email" type="input" ng-model="modal.local.email" placeholder="Enter email"/>
           </li>
-          <li ng-if="modal.user.errors.email" class="error">{{modal.user.errors.email}}</li>
+          <li ng-if="modal.local.errors.email" class="error">{{modal.local.errors.email}}</li>
           <li>
-            <label for="password">Password</label>
-            <input id="password" type="password" ng-model="modal.user.password" placeholder="Enter password"/>
+            <label for="password">{{modal['add-attendance'].labels.table.password}}</label>
+            <input id="password" type="password" ng-model="modal.local.password" placeholder="Enter password"/>
           </li>
-          <li ng-if="modal.user.errors.password" class="error">{{modal.user.errors.password}}</li>
+          <li ng-if="modal.local.errors.password" class="error">{{modal.local.errors.password}}</li>
           <li>
-            <label for="rpassword">Repeat Password</label>
-            <input id="rpassword" type="password" ng-model="modal.user.rpassword" placeholder="Confirm password"/>
+            <label for="rpassword">{{modal['add-attendance'].labels.table.rpassword}}</label>
+            <input id="rpassword" type="password" ng-model="modal.local.rpassword" placeholder="Confirm password"/>
           </li>
-          <li ng-if="modal.user.errors.rpassword" class="error">{{modal.user.errors.rpassword}}</li>
+          <li ng-if="modal.local.errors.rpassword" class="error">{{modal.local.errors.rpassword}}</li>
         </ul>
       </div>
-      <div class="modal-footer">
-        <button type="button" data-dismiss="modal" class="ebutton white-button">Close</button>
-        <button type="button" ng-click="modal.submit()" class="ebutton green-button">Add User</button>
+      <div ng-hide="modal['add-user'].loading" class="modal-footer text-center">
+        <button type="button" ng-click="modal[&quot;add-user&quot;].action.cancel(modal.local)" class="ebutton white-button">{{modal['add-user'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-user&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-user'].submit}}</button>
       </div>
     </div>
     <!-- /.modal-content-->

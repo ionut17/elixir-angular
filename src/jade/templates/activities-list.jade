@@ -2,61 +2,79 @@ section.container-title
   // Header
   .row
     .col-md-12
-      span.td-subtitle(ng-if="subtitle") {{subtitle}}
+      span.td-subtitle(ng-if="subtitle" ng-class="subtitle.class") {{subtitle.text}}
       .page-title-wrapper
         .page-title-item
           h2 {{title}}
-        button.ebutton.green-button(ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)") Add Activity
-        button.ebutton.green-button(ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)") Upload File
+        select.large-select.hide(name='course', ng-model='selectedCourse', ng-options="course.id as course.title for course in courses track by course.id", ng-change='changeCourse(selectedCourse)', ng-if='!singleActivity')
+          option(value='') All Courses
   .row.container-title-nav(ng-if='singleActivity')
     .col-md-12
       .page-title-wrapper
         ul.tabs-wrapper
-          li(ui-sref='base.activities.list({type: null, page: 0})', ng-class='{active: activities.type=="activities"}', ng-if='singleActivity') All Activities
-          li(ui-sref='base.activities.list({type: "attendances", page: 0})', ng-class='{active: activities.type=="attendances"}', ng-if='singleActivity && isAuthorized(authorizedRoles.activities.sublist)') Attendances
-          li(ui-sref='base.activities.list({type: "grades", page: 0})', ng-class='{active: activities.type=="grades"}', ng-if='singleActivity && isAuthorized(authorizedRoles.activities.sublist)') Grades
-          li(ui-sref='base.activities.list({type: "files", page: 0})', ng-class='{active: activities.type=="files"}', ng-if='singleActivity && isAuthorized(authorizedRoles.activities.sublist)') Files
+          li(ui-sref='base.activities.list({type: null, page: 0})', ng-class='{active: activities.type=="activities"}', ng-if='singleActivity') {{labels.table.allActivities}}
+          li(ui-sref='base.activities.list({type: "attendances", page: 0})', ng-class='{active: activities.type=="attendances"}', ng-if='singleActivity && isAuthorized(authorizedRoles.activities.sublist)') {{labels.table.attendances}}
+          li(ui-sref='base.activities.list({type: "grades", page: 0})', ng-class='{active: activities.type=="grades"}', ng-if='singleActivity && isAuthorized(authorizedRoles.activities.sublist)') {{labels.table.grades}}
+          li(ui-sref='base.activities.list({type: "files", page: 0})', ng-class='{active: activities.type=="files"}', ng-if='singleActivity && isAuthorized(authorizedRoles.activities.sublist)') {{labels.table.files}}
           //- li(ui-sref='base.activities.list({type: null, course_id: course.id, page: 0})', ng-if='!singleCourse', ng-repeat='course in courses track by course.id') {{course.title}}
 
 section.container-tools
-  h3 Tools
-  button.ebutton.green-button(ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)") Add Activity
-  button.ebutton.green-button(ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)") Upload File
+  section.tools
+    h3 {{labels.table.tools}}
+    button.ebutton.icon-button(ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)")
+      i.material-icons.sm assignment
+      span {{labels.buttons.addActivity}}
+    button.ebutton.icon-button(ng-if="isAuthorized(authorizedRoles.attendances.create)" ng-click="modal['add-attendance'].this(singleActivity || singleCourse)")
+      i.material-icons.sm event
+      span {{labels.buttons.markAttendances}}
+    button.ebutton.icon-button(ng-if="isAuthorized(authorizedRoles.grades.create)" ng-click="modal['add-grade'].this(singleActivity || singleCourse)")
+      i.material-icons.sm spellcheck
+      span {{labels.buttons.addGrades}}
+    button.ebutton.icon-button(ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)")
+      i.material-icons file_upload
+      span {{labels.buttons.uploadFile}}
+  h4(ng-if='!singleActivity') {{labels.table.filterByCourse}}
+  select.large-select(name='course', ng-model='selectedCourse', ng-options="course.id as course.title for course in courses track by course.id", ng-change='changeCourse(selectedCourse)', ng-if='!singleActivity')
+    option(value='') {{labels.table.allCourses}}
 
 section.container-content
   .row
     .col-lg-3.col-md-4.coverbox-wrapper.vertical.hide
         div.coverbox.coverbox-sm(ui-sref='base.activities.list({type: null, course_id: course.id, page: 0})' ng-if='!singleCourse' ng-repeat='course in courses track by course.id')
           h3 {{course.title}}
-    .col-md-12
+    .col-lg-6.col-md-12
       .table-wrapper
         .table-title
           include elements/pagination
-          select.large-select(name='course', ng-model='selectedCourse', ng-options="course.id as course.title for course in courses track by course.id", ng-change='changeCourse(selectedCourse)', ng-if='!singleActivity')
-            option(value='') All Courses
           include elements/search-bar
         table.table.elixir-table
           thead
             tr
-              th #
-              th(ng-show="singleActivity && activities.type=='activities'") Role
-              th.col-sm-2(ng-hide="singleCourse") Course
-              th.col-sm-1 Type
-              th Name
-              th.col-sm-2(ng-if="activities.type!=='files'") Activity Date
-              th.col-sm-2(ng-if="activities.type==='files'") Upload Date
-              th(ng-show="singleActivity") Student
+              th.td-fit #
+              //-  && activities.type=='activities'
+              th.td-fit(ng-show="singleActivity") {{labels.table.role}}
+              th.td-fit(ng-hide="singleCourse") {{labels.table.course}}
+              th.td-fit(ng-hide="singleActivity") {{labels.table.type}}
+              th(ng-hide="singleActivity") {{labels.table.name}}
+              th(ng-show="singleActivity") {{labels.table.student}}
+              th(ng-if="activities.type!=='files'") {{labels.table.activityDate}}
+              th(ng-if="activities.type==='files'") {{labels.table.uploadDate}}
+              th.td-actions(ng-show="isAuthorized(authorizedRoles.activities.edit) || isAuthorized(authorizedRoles.activities.delete)") {{labels.table.actions}}
           tbody
-            tr(ng-repeat='activity in activities track by $index', ng-click="goTo(activity)")
-              th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
-              td(ng-show="singleActivity && activities.type=='activities'")
-                span.tag(ng-class='activity.roleTag') {{activity.role}}
-              td.td-blue(ng-hide="singleCourse") {{activity.activity.course.title}}
-              td
+            tr(ng-repeat='activity in activities track by $index' ng-click="goTo(activity)")
+              th.td-fit(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
+              //-  && activities.type=='activities'
+              td.td-fit(ng-show="singleActivity")
+                span.tag(class='{{"tag-"+activity.role}}') {{labels.table[activity.role]}}
+              td.td-blue.td-fit(ng-hide="singleCourse" ) {{activity.activity.course.title}}
+              td.td-fit(ng-hide="singleActivity")
                 span.tag(ng-class='activity.tag') {{activity.activity.type.name}}
-              td {{activity.activity.name}}
+              td(ng-hide="singleActivity") {{activity.activity.name}}
+              td.td-bold(ng-show="singleActivity") {{activity.user.firstName + ' ' + activity.user.lastName}}
               td.td-blue(ng-if="activities.type!=='files'") {{activity.activity.date}}
               th.td-blue(ng-if="activities.type==='files'") {{activity.uploadDate}}
-              td.td-bold(ng-show="singleActivity") {{activity.user.firstName + ' ' + activity.user.lastName}}
+              td.td-actions(ng-show="isAuthorized(authorizedRoles.activities.edit) || isAuthorized(authorizedRoles.activities.delete)" ng-click="$event.stopPropagation();")
+                i.material-icons.icon-button.icon-edit(title="Edit" ng-if="isAuthorized(authorizedRoles.activities.edit)") mode_edit
+                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.activities.delete)" ng-click="modal.confirm.this(delete, 'delete', activity)") delete_forever
             tr.disable-hover(ng-if='!activities.length')
-              td.td-disabled.text-center(colspan='6') No results have been found
+              td.td-disabled.text-center(colspan='10') {{labels.errors.noResults}}

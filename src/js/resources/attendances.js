@@ -30,6 +30,27 @@ app.factory("Attendances", ["config", "$resource", "AuthService", function(confi
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        addAttendances: {
+            url: config.apiEndpoint + "attendances",
+            method: "POST",
+            isArray: true,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        delete: {
+          url: config.apiEndpoint + "attendances/:activity_id/:student_id",
+          method: "DELETE",
+          params: {activity_id:'@activity_id', student_id: '@student_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

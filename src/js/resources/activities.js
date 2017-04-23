@@ -20,6 +20,17 @@ app.factory("Activities", ["config", "$resource", "AuthService", function(config
                 }
             }
         },
+        getAllUnpaged: {
+            url: config.apiEndpoint + "activities/join/all",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         getTypes: {
             url: config.apiEndpoint + "activities/types",
             method: "GET",
@@ -62,5 +73,15 @@ app.factory("Activities", ["config", "$resource", "AuthService", function(config
                 }
             }
         },
+        delete: {
+          url: config.apiEndpoint + "activities/:activity_id",
+          method: "DELETE",
+          headers: {
+              'Accept': 'application/json',
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
+        }
     });
 }]);

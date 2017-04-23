@@ -1,0 +1,78 @@
+
+<div id="add-grade" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-icon-titled">
+        <section><i class="material-icons">spellcheck</i>
+          <h2>{{modal['add-grade'].title}}</h2>
+        </section>
+        <section class="left-aligned">
+          <h1>{{modal['add-grade'].step.current+'. '+modal['add-grade'].step.title}}</h1>
+          <p ng-show="modal[&quot;add-grade&quot;].step.details.length" ng-repeat="detail in modal['add-grade'].step.details" ng-class="detail.class">{{detail.content}}</p>
+        </section>
+      </div>
+      <div class="modal-body">
+        <div ng-show="modal['add-grade'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>{{modal['add-grade'].loadingMessage}}</h5>
+        </div>
+        <ul ng-hide="modal['add-grade'].loading || modal['add-grade'].step.current!==1">
+          <li>
+            <label for="course">{{modal['add-grade'].labels.table.course}}</label>
+            <select name="course" ng-model="modal.local.courseId" ng-change="modal[&quot;add-grade&quot;].refreshActivities()" ng-disabled="modal.local.courseDisabled" ng-options="course as course.title for course in modal['add-grade'].data.courses track by course.id" placeholder="Select course" required="required">
+              <option selected="selected" disabled="disabled" value="">{{modal['add-grade'].labels.placeholders.selectCourse}}</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.course" class="error">{{modal.local.errors.course}}</li>
+          <li>
+            <label for="activity">{{modal['add-grade'].labels.table.activity}}</label>
+            <select name="activity" ng-model="modal.local.activityId" ng-disabled="modal.local.activityDisabled" ng-options="activity as activity.name for activity in modal['add-grade'].data.activities track by activity.id" placeholder="Select activity" required="required">
+              <option selected="selected" disabled="disabled" value="">{{modal['add-grade'].labels.placeholders.selectActivity}}</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.activity" class="error">{{modal.local.errors.activity}}</li>
+        </ul>
+        <ul ng-hide="modal['add-grade'].loading || modal['add-grade'].step.current!==2">
+          <li class="filters">
+            <select name="group" ng-model="modal.local.groupId" ng-change="modal[&quot;add-grade&quot;].filterStudents()" ng-options="group as group.name for group in modal['add-grade'].data.groups track by group.id" placeholder="Select group" required="required" class="sm-select">
+              <option selected="selected" value="">{{modal['add-grade'].labels.table.allGroups}}</option>
+            </select>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="modal['add-grade'].search.value" placeholder="Search"/><i ng-click="modal['add-grade'].search.clear()" ng-show="modal['add-grade'].search.value" class="material-icons">close</i>
+              </div><a ng-click="modal['add-grade'].filterStudents()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
+            <li ng-if="modal.local.errors.student" class="error no-margin">{{modal.local.errors.student}}</li>
+          </li>
+        </ul>
+      </div>
+      <div ng-hide="modal['add-grade'].loading || modal['add-grade'].step.current!==2" class="table-wrapper modal-table">
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th class="col-sm-1">#</th>
+              <th>Student</th>
+              <th class="col-sm-1 checker">{{modal['add-grade'].labels.marked}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="student in modal.local.students track by $index" ng-show="student.visible">
+              <th scope="row" class="col-sm-1">{{student.index}}</th>
+              <td class="td-bold">{{student.lastName+' '+student.firstName}}</td>
+              <td ng-class="{'graded': student.grade !== null}" class="col-sm-1 grader">
+                <input type="number" ng-model="student.grade"/>
+              </td>
+            </tr>
+            <tr ng-if="!modal.local.students.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{modal['add-grade'].labels.errors.noResults}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div ng-hide="modal['add-grade'].loading" class="modal-footer text-center">
+        <button type="button" ng-click="modal[&quot;add-grade&quot;].action.cancel(modal.local)" class="ebutton white-button">{{modal['add-grade'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-grade&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-grade'].submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>

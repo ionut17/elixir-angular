@@ -44,56 +44,78 @@ app.config(function($stateProvider, config) {
 });
 
 
-app.controller('SettingsController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+app.controller('SettingsController', ['$scope', '$rootScope', 'resolvedData', 'languageTranslator', function($scope, $rootScope, resolvedData, languageTranslator) {
     //Init
-    $scope.title = 'Settings';
     $scope.user = resolvedData.user;
     console.log($scope.user);
     $scope.user.tag = 'tag-'+$scope.user.type;
 
-    //Add path to breadcrums list
-    $rootScope.paths[1] = {
-      'title': 'Settings',
-      'icon': null,
-      'state': 'base.settings',
-      'params': null
-    };
-    $rootScope.paths.length = 2;
+    $scope.setData = function(){
+      $scope.title = languageTranslator.pages.settings.title[$rootScope.language];
+      $scope.languageLabel = languageTranslator.pages.settings.languageLabel[$rootScope.language];
+      //Add path to breadcrums list
+      $rootScope.paths[1] = {
+        'title': languageTranslator.pages.settings.title[$rootScope.language],
+        'icon': null,
+        'state': 'base.settings',
+        'params': null
+      };
+      $rootScope.paths.length = 2;
+      $scope.buttonLabels = {
+        changeDetails: languageTranslator.pages.settings.buttons.changeDetails[$rootScope.language]
+      }
 
-    //Details
-    $scope.table = {
-      title: 'User details'
+      //Details
+      $scope.table = {};
+      $scope.table.detailRowsTitle = languageTranslator.pages.settings.table.detailsRowsTitle[$rootScope.language];
+      $scope.table.detailRows = [{
+          title : languageTranslator.pages.settings.table.detailsRows.firstName[$rootScope.language],
+          value : $scope.user.firstName,
+          customClass : 'td-bold'
+        },{
+          title : languageTranslator.pages.settings.table.detailsRows.lastName[$rootScope.language],
+          value : $scope.user.lastName,
+          customClass : 'td-bold'
+        },{
+          title: languageTranslator.pages.settings.table.detailsRows.type[$rootScope.language],
+          value : $scope.user.type,
+          customClass : 'tag '+$scope.user.tag
+        },{
+          title: languageTranslator.pages.settings.table.detailsRows.email[$rootScope.language],
+          value: $scope.user.email,
+          customClass: 'td-blue'
+        }
+      ];
+      $scope.table.settingRowsTitle = languageTranslator.pages.settings.title[$rootScope.language];
+      $scope.table.settingRows = [{
+          title : languageTranslator.pages.settings.languageLabel[$rootScope.language],
+          value : languageTranslator.pages.settings.errors.unavailable[$rootScope.language],
+          customClass : 'td-disabled'
+        },{
+          title : languageTranslator.pages.settings.table.settingRows.support[$rootScope.language],
+          value : languageTranslator.pages.settings.errors.unavailable[$rootScope.language],
+          customClass : 'td-disabled'
+        },{
+          title : languageTranslator.pages.settings.table.settingRows.changePassword[$rootScope.language],
+          value : languageTranslator.pages.settings.errors.unavailable[$rootScope.language],
+          customClass : 'td-disabled'
+        }
+      ];
     };
-    $scope.table.detailRows = [{
-        title : 'First Name',
-        value : $scope.user.firstName,
-        customClass : 'td-bold'
-      },{
-        title : 'Last Name',
-        value : $scope.user.lastName,
-        customClass : 'td-bold'
-      },{
-        title: 'Type',
-        value : $scope.user.type,
-        customClass : 'tag '+$scope.user.tag
-      },{
-        title: 'Email',
-        value: $scope.user.email,
-        customClass: 'td-blue'
+    $scope.setData();
+
+    //language
+    $scope.languages = languageTranslator.languages;
+    $scope.checkLanguage = function(language){
+      if (language === $rootScope.language){
+        return true;
+      } else{
+        return false;
       }
-    ];
-    $scope.table.settingRows = [{
-        title : 'Language',
-        value : 'unavailable',
-        customClass : 'td-disabled'
-      },{
-        title : 'Support',
-        value : 'unavailable',
-        customClass : 'td-disabled'
-      },{
-        title : 'Change Password',
-        value : 'unavailable',
-        customClass : 'td-disabled'
-      }
-    ];
+    }
+    $scope.languageToggle = function(lang){
+      $rootScope.languageToggle(lang);
+      $scope.setData();
+    };
+
 }]);

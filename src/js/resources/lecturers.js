@@ -10,6 +10,17 @@ app.factory("Lecturers", ["config", "$resource", "AuthService", function(config,
                 }
             }
         },
+        getAllUnpaged: {
+            url: config.apiEndpoint + "lecturers/all",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         getById: {
             url: config.apiEndpoint + "lecturers/:id",
             method: "GET",

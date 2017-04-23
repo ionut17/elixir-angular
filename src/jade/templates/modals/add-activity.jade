@@ -2,7 +2,7 @@
 	.modal-dialog(role='document')
 		.modal-content
 			.modal-icon
-				i.material-icons library_add
+				i.material-icons assignment
 				h2 {{modal['add-activity'].title}}
 			.modal-header.hide
 				h2 Add Activity
@@ -11,23 +11,26 @@
 			.modal-body
 				div.preloader-wrapper(ng-show="modal['add-activity'].loading")
 					figure.preloader
-					h5 Adăugare activitate
+					h5 {{modal['add-activity'].labels.loading}}
 				ul(ng-hide="modal['add-activity'].loading")
 					li
-						label(for='course') Course
+						label(for='course') {{modal['add-activity'].labels.table.course}}
 						select#type(name='course', ng-model='modal.local.courseId', ng-options="course.id as course.title for course in modal['add-activity'].data.courses track by course.id", placeholder='Select course' required)
-							option(selected disabled value='') Select course
-					li.error(ng-if='modal.local.errors.course') {{modal.user.errors.course}}
+							option(selected disabled value='') {{modal['add-activity'].labels.placeholders.selectCourse}}
+					li.error(ng-if='modal.local.errors.course') {{modal.local.errors.course}}
 					li
-						label(for='type') Type
+						label(for='type') {{modal['add-activity'].labels.table.type}}
 						select#type(name='type', ng-model='modal.local.typeId', ng-options="type.id as type.name for type in modal['add-activity'].data.types track by type.id", placeholder='Select type' required)
-							option(selected disabled value='') Select type
+							option(selected disabled value='') {{modal['add-activity'].labels.placeholders.selectType}}
+					li.error(ng-if='modal.local.errors.type') {{modal.local.errors.type}}
 					li
-						label(for='name') Name
-						input(name='name' type='input' ng-model='modal.local.name' placeholder='Enter name of activity (e.g Laborator 2)' required)
+						label(for='name') {{modal['add-activity'].labels.table.name}}
+						input(name='name' type='input' ng-model='modal.local.name' placeholder="{{modal['add-activity'].labels.placeholders.enterNameOfActivity}}" required)
+					li.error(ng-if='modal.local.errors.name') {{modal.local.errors.name}}
 					li
-						label(for='date') Date
-						input#add-activity-datepicker(name='date' type='text' ng-model='modal.local.date' placeholder='Enter date of activity' required)
+						label(for='date') {{modal['add-activity'].labels.table.date}}
+						input#add-activity-datepicker(name='date' type='text' ng-model='modal.local.date' placeholder="{{modal['add-activity'].labels.placeholders.enterDateOfActivity}}" required)
+					li.error(ng-if='modal.local.errors.date') {{modal.local.errors.date}}
 			.modal-footer.text-center(ng-hide="modal['add-activity'].loading")
 				button.ebutton.white-button(type='button', data-dismiss='modal') {{modal['add-activity'].cancel}}
 				button.ebutton.green-button(type='button', ng-click='modal["add-activity"].action.submit(modal.local)') {{modal['add-activity'].submit}}

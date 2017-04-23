@@ -11,7 +11,123 @@
 </section>
 <section class="container-content">
   <div class="row">
-    <div class="col-md-12 coverbox-wrapper">
+    <div class="col-md-12 coverbox-wrapper no-after">
+      <div ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this()" class="coverbox coverbox-sm"><i class="material-icons">file_upload</i>
+        <h3>{{dashboardLabels.uploadFile}}</h3>
+      </div>
+      <div ng-if="hasRole('student')" ui-sref="base.users.view({type: user.type+&quot;s&quot;, id: user.id, detail: &quot;grades&quot;, page: 0})" class="coverbox coverbox-sm"><i class="material-icons">spellcheck</i>
+        <h3>{{dashboardLabels.myGrades}}</h3>
+      </div>
+      <div ng-if="hasRole('student')" ui-sref="base.users.view({type: user.type+&quot;s&quot;, id: user.id, detail: &quot;attendances&quot;, page: 0})" class="coverbox coverbox-sm"><i class="material-icons">event</i>
+        <h3>{{dashboardLabels.myAttendances}}</h3>
+      </div>
+      <div ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this()" class="coverbox coverbox-sm"><i class="material-icons">assignment</i>
+        <h3>{{dashboardLabels.addActivity}}</h3>
+      </div>
+      <div ng-if="isAuthorized(authorizedRoles.attendances.create)" ng-click="modal['add-attendance'].this()" class="coverbox coverbox-sm"><i class="material-icons">event</i>
+        <h3>{{dashboardLabels.addAttendances}}</h3>
+      </div>
+      <div ng-if="isAuthorized(authorizedRoles.grades.create)" ng-click="modal['add-grade'].this()" class="coverbox coverbox-sm"><i class="material-icons">spellcheck</i>
+        <h3>{{dashboardLabels.addGrades}}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div ng-if="hasRole('student')" class="col-md-6 col-sm-12 col-xs-12">
+      <div class="table-wrapper">
+        <div class="table-title">{{dashboardLabels.latestActivities}}
+          <button ui-sref="base.activities.list" class="ebutton sm-button white-button-alt">{{dashboardLabels.tables.viewAll}}</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="col-sm-2">{{dashboardLabels.tables.role}}</th>
+              <th class="col-sm-3">{{dashboardLabels.tables.course}}</th>
+              <th class="col-sm-1">{{dashboardLabels.tables.type}}</th>
+              <th class="col-sm-2">{{dashboardLabels.tables.name}}</th>
+              <th class="col-sm-3">{{dashboardLabels.tables.activityDate}}</th>
+              <th ng-if="isAuthorized(authorizedRoles.dashboard.user)" class="col-sm-1">Student</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="activity in activities track by $index" ui-sref="base.activities.view({type: activity.role+&quot;s&quot;, course_id: activity.activity.course.id, activity_id: activity.activity.id, user_id: activity.user.id, file_id: activity.extraId})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
+              <td class="td-blue">{{activity.activity.course.title}}</td>
+              <td><span ng-class="activity.tag" class="tag tag-sm">{{activity.activity.type.name}}</span></td>
+              <td>{{activity.activity.name}}</td>
+              <td class="td-blue">{{activity.activity.date}}</td>
+              <td ng-if="isAuthorized(authorizedRoles.dashboard.user)">{{activity.user.lastName+' '+activity.user.firstName}}</td>
+            </tr>
+            <tr ng-if="!activities.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{dashboardLabels.errors.noResults}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div ng-if="hasRole('lecturer')" class="col-md-6 col-sm-12 col-xs-12">
+      <div class="table-wrapper">
+        <div class="table-title">{{dashboardLabels.latestFiles}}
+          <button ui-sref="base.activities.list" class="ebutton sm-button white-button-alt">{{dashboardLabels.tables.viewAll}}</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="col-sm-2">{{dashboardLabels.tables.uploadDate}}</th>
+              <th class="col-sm-4">{{dashboardLabels.tables.student}}</th>
+              <th class="col-sm-3">{{dashboardLabels.tables.course}}</th>
+              <th class="col-sm-2">{{dashboardLabels.tables.name}}</th>
+              <th class="col-sm-1">{{dashboardLabels.tables.type}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="file in files track by $index" ui-sref="base.activities.view({type: &quot;files&quot;, course_id: file.activity.course.id, activity_id: file.activity.id, user_id: file.student.id, file_id: file.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-blue">{{file.uploadDate}}</td>
+              <td>{{file.student.lastName+' '+file.student.firstName}}</td>
+              <td class="td-blue">{{file.activity.course.title}}</td>
+              <td>{{file.activity.name}}</td>
+              <td><span ng-class="activity.tag" class="tag tag-sm">{{file.activity.type.name}}</span></td>
+            </tr>
+            <tr ng-if="!activities.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{dashboardLabels.errors.noResults}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-12 col-xs-12">
+      <div class="table-wrapper">
+        <div class="table-title">{{dashboardLabels.courses}}
+          <button ui-sref="base.courses.list" class="ebutton sm-button white-button-alt">{{dashboardLabels.tables.viewAll}}</button>
+        </div>
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="col-sm-9">{{dashboardLabels.tables.title}}</th>
+              <th class="col-sm-1">{{dashboardLabels.tables.year}}</th>
+              <th class="col-sm-1">{{dashboardLabels.tables.semester}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="course in courses track by $index" ui-sref="base.courses.view({id: course.id})">
+              <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <td class="td-blue">{{course.title}}</td>
+              <td>{{course.year}}</td>
+              <td>{{course.semester}}</td>
+            </tr>
+            <tr ng-if="!courses.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{dashboardLabels.errors.noResults}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12 coverbox-wrapper hide">
       <div ui-sref="base.activities.list({type: null})" ng-if="isAuthorized(authorizedRoles.activities.list)" class="coverbox"><i class="material-icons">assignment</i>
         <h3>Activities</h3>
       </div>

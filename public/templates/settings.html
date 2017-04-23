@@ -11,12 +11,18 @@
     </div>
   </div>
 </section>
+<section ng-if="isAuthorized(authorizedRoles.settings)" class="container-tools">
+  <section class="tools">
+    <h3>{{languageLabel}}</h3>
+    <button ng-repeat="language in languages" ng-click="languageToggle(language)" ng-class="{&quot;active&quot;: checkLanguage(language)}" class="ebutton language-toggle">{{language}}</button>
+  </section>
+</section>
 <section class="container-content">
   <div class="row">
     <div class="col-md-6 col-sm-12">
       <div class="table-wrapper">
-        <div class="table-title">{{table.title}}
-          <button class="ebutton white-button">Change Details</button>
+        <div class="table-title">{{table.detailRowsTitle}}
+          <button class="ebutton white-button">{{buttonLabels.changeDetails}}</button>
         </div>
         <table class="table elixir-table elixir-table-horizontal disable-hover">
           <tbody>
@@ -30,7 +36,7 @@
     </div>
     <div class="col-md-6 col-sm-12">
       <div class="table-wrapper">
-        <div class="table-title">Settings</div>
+        <div class="table-title">{{table.settingRowsTitle}}</div>
         <table class="table elixir-table elixir-table-horizontal disable-hover">
           <tbody>
             <tr ng-repeat="settingRow in table.settingRows">

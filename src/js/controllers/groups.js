@@ -34,13 +34,18 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Groups', '$stateParams', function($scope, $rootScope, resolvedData, $state, Groups, $stateParams) {
+app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Groups', '$stateParams', 'languageTranslator', function($scope, $rootScope, resolvedData, $state, Groups, $stateParams, languageTranslator) {
     //Init
-    $scope.title = 'Groups';
+    $scope.title = languageTranslator.tables.groups[$rootScope.language];
     $scope.groups = resolvedData.groups;
     $scope.pager = resolvedData.pager;
 
-    console.log($scope.groups);
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons)
+    };
 
     $scope.pager.getPage = function(index){
       $stateParams.page = index;
@@ -62,7 +67,7 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Groups',
+      'title': languageTranslator.tables.groups[$rootScope.language],
       'icon': null,
       'state': 'base.groups.list',
       'params': null
@@ -98,14 +103,21 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', function($scope, $rootScope, resolvedData) {
+app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 'languageTranslator', function($scope, $rootScope, resolvedData, languageTranslator) {
     //Init
     $scope.group = resolvedData.group;
-    $scope.title = "Grupa "+$scope.group.name;
+    $scope.title = [languageTranslator.tables.group[$rootScope.language],$scope.group.name].join(' ');
+
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons)
+    };
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Groups',
+      'title': languageTranslator.tables.groups[$rootScope.language],
       'icon': null,
       'state': 'base.groups.list',
       'params': null

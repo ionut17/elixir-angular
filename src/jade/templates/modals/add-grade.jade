@@ -1,0 +1,54 @@
+#add-grade.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		.modal-content
+			.modal-icon-titled
+				section
+					i.material-icons spellcheck
+					h2 {{modal['add-grade'].title}}
+				section.left-aligned
+					h1 {{modal['add-grade'].step.current+'. '+modal['add-grade'].step.title}}
+					p(ng-show='modal["add-grade"].step.details.length' ng-repeat="detail in modal['add-grade'].step.details" ng-class="detail.class") {{detail.content}}
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['add-grade'].loading")
+					figure.preloader
+					h5 {{modal['add-grade'].loadingMessage}}
+				ul(ng-hide="modal['add-grade'].loading || modal['add-grade'].step.current!==1")
+					li
+						label(for='course') {{modal['add-grade'].labels.table.course}}
+						select(name='course', ng-model='modal.local.courseId', ng-change='modal["add-grade"].refreshActivities()', ng-disabled='modal.local.courseDisabled', ng-options="course as course.title for course in modal['add-grade'].data.courses track by course.id", placeholder='Select course' required)
+							option(selected disabled value='') {{modal['add-grade'].labels.placeholders.selectCourse}}
+					li.error(ng-if='modal.local.errors.course') {{modal.local.errors.course}}
+					li
+						label(for='activity') {{modal['add-grade'].labels.table.activity}}
+						select(name='activity', ng-model='modal.local.activityId', ng-disabled='modal.local.activityDisabled', ng-options="activity as activity.name for activity in modal['add-grade'].data.activities track by activity.id", placeholder='Select activity' required)
+							option(selected disabled value='') {{modal['add-grade'].labels.placeholders.selectActivity}}
+					li.error(ng-if='modal.local.errors.activity') {{modal.local.errors.activity}}
+				ul(ng-hide="modal['add-grade'].loading || modal['add-grade'].step.current!==2")
+					li.filters
+						select.sm-select(name='group', ng-model='modal.local.groupId', ng-change='modal["add-grade"].filterStudents()', ng-options="group as group.name for group in modal['add-grade'].data.groups track by group.id", placeholder='Select group' required)
+							option(selected value='') {{modal['add-grade'].labels.table.allGroups}}
+						figure.search-bar-wrapper
+							.search-bar
+								input#search-bar-input(name="search" type="text" ng-model="modal['add-grade'].search.value" placeholder="Search")
+								i.material-icons(ng-click="modal['add-grade'].search.clear()" ng-show="modal['add-grade'].search.value") close
+							a.search-button(ng-click="modal['add-grade'].filterStudents()")
+								i.material-icons search
+						li.error.no-margin(ng-if='modal.local.errors.student') {{modal.local.errors.student}}
+			.table-wrapper.modal-table(ng-hide="modal['add-grade'].loading || modal['add-grade'].step.current!==2")
+				table.table.elixir-table
+					thead
+						tr
+							th.col-sm-1 #
+							th Student
+							th.col-sm-1.checker {{modal['add-grade'].labels.marked}}
+					tbody
+						tr(ng-repeat='student in modal.local.students track by $index' ng-show="student.visible")
+							th.col-sm-1(scope='row') {{student.index}}
+							td.td-bold {{student.lastName+' '+student.firstName}}
+							td.col-sm-1.grader(ng-class="{'graded': student.grade !== null}")
+								input(type='number' ng-model="student.grade")
+						tr.disable-hover(ng-if='!modal.local.students.length')
+							td.td-disabled.text-center(colspan='6') {{modal['add-grade'].labels.errors.noResults}}
+			.modal-footer.text-center(ng-hide="modal['add-grade'].loading")
+				button.ebutton.white-button(type='button', ng-click='modal["add-grade"].action.cancel(modal.local)') {{modal['add-grade'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["add-grade"].action.submit(modal.local)') {{modal['add-grade'].submit}}

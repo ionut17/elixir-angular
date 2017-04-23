@@ -75,11 +75,19 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins) {
+app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', 'languageTranslator',
+          function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins, languageTranslator) {
     //Init
-    $scope.title = $stateParams.type ? $stateParams.type : 'Users';
+    $scope.title = $stateParams.type ? $stateParams.type : languageTranslator.tables.users[$rootScope.language];
     $scope.users = resolvedData.users;
     $scope.pager = resolvedData.pager;
+
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons)
+    };
 
     $scope.refresh = function(index){
       if (!index){
@@ -125,7 +133,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Users',
+      'title': languageTranslator.tables.users[$rootScope.language],
       'icon': null,
       'state': 'base.users.list',
       'params': null
@@ -133,7 +141,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
     $rootScope.paths.length = 2;
     if ($stateParams.type){
       $rootScope.paths[2] = {
-        'title': $stateParams.type,
+        'title': languageTranslator.tables[$stateParams.type][$rootScope.language],
         'icon': null,
         'state': 'base.users.list',
         'params': {
@@ -143,37 +151,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
       $rootScope.paths.length = 3;
     }
 
-    $scope.modal = {
-      user : {
-        errors : {}
-      }
-    };
-    $scope.modal.submit = function(){
-      switch($scope.modal.user.type){
-        case 'student':
-          Students.add($scope.modal.user).$promise.then(function(response){
-            console.log(response);
-          }, function(response){
-            console.log(response);
-          });
-          break;
-        case 'lecturer':
-          Lecturers.add($scope.modal.user).$promise.then(function(response){
-            console.log(response);
-          }, function(response){
-            console.log(response);
-          });
-          break;
-        case 'admin':
-          Admins.add($scope.modal.user).$promise.then(function(response){
-            console.log(response);
-          }, function(response){
-            console.log(response);
-          });
-          break;
-      }
-      console.log($scope.modal.user);
-    }
+    console.log($scope.users);
 
     $scope.filters = {
       toggleFilters : undefined,
@@ -324,13 +302,21 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', '$state', function($scope, $rootScope, $stateParams, Students, Groups, resolvedData, $stateParams, $state) {
+app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', 'Students', 'Groups', 'resolvedData', '$stateParams', '$state', 'languageTranslator',
+          function($scope, $rootScope, $stateParams, Students, Groups, resolvedData, $stateParams, $state, languageTranslator) {
     //Init
     $scope.user = resolvedData.user;
     $scope.pager = resolvedData.pager ? resolvedData.pager : {};
     $scope.pager.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.users.view', $stateParams, {reload: true});
+    };
+
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons)
     };
 
     $scope.user.type = $stateParams.type;
@@ -341,19 +327,15 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     }
     $scope.title = $scope.user.lastName + " " + $scope.user.firstName;
 
-    //TODO refresh function for working pagination on sub views
-    console.log($scope.user);
-
-
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Users',
+      'title': languageTranslator.tables.users[$rootScope.language],
       'icon': null,
       'state': 'base.users.list',
       'params': null
     };
     $rootScope.paths[2] = {
-      'title':  $scope.user.type,
+      'title':  languageTranslator.tables[$scope.user.type][$rootScope.language],
       'icon': null,
       'state': 'base.users.list',
       'params': {
@@ -390,19 +372,19 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
       'editButtons' : false
     }
 
-    // console.log($scope.user);
+    console.log($scope.modal);
 
-    $scope.modal = {
+    $scope.modalOld = {
       element: $('#add-group-modal'),
       user: {},
       open: undefined,
       submit: undefined
     }
 
-    $scope.modal.open = function(){
+    $scope.modalOld.open = function(){
       // Get groups
       Groups.getAll().$promise.then(function(response){
-        $scope.modal.groups = [];
+        $scope.modalOld.groups = [];
         //Show only appropiate groups
         angular.forEach(response, function(group, key) {
           var hasGroup = false;
@@ -412,7 +394,7 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
             }
           });
           if (!hasGroup){
-            $scope.modal.groups.push(group);
+            $scope.modalOld.groups.push(group);
           }
         });
       }, function(response){
@@ -420,18 +402,18 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
       });
     }
 
-    $scope.modal.submit = function(){
+    $scope.modalOld.submit = function(){
       if ($stateParams.type === 'students'){
         Students.addGroup({
           id: $scope.user.id
-        }, $scope.modal.user.group).$promise.then(function(response){
+        }, $scope.modalOld.user.group).$promise.then(function(response){
           console.log(response);
         }, function(response){
           console.log(response);
         });
 
       }
-      $scope.modal.element.modal('hide');
+      $scope.modalOld.element.modal('hide');
     }
 
 }]);

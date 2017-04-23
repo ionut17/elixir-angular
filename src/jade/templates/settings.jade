@@ -5,14 +5,18 @@ section.container-title
       .page-title-wrapper
           div
             h2 {{title}}
+            
+section.container-tools( ng-if="isAuthorized(authorizedRoles.settings)")
+  section.tools
+    h3 {{languageLabel}}
+    button.ebutton.language-toggle(ng-repeat="language in languages" ng-click="languageToggle(language)" ng-class='{"active": checkLanguage(language)}') {{language}}
 
 section.container-content
   .row
     .col-md-6.col-sm-12
       .table-wrapper
-        .table-title
-          | {{table.title}}
-          button.ebutton.white-button Change Details
+        .table-title {{table.detailRowsTitle}}
+          button.ebutton.white-button {{buttonLabels.changeDetails}}
         table.table.elixir-table.elixir-table-horizontal.disable-hover
           tbody
             tr(ng-repeat='detailRow in table.detailRows')
@@ -21,7 +25,7 @@ section.container-content
                 span(ng-class="detailRow.customClass") {{detailRow.value}}
     .col-md-6.col-sm-12
       .table-wrapper
-        .table-title Settings
+        .table-title {{table.settingRowsTitle}}
         table.table.elixir-table.elixir-table-horizontal.disable-hover
           tbody
             tr(ng-repeat='settingRow in table.settingRows')

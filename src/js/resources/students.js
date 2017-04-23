@@ -10,6 +10,17 @@ app.factory("Students", ["config", "$resource", "AuthService", function(config, 
                 }
             }
         },
+        getAllUnpaged: {
+            url: config.apiEndpoint + "students/all",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         getById: {
             url: config.apiEndpoint + "students/:id",
             method: "GET",
@@ -19,6 +30,17 @@ app.factory("Students", ["config", "$resource", "AuthService", function(config, 
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        getByCourseId: {
+          url: config.apiEndpoint + "students/course/:course_id",
+          method: "GET",
+          isArray: true,
+          headers: {
+              'Accept': 'application/json',
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         },
         getAttendances: {
             url: config.apiEndpoint + "students/:id/attendances",

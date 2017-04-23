@@ -15,14 +15,14 @@
       <div class="table-wrapper">
         <div class="table-title">
           <div class="pagination-wrapper">
-            <h4>Page</h4>
+            <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
             <ul class="pagination">
               <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
             </ul>
           </div>
           <figure class="search-bar-wrapper">
             <div class="search-bar">
-              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="{{language == 'en' ? 'Search' : 'Caută'}}"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
             </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
           </figure>
         </div>

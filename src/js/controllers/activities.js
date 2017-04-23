@@ -143,16 +143,28 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", "Activities", "Attendances", "Grades", "Files", "AuthService", "Courses",
-        function($scope, $rootScope, resolvedData, $state, $stateParams, Activities, Attendances, Grades, Files, AuthService, Courses) {
+app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedData', '$state', "$stateParams", "Activities", "Attendances", "Grades", "Files", "AuthService", "Courses", "languageTranslator", "NotificationService", 'NOTIFICATIONS_TYPES',
+        function($scope, $rootScope, resolvedData, $state, $stateParams, Activities, Attendances, Grades, Files, AuthService, Courses, languageTranslator, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
     $scope.singleActivity = resolvedData.activity;
     $scope.singleCourse = resolvedData.course;
     $scope.activities = resolvedData.activities;
     $scope.pager = resolvedData.pager;
-    $scope.title = $scope.activities.type;
-    $scope.subtitle = $scope.singleActivity ? [$scope.singleActivity.name, $scope.singleActivity.course.title].join(' / ') : $scope.singleCourse ? $scope.singleCourse.title : 'All Courses';
-    $scope.isAuthorized = AuthService.isAuthorized;
+    // $scope.title = $scope.singleActivity.name ? [$scope.singleActivity.name,'/',$scope.activities.type].join(' ') : $scope.activities.type;
+    $scope.title = $scope.singleActivity ? $scope.singleActivity.name : languageTranslator.pages.activities.title[$rootScope.language];
+    $scope.subtitle = {
+      text: $scope.singleActivity ? $scope.singleActivity.course.title : $scope.singleCourse ? $scope.singleCourse.title : languageTranslator.tables.allCourses[$rootScope.language],
+      class: $scope.singleActivity || $scope.singleCourse ? 'td-blue' : ''
+    }
+    $scope.hasRole = AuthService.hasRole;
+
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+      marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+    }
 
     //Get specific page
     var previousType = null;
@@ -177,6 +189,53 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       }
     };
 
+    // Delete
+    $scope.delete = function(params){
+      var resource = null;
+      var label = params.role.capitalizeFirstLetter();
+      var requestBody = {};
+      switch (params.role){
+        case 'activity':
+          resource = Activities;
+          requestBody = {
+            activity_id: params.activity.id
+          };
+          break;
+        case 'attendance':
+          resource = Attendances;
+          requestBody = {
+            activity_id: params.activity.id,
+            student_id: params.user.id
+          };
+          break;
+        case 'grade':
+          resource = Grades;
+          requestBody = {
+            activity_id: params.activity.id,
+            student_id: params.user.id
+          };
+          break;
+      }
+      //Removing activity
+      resource.delete(requestBody).$promise.then(function(response){
+        $state.go('base.activities.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: 'You have successfully deleted the '+label,
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
+    }
+
     // Search
     $scope.search = $rootScope.search;
     $scope.search.go = function(){
@@ -195,6 +254,12 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
     $scope.courses = undefined;
     if ($scope.singleActivity === undefined){
       Courses.getAllUnpaged().$promise.then(function(response){
+        //Modify course titles
+        angular.forEach(response, function(value, key) {
+           value.title = [Array(value.year+1).join('I'),value.semester,' - ',value.title].join('');
+        });
+        response.sort( function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);} );
+        //Set courses
         $scope.courses = response;
       }, function(response){});
     };
@@ -218,7 +283,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Activities',
+      'title': languageTranslator.pages.activities.title[$rootScope.language],
       'icon': null,
       'state': 'base.activities.list',
       'params': {
@@ -255,7 +320,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       }
       if($stateParams.type){
         $rootScope.paths[4] = {
-          'title': $stateParams.type,
+          'title': languageTranslator.tables[$stateParams.type][$rootScope.language],
           'icon': null,
           'state': 'base.activities.list',
           'params': {
@@ -442,10 +507,18 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', 'config', function($scope, $rootScope, resolvedData, config) {
+app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedData', 'config', 'languageTranslator', function($scope, $rootScope, resolvedData, config, languageTranslator) {
     //Init
     $scope.activity = resolvedData.activity;
-    $scope.title = [$scope.activity.user.firstName,$scope.activity.user.lastName,'-',$scope.activity.type.slice(0,-1),'at',$scope.activity.activity.type.name,'(',$scope.activity.activity.course.title,')'].join(' ');
+    $scope.title = [$scope.activity.user.firstName,$scope.activity.user.lastName,'-',languageTranslator.tables[$scope.activity.type.slice(0,-1)][$rootScope.language],languageTranslator.tables.at[$rootScope.language],$scope.activity.activity.type.name,'(',$scope.activity.activity.course.title,')'].join(' ');
+
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+      marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+    }
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -474,7 +547,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Activities',
+      'title': languageTranslator.pages.activities.title[$rootScope.language],
       'icon': null,
       'state': 'base.activities.list',
       'params': {
@@ -504,7 +577,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         }
       };
     $rootScope.paths[4] = {
-        'title': $scope.activity.type,
+        'title': languageTranslator.tables[$scope.activity.type][$rootScope.language],
         'icon': null,
         'state': 'base.activities.list',
         'params': {
@@ -527,12 +600,21 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
     $rootScope.paths.length = 6;
 
     //Logic
+    var orderedTitle = undefined;
+    switch ($rootScope.language){
+      case 'en':
+        orderedTitle = [languageTranslator.tables[$scope.activity.type.slice(0,-1)][$rootScope.language],languageTranslator.tables.details[$rootScope.language]].join(' ');
+        break;
+      case 'ro':
+        orderedTitle = [languageTranslator.tables.details[$rootScope.language], languageTranslator.tables[$scope.activity.type.slice(0,-1)][$rootScope.language]].join(' ');
+        break;
+    }
     $scope.table = {
-      title : $scope.activity.type.slice(0,-1) + " Details",
+      title : orderedTitle,
       columns : {
         user: $scope.activity.user.type.capitalizeFirstLetter(),
-        activity: 'Activity',
-        course: 'Course'
+        activity: $scope.labels.table.activity,
+        course: $scope.labels.table.course
       },
       retrieveLink : function(){
         return config.apiEndpoint+'storage/retrieve/'+$scope.activity.id+'?k='+$rootScope.authUser.token;
@@ -545,7 +627,7 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         break;
       case 'grades':
         $scope.table.extraRows = [{
-            title : 'Value',
+            title : $scope.labels.table.value,
             value : $scope.activity.value,
             customClass : 'tag tag-auto tag-grade'
           }
@@ -553,14 +635,18 @@ app.controller('ActivitiesViewController', ['$scope', '$rootScope', 'resolvedDat
         break;
       case 'files':
         $scope.table.extraRows = [{
-            title : 'File',
+            title : $scope.labels.table.file,
             value : $scope.activity.fileName+'.'+$scope.activity.extension,
             customClass : '',
             hasDownloadButton: true,
           },{
-            title: 'Type',
+            title: $scope.labels.table.type,
             value : $scope.activity.extension,
             customClass : 'tag tag-auto tag-file'
+          },{
+            title: $scope.labels.table.uploadDate,
+            value : $scope.activity.uploadDate,
+            customClass : 'td-blue'
           }
         ]
         break;

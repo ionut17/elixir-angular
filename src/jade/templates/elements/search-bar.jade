@@ -1,6 +1,6 @@
 figure.search-bar-wrapper
   .search-bar
-    input#search-bar-input(name="search" type="text" ng-model="search.value" placeholder="Search")
+    input#search-bar-input(name="search" type="text" ng-model="search.value" placeholder="{{language == 'en' ? 'Search' : 'Caută'}}")
     i.material-icons(ng-click="search.clear()" ng-show="search.value") close
   a.search-button(ng-click="search.go()")
     i.material-icons search

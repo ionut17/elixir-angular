@@ -2,13 +2,14 @@
 <section class="container-title">
   <!-- Header-->
   <div class="row">
-    <div class="col-md-12"><span ng-if="subtitle" class="td-subtitle">{{subtitle}}</span>
+    <div class="col-md-12"><span ng-if="subtitle" ng-class="subtitle.class" class="td-subtitle">{{subtitle.text}}</span>
       <div class="page-title-wrapper">
         <div class="page-title-item">
           <h2>{{title}}</h2>
         </div>
-        <button ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)" class="ebutton green-button">Add Activity</button>
-        <button ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)" class="ebutton green-button">Upload File</button>
+        <select name="course" ng-model="selectedCourse" ng-options="course.id as course.title for course in courses track by course.id" ng-change="changeCourse(selectedCourse)" ng-if="!singleActivity" class="large-select hide">
+          <option value="">All Courses</option>
+        </select>
       </div>
     </div>
   </div>
@@ -16,19 +17,27 @@
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <ul class="tabs-wrapper">
-          <li ui-sref="base.activities.list({type: null, page: 0})" ng-class="{active: activities.type==&quot;activities&quot;}" ng-if="singleActivity">All Activities</li>
-          <li ui-sref="base.activities.list({type: &quot;attendances&quot;, page: 0})" ng-class="{active: activities.type==&quot;attendances&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">Attendances</li>
-          <li ui-sref="base.activities.list({type: &quot;grades&quot;, page: 0})" ng-class="{active: activities.type==&quot;grades&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">Grades</li>
-          <li ui-sref="base.activities.list({type: &quot;files&quot;, page: 0})" ng-class="{active: activities.type==&quot;files&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">Files</li>
+          <li ui-sref="base.activities.list({type: null, page: 0})" ng-class="{active: activities.type==&quot;activities&quot;}" ng-if="singleActivity">{{labels.table.allActivities}}</li>
+          <li ui-sref="base.activities.list({type: &quot;attendances&quot;, page: 0})" ng-class="{active: activities.type==&quot;attendances&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">{{labels.table.attendances}}</li>
+          <li ui-sref="base.activities.list({type: &quot;grades&quot;, page: 0})" ng-class="{active: activities.type==&quot;grades&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">{{labels.table.grades}}</li>
+          <li ui-sref="base.activities.list({type: &quot;files&quot;, page: 0})" ng-class="{active: activities.type==&quot;files&quot;}" ng-if="singleActivity &amp;&amp; isAuthorized(authorizedRoles.activities.sublist)">{{labels.table.files}}</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 <section class="container-tools">
-  <h3>Tools</h3>
-  <button ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)" class="ebutton green-button">Add Activity</button>
-  <button ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)" class="ebutton green-button">Upload File</button>
+  <section class="tools">
+    <h3>{{labels.table.tools}}</h3>
+    <button ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(singleCourse)" class="ebutton icon-button"><i class="material-icons sm">assignment</i><span>{{labels.buttons.addActivity}}</span></button>
+    <button ng-if="isAuthorized(authorizedRoles.attendances.create)" ng-click="modal['add-attendance'].this(singleActivity || singleCourse)" class="ebutton icon-button"><i class="material-icons sm">event</i><span>{{labels.buttons.markAttendances}}</span></button>
+    <button ng-if="isAuthorized(authorizedRoles.grades.create)" ng-click="modal['add-grade'].this(singleActivity || singleCourse)" class="ebutton icon-button"><i class="material-icons sm">spellcheck</i><span>{{labels.buttons.addGrades}}</span></button>
+    <button ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this(singleActivity || singleCourse)" class="ebutton icon-button"><i class="material-icons">file_upload</i><span>{{labels.buttons.uploadFile}}</span></button>
+  </section>
+  <h4 ng-if="!singleActivity">{{labels.table.filterByCourse}}</h4>
+  <select name="course" ng-model="selectedCourse" ng-options="course.id as course.title for course in courses track by course.id" ng-change="changeCourse(selectedCourse)" ng-if="!singleActivity" class="large-select">
+    <option value="">{{labels.table.allCourses}}</option>
+  </select>
 </section>
 <section class="container-content">
   <div class="row">
@@ -37,50 +46,49 @@
         <h3>{{course.title}}</h3>
       </div>
     </div>
-    <div class="col-md-12">
+    <div class="col-lg-6 col-md-12">
       <div class="table-wrapper">
         <div class="table-title">
           <div class="pagination-wrapper">
-            <h4>Page</h4>
+            <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
             <ul class="pagination">
               <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
             </ul>
           </div>
-          <select name="course" ng-model="selectedCourse" ng-options="course.id as course.title for course in courses track by course.id" ng-change="changeCourse(selectedCourse)" ng-if="!singleActivity" class="large-select">
-            <option value="">All Courses</option>
-          </select>
           <figure class="search-bar-wrapper">
             <div class="search-bar">
-              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="{{language == 'en' ? 'Search' : 'Caută'}}"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
             </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
           </figure>
         </div>
         <table class="table elixir-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th ng-show="singleActivity &amp;&amp; activities.type=='activities'">Role</th>
-              <th ng-hide="singleCourse" class="col-sm-2">Course</th>
-              <th class="col-sm-1">Type</th>
-              <th>Name</th>
-              <th ng-if="activities.type!=='files'" class="col-sm-2">Activity Date</th>
-              <th ng-if="activities.type==='files'" class="col-sm-2">Upload Date</th>
-              <th ng-show="singleActivity">Student</th>
+              <th class="td-fit">#</th>
+              <th ng-show="singleActivity" class="td-fit">{{labels.table.role}}</th>
+              <th ng-hide="singleCourse" class="td-fit">{{labels.table.course}}</th>
+              <th ng-hide="singleActivity" class="td-fit">{{labels.table.type}}</th>
+              <th ng-hide="singleActivity">{{labels.table.name}}</th>
+              <th ng-show="singleActivity">{{labels.table.student}}</th>
+              <th ng-if="activities.type!=='files'">{{labels.table.activityDate}}</th>
+              <th ng-if="activities.type==='files'">{{labels.table.uploadDate}}</th>
+              <th ng-show="isAuthorized(authorizedRoles.activities.edit) || isAuthorized(authorizedRoles.activities.delete)" class="td-actions">{{labels.table.actions}}</th>
             </tr>
           </thead>
           <tbody>
             <tr ng-repeat="activity in activities track by $index" ng-click="goTo(activity)">
-              <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
-              <td ng-show="singleActivity &amp;&amp; activities.type=='activities'"><span ng-class="activity.roleTag" class="tag">{{activity.role}}</span></td>
-              <td ng-hide="singleCourse" class="td-blue">{{activity.activity.course.title}}</td>
-              <td><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
-              <td>{{activity.activity.name}}</td>
+              <th scope="row" class="td-fit">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
+              <td ng-show="singleActivity" class="td-fit"><span class="tag {{&quot;tag-&quot;+activity.role}}">{{labels.table[activity.role]}}</span></td>
+              <td ng-hide="singleCourse" class="td-blue td-fit">{{activity.activity.course.title}}</td>
+              <td ng-hide="singleActivity" class="td-fit"><span ng-class="activity.tag" class="tag">{{activity.activity.type.name}}</span></td>
+              <td ng-hide="singleActivity">{{activity.activity.name}}</td>
+              <td ng-show="singleActivity" class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
               <td ng-if="activities.type!=='files'" class="td-blue">{{activity.activity.date}}</td>
               <th ng-if="activities.type==='files'" class="td-blue">{{activity.uploadDate}}</th>
-              <td ng-show="singleActivity" class="td-bold">{{activity.user.firstName + ' ' + activity.user.lastName}}</td>
+              <td ng-show="isAuthorized(authorizedRoles.activities.edit) || isAuthorized(authorizedRoles.activities.delete)" ng-click="$event.stopPropagation();" class="td-actions"><i title="Edit" ng-if="isAuthorized(authorizedRoles.activities.edit)" class="material-icons icon-button icon-edit">mode_edit</i><i title="Delete" ng-if="isAuthorized(authorizedRoles.activities.delete)" ng-click="modal.confirm.this(delete, 'delete', activity)" class="material-icons icon-button icon-delete">delete_forever</i></td>
             </tr>
             <tr ng-if="!activities.length" class="disable-hover">
-              <td colspan="6" class="td-disabled text-center">No results have been found</td>
+              <td colspan="10" class="td-disabled text-center">{{labels.errors.noResults}}</td>
             </tr>
           </tbody>
         </table>

@@ -5,10 +5,17 @@
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <h2>{{title}}</h2>
-        <button data-toggle="modal" data-target="#add-user-modal" class="ebutton green-button">Add Course</button>
       </div>
     </div>
   </div>
+</section>
+<section ng-if="isAuthorized(authorizedRoles.courses.tools)" class="container-tools">
+  <section class="tools">
+    <h3>{{labels.table.tools}}</h3>
+    <button ng-click="modal['add-course'].this()" ng-if="isAuthorized(authorizedRoles.courses.create)" class="ebutton icon-button"><i class="material-icons sm">school</i><span>{{labels.buttons.addCourse}}</span></button>
+    <button ng-click="modal['add-course-lecturer'].this()" ng-if="isAuthorized(authorizedRoles.courses.addLecturer)" class="ebutton icon-button"><i class="material-icons sm">playlist_add</i><span>{{labels.buttons.addLecturerToCourse}}</span></button>
+    <button ng-click="modal['add-course-students'].this()" ng-if="isAuthorized(authorizedRoles.courses.addStudents)" class="ebutton icon-button"><i class="material-icons sm">playlist_add</i><span>{{labels.buttons.addStudentsToCourse}}</span></button>
+  </section>
 </section>
 <section class="container-content">
   <div class="row">
@@ -16,14 +23,14 @@
       <div class="table-wrapper">
         <div class="table-title">
           <div class="pagination-wrapper">
-            <h4>Page</h4>
+            <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
             <ul class="pagination">
               <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
             </ul>
           </div>
           <figure class="search-bar-wrapper">
             <div class="search-bar">
-              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="Search"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
+              <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="{{language == 'en' ? 'Search' : 'Caută'}}"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
             </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
           </figure>
         </div>
@@ -31,10 +38,11 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Title</th>
-              <th>Year</th>
-              <th>Semester</th>
-              <th>Lecturers</th>
+              <th>{{labels.table.title}}</th>
+              <th>{{labels.table.year}}</th>
+              <th>{{labels.table.semester}}</th>
+              <th class="td-fit">{{labels.table.lecturers}}</th>
+              <th ng-show="isAuthorized(authorizedRoles.courses.edit) || isAuthorized(authorizedRoles.courses.delete)" class="td-actions">{{labels.table.actions}}</th>
             </tr>
           </thead>
           <tbody>
@@ -43,7 +51,8 @@
               <td class="td-bold">{{course.title}}</td>
               <td class="td-bold">{{course.year}}</td>
               <td class="td-bold">{{course.semester}}</td>
-              <td class="td-blue">{{course.lecturers.length}}</td>
+              <td class="td-blue td-fit">{{course.lecturers.length}}</td>
+              <td ng-show="isAuthorized(authorizedRoles.courses.edit) || isAuthorized(authorizedRoles.courses.delete)" class="td-actions"><i title="Edit" ng-if="isAuthorized(authorizedRoles.courses.edit)" class="material-icons icon-button icon-edit">mode_edit</i><i title="Delete" ng-if="isAuthorized(authorizedRoles.courses.delete)" class="material-icons icon-button icon-delete">delete_forever</i></td>
             </tr>
             <tr ng-if="!courses.length" class="disable-hover">
               <td colspan="6" class="td-disabled text-center">No results have been found</td>

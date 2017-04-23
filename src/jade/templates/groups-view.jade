@@ -2,7 +2,7 @@ section.container-title
   // Header
   .row
     .col-md-12
-      span.td-subtitle Year {{group.year}} ( {{group.students.length}} Students )
+      span.td-subtitle {{labels.table.year}} {{group.year}} ( {{group.students.length}} {{labels.table.students}} )
       .page-title-wrapper
           h2 {{title}}
 
@@ -12,15 +12,15 @@ section.container-content
     .col-md-6
       .table-wrapper
         .table-title
-          | Students
+          | {{labels.table.students}}
         table.table.elixir-table
           thead
             tr
               th #
-              th First Name
-              th Last Name
-              th Email
-              th Actions
+              th {{labels.table.firstName}}
+              th {{labels.table.lastName}}
+              th {{labels.table.email}}
+              th {{labels.table.actions}}
           tbody
             tr(ng-repeat='user in group.students track by $index', ui-sref="base.users.view({type: 'students', id: user.id})")
               th.col-sm-1(scope='row') {{$index+1}}
@@ -30,4 +30,4 @@ section.container-content
               td
                 i.fa.fa-times(aria-hidden='true')
             tr.disable-hover(ng-if='!group.students.length')
-              td.td-disabled.text-center(colspan='6') No results have been found
+              td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}

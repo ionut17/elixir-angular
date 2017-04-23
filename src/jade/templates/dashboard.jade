@@ -7,7 +7,100 @@ section.container-title
 
 section.container-content
   .row
-    .col-md-12.coverbox-wrapper
+    .col-md-12.coverbox-wrapper.no-after
+        div.coverbox.coverbox-sm(ng-if="isAuthorized(authorizedRoles.files.create)" ng-click="modal['add-file'].this()")
+          i.material-icons file_upload
+          h3 {{dashboardLabels.uploadFile}}
+        div.coverbox.coverbox-sm(ng-if="hasRole('student')" ui-sref='base.users.view({type: user.type+"s", id: user.id, detail: "grades", page: 0})')
+          i.material-icons spellcheck
+          h3 {{dashboardLabels.myGrades}}
+        div.coverbox.coverbox-sm(ng-if="hasRole('student')" ui-sref='base.users.view({type: user.type+"s", id: user.id, detail: "attendances", page: 0})')
+          i.material-icons event
+          h3 {{dashboardLabels.myAttendances}}
+        div.coverbox.coverbox-sm(ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this()")
+          i.material-icons assignment
+          h3 {{dashboardLabels.addActivity}}
+        div.coverbox.coverbox-sm(ng-if="isAuthorized(authorizedRoles.attendances.create)" ng-click="modal['add-attendance'].this()")
+          i.material-icons event
+          h3 {{dashboardLabels.addAttendances}}
+        div.coverbox.coverbox-sm(ng-if="isAuthorized(authorizedRoles.grades.create)" ng-click="modal['add-grade'].this()")
+          i.material-icons spellcheck
+          h3 {{dashboardLabels.addGrades}}
+  .row
+    .col-md-6.col-sm-12.col-xs-12(ng-if="hasRole('student')")
+      .table-wrapper
+        .table-title
+          | {{dashboardLabels.latestActivities}}
+          button.ebutton.sm-button.white-button-alt(ui-sref='base.activities.list') {{dashboardLabels.tables.viewAll}}
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th.col-sm-2 {{dashboardLabels.tables.role}}
+              th.col-sm-3 {{dashboardLabels.tables.course}}
+              th.col-sm-1 {{dashboardLabels.tables.type}}
+              th.col-sm-2 {{dashboardLabels.tables.name}}
+              th.col-sm-3 {{dashboardLabels.tables.activityDate}}
+              th.col-sm-1(ng-if="isAuthorized(authorizedRoles.dashboard.user)") Student
+          tbody
+            tr(ng-repeat='activity in activities track by $index',  ui-sref='base.activities.view({type: activity.role+"s", course_id: activity.activity.course.id, activity_id: activity.activity.id, user_id: activity.user.id, file_id: activity.extraId})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td
+                span.tag(ng-class='activity.roleTag') {{activity.role}}
+              td.td-blue {{activity.activity.course.title}}
+              td
+                span.tag.tag-sm(ng-class='activity.tag') {{activity.activity.type.name}}
+              td {{activity.activity.name}}
+              td.td-blue {{activity.activity.date}}
+              td(ng-if="isAuthorized(authorizedRoles.dashboard.user)") {{activity.user.lastName+' '+activity.user.firstName}}
+            tr.disable-hover(ng-if='!activities.length')
+              td.td-disabled.text-center(colspan='6') {{dashboardLabels.errors.noResults}}
+    .col-md-6.col-sm-12.col-xs-12(ng-if="hasRole('lecturer')")
+      .table-wrapper
+        .table-title
+          | {{dashboardLabels.latestFiles}}
+          button.ebutton.sm-button.white-button-alt(ui-sref='base.activities.list') {{dashboardLabels.tables.viewAll}}
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th.col-sm-2 {{dashboardLabels.tables.uploadDate}}
+              th.col-sm-4 {{dashboardLabels.tables.student}}
+              th.col-sm-3 {{dashboardLabels.tables.course}}
+              th.col-sm-2 {{dashboardLabels.tables.name}}
+              th.col-sm-1 {{dashboardLabels.tables.type}}
+          tbody
+            tr(ng-repeat='file in files track by $index',  ui-sref='base.activities.view({type: "files", course_id: file.activity.course.id, activity_id: file.activity.id, user_id: file.student.id, file_id: file.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td.td-blue {{file.uploadDate}}
+              td {{file.student.lastName+' '+file.student.firstName}}
+              td.td-blue {{file.activity.course.title}}
+              td {{file.activity.name}}
+              td
+                span.tag.tag-sm(ng-class='activity.tag') {{file.activity.type.name}}
+            tr.disable-hover(ng-if='!activities.length')
+              td.td-disabled.text-center(colspan='6') {{dashboardLabels.errors.noResults}}
+    .col-md-6.col-sm-12.col-xs-12
+      .table-wrapper
+        .table-title
+          | {{dashboardLabels.courses}}
+          button.ebutton.sm-button.white-button-alt(ui-sref='base.courses.list') {{dashboardLabels.tables.viewAll}}
+        table.table.elixir-table
+          thead
+            tr
+              th #
+              th.col-sm-9 {{dashboardLabels.tables.title}}
+              th.col-sm-1 {{dashboardLabels.tables.year}}
+              th.col-sm-1 {{dashboardLabels.tables.semester}}
+          tbody
+            tr(ng-repeat='course in courses track by $index', ui-sref='base.courses.view({id: course.id})')
+              th.col-sm-1(scope='row') {{$index+1}}
+              td.td-blue {{course.title}}
+              td {{course.year}}
+              td {{course.semester}}
+            tr.disable-hover(ng-if='!courses.length')
+              td.td-disabled.text-center(colspan='6') {{dashboardLabels.errors.noResults}}
+    .col-md-12.coverbox-wrapper.hide
         div.coverbox(ui-sref='base.activities.list({type: null})' ng-if="isAuthorized(authorizedRoles.activities.list)")
           i.material-icons assignment
           h3 Activities

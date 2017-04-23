@@ -1,0 +1,77 @@
+
+<div id="add-attendance" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <!--TODO Add steps to modals and make option to select multiple users to add attendance for them-->
+    <div class="modal-content">
+      <div class="modal-icon-titled">
+        <section><i class="material-icons">event</i>
+          <h2>{{modal['add-attendance'].title}}</h2>
+        </section>
+        <section class="left-aligned">
+          <h1>{{modal['add-attendance'].step.current+'. '+modal['add-attendance'].step.title}}</h1>
+          <p ng-show="modal[&quot;add-attendance&quot;].step.details.length" ng-repeat="detail in modal['add-attendance'].step.details" ng-class="detail.class">{{detail.content}}</p>
+        </section>
+      </div>
+      <div class="modal-body">
+        <div ng-show="modal['add-attendance'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>{{modal['add-attendance'].loadingMessage}}</h5>
+        </div>
+        <ul ng-hide="modal['add-attendance'].loading || modal['add-attendance'].step.current!==1">
+          <li>
+            <label for="course">{{modal['add-attendance'].labels.table.course}}</label>
+            <select name="course" ng-model="modal.local.courseId" ng-change="modal[&quot;add-attendance&quot;].refreshActivities()" ng-disabled="modal.local.courseDisabled" ng-options="course as course.title for course in modal['add-attendance'].data.courses track by course.id" placeholder="Select course" required="required">
+              <option selected="selected" disabled="disabled" value="">{{modal['add-attendance'].labels.placeholders.selectCourse}}</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.course" class="error">{{modal.local.errors.course}}</li>
+          <li>
+            <label for="activity">{{modal['add-attendance'].labels.table.activity}}</label>
+            <select name="activity" ng-model="modal.local.activityId" ng-disabled="modal.local.activityDisabled" ng-options="activity as activity.name for activity in modal['add-attendance'].data.activities track by activity.id" placeholder="Select activity" required="required">
+              <option selected="selected" disabled="disabled" value="">{{modal['add-attendance'].labels.placeholders.selectActivity}}</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.activity" class="error">{{modal.local.errors.activity}}</li>
+        </ul>
+        <ul ng-hide="modal['add-attendance'].loading || modal['add-attendance'].step.current!==2">
+          <li class="filters">
+            <select name="group" ng-model="modal.local.groupId" ng-change="modal[&quot;add-attendance&quot;].filterStudents()" ng-options="group as group.name for group in modal['add-attendance'].data.groups track by group.id" placeholder="Select group" required="required" class="sm-select">
+              <option selected="selected" value="">{{modal['add-attendance'].labels.table.allGroups}}</option>
+            </select>
+            <figure class="search-bar-wrapper">
+              <div class="search-bar">
+                <input id="search-bar-input" name="search" type="text" ng-model="modal['add-attendance'].search.value" placeholder="{{modal['add-attendance'].labels.table.search}}"/><i ng-click="modal['add-attendance'].search.clear()" ng-show="modal['add-attendance'].search.value" class="material-icons">close</i>
+              </div><a ng-click="modal['add-attendance'].filterStudents()" class="search-button"><i class="material-icons">search</i></a>
+            </figure>
+            <li ng-if="modal.local.errors.student" class="error no-margin">{{modal.local.errors.student}}</li>
+          </li>
+        </ul>
+      </div>
+      <div ng-hide="modal['add-attendance'].loading || modal['add-attendance'].step.current!==2" class="table-wrapper modal-table">
+        <table class="table elixir-table">
+          <thead>
+            <tr>
+              <th class="td-fit">#</th>
+              <th>Student</th>
+              <th class="td-fit checker">{{modal['add-attendance'].labels.attended}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="student in modal.local.students track by $index" ng-show="student.visible" ng-click="modal['add-attendance'].toggleCheck($index)">
+              <th scope="row" class="td-fit">{{student.index}}</th>
+              <td class="td-bold">{{student.lastName+' '+student.firstName}}</td>
+              <td ng-class="{'checked': student.checked}" class="td-fit checker"></td>
+            </tr>
+            <tr ng-if="!modal.local.students.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{modal['add-attendance'].errors.noResults}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div ng-hide="modal['add-attendance'].loading" class="modal-footer text-center">
+        <button type="button" ng-click="modal[&quot;add-attendance&quot;].action.cancel(modal.local)" class="ebutton white-button">{{modal['add-attendance'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-attendance&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-attendance'].submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>

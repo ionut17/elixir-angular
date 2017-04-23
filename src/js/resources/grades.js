@@ -30,6 +30,27 @@ app.factory("Grades", ["config", "$resource", "AuthService", function(config, $r
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        addGrades: {
+            url: config.apiEndpoint + "grades",
+            method: "POST",
+            isArray: true,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        delete: {
+          url: config.apiEndpoint + "grades/:activity_id/:student_id",
+          method: "DELETE",
+          params: {activity_id:'@activity_id', student_id: '@student_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

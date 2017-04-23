@@ -18,6 +18,14 @@ app.constant("config", {
         list: ['*'],
         sublist: ['*'],
         view: ['*'],
+        create: ['ADMIN', 'LECTURER'],
+        edit: ['ADMIN', 'LECTURER'],
+        delete: ['ADMIN', 'LECTURER']
+      },
+      attendances: {
+        create: ['ADMIN', 'LECTURER']
+      },
+      grades: {
         create: ['ADMIN', 'LECTURER']
       },
       files: {
@@ -25,18 +33,32 @@ app.constant("config", {
       },
       courses: {
         list: ['*'],
-        view: ['*']
+        view: ['*'],
+        create: ['ADMIN'],
+        addLecturer: ['ADMIN'],
+        addStudents: ['ADMIN', 'LECTURER'],
+        tools: ['ADMIN'],
+        edit: ['ADMIN'],
+        delete: ['ADMIN']
       },
-      dashboard: ['*'],
+      dashboard: {
+        view: ['*'],
+        user: ['ADMIN', 'LECTURER']
+      },
       groups: {
         list: ['*'],
-        view: ['ADMIN', 'LECTURER']
+        view: ['ADMIN', 'LECTURER'],
+        edit: ['ADMIN'],
+        delete: ['ADMIN']
       },
       myAccount: ['*'],
       settings: ['*'],
       users: {
         list: ['ADMIN'],
-        view: ['*']
+        view: ['*'],
+        edit: ['ADMIN'],
+        delete: ['ADMIN'],
+        create: ['ADMIN']
       }
     }
 

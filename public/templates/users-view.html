@@ -14,12 +14,12 @@
     <div class="col-md-12">
       <div class="page-title-wrapper">
         <ul class="tabs-wrapper">
-          <li ui-sref="base.users.view({detail: null})" ng-class="{active: user.detail==&quot;overview&quot;}">Overview</li>
-          <li ui-sref="base.users.view({detail: &quot;attendances&quot;, page: 0})" ng-class="{active: user.detail==&quot;attendances&quot;}" ng-if="user.type==&quot;students&quot;">Attendances</li>
-          <li ui-sref="base.users.view({detail: &quot;grades&quot;, page: 0})" ng-class="{active: user.detail==&quot;grades&quot;}" ng-if="user.type==&quot;students&quot;">Grades</li>
-          <li ui-sref="base.users.view({detail: &quot;files&quot;, page: 0})" ng-class="{active: user.detail==&quot;files&quot;}" ng-if="user.type==&quot;students&quot;">Files</li>
-          <li ui-sref="base.users.view({detail: &quot;groups&quot;, page: 0})" ng-class="{active: user.detail==&quot;groups&quot;}" ng-if="user.type==&quot;students&quot;">Groups</li>
-          <li ui-sref="base.users.view({detail: &quot;courses&quot;, page: 0})" ng-class="{active: user.detail==&quot;courses&quot;}" ng-if="user.type==&quot;students&quot; || user.type==&quot;lecturers&quot;">Courses</li>
+          <li ui-sref="base.users.view({detail: null})" ng-class="{active: user.detail==&quot;overview&quot;}">{{labels.table.overview}}</li>
+          <li ui-sref="base.users.view({detail: &quot;attendances&quot;, page: 0})" ng-class="{active: user.detail==&quot;attendances&quot;}" ng-if="user.type==&quot;students&quot;">{{labels.table.attendances}}</li>
+          <li ui-sref="base.users.view({detail: &quot;grades&quot;, page: 0})" ng-class="{active: user.detail==&quot;grades&quot;}" ng-if="user.type==&quot;students&quot;">{{labels.table.grades}}</li>
+          <li ui-sref="base.users.view({detail: &quot;files&quot;, page: 0})" ng-class="{active: user.detail==&quot;files&quot;}" ng-if="user.type==&quot;students&quot;">{{labels.table.files}}</li>
+          <li ui-sref="base.users.view({detail: &quot;groups&quot;, page: 0})" ng-class="{active: user.detail==&quot;groups&quot;}" ng-if="user.type==&quot;students&quot;">{{labels.table.groups}}</li>
+          <li ui-sref="base.users.view({detail: &quot;courses&quot;, page: 0})" ng-class="{active: user.detail==&quot;courses&quot;}" ng-if="user.type==&quot;students&quot; || user.type==&quot;lecturers&quot;">{{labels.table.courses}}</li>
         </ul>
       </div>
     </div>
@@ -30,23 +30,23 @@
     <div class="col-md-12 coverbox-wrapper">
       <div ng-if="user.hasAttendances" ui-sref="base.users.view({detail: &quot;attendances&quot;})" class="coverbox">
         <h2>{{user.attendances.length}}</h2>
-        <h3>Attendances</h3>
+        <h3>{{user.attendances.length == 1 ? labels.table.attendance : labels.table.attendances}}</h3>
       </div>
       <div ng-if="user.hasGrades" ui-sref="base.users.view({detail: &quot;grades&quot;})" class="coverbox">
         <h2>{{user.grades.length}}</h2>
-        <h3>Grades</h3>
+        <h3>{{user.grades.length == 1 ? labels.table.grade : labels.table.grades}}</h3>
       </div>
       <div ng-if="user.hasFiles" ui-sref="base.users.view({detail: &quot;files&quot;})" class="coverbox">
         <h2>{{user.files.length}}</h2>
-        <h3>Files</h3>
+        <h3>{{user.files.length == 1 ? labels.table.file : labels.table.files}}</h3>
       </div>
       <div ng-if="user.hasGroups" ui-sref="base.users.view({detail: &quot;groups&quot;})" class="coverbox">
         <h2>{{user.groups.length}}</h2>
-        <h3>Groups</h3>
+        <h3>{{user.groups.length == 1 ? labels.table.group : labels.table.groups}}</h3>
       </div>
       <div ng-if="user.hasCourses" ui-sref="base.users.view({detail: &quot;courses&quot;})" class="coverbox">
         <h2>{{user.courses.length}}</h2>
-        <h3>Courses</h3>
+        <h3>{{user.courses.length == 1 ? labels.table.course : labels.table.courses}}</h3>
       </div>
     </div>
   </div>
@@ -57,7 +57,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -67,24 +67,24 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>File</th>
-                <th class="hidden-xs">Name</th>
-                <th>Type</th>
-                <th class="hidden-xs">Date</th>
-                <th>Course</th>
+                <th>{{labels.table.file}}</th>
+                <th class="hidden-xs">{{labels.table.name}}</th>
+                <th class="td-fit">{{labels.table.type}}</th>
+                <th class="hidden-xs">{{labels.table.date}}</th>
+                <th>{{labels.table.course}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="file in user.files track by $index" ui-sref="base.activities.view({type: &quot;files&quot;, activity_id: file.activity.id, user_id: file.student.id})">
+              <tr ng-repeat="file in user.files track by $index" ui-sref="base.activities.view({type: &quot;files&quot;, activity_id: file.activity.id, course_id: file.activity.course.id, file_id: file.id, user_id: file.student.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td class="td-bold td-blue">{{file.fileName+'.'+file.extension}}</td>
                 <td class="hidden-xs td-bold">{{file.activity.name}}</td>
-                <td><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{file.activity.type.name}}</span></td>
+                <td class="td-fit"><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{file.activity.type.name}}</span></td>
                 <td class="hidden-xs td-blue">{{file.activity.date}}</td>
                 <td class="td-bold">{{file.activity.course.title}}</td>
               </tr>
               <tr ng-if="!user.files.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>
@@ -95,7 +95,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -105,22 +105,22 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th class="hidden-xs">Name</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Course</th>
+                <th class="hidden-xs">{{labels.table.name}}</th>
+                <th class="td-fit">{{labels.table.type}}</th>
+                <th>{{labels.table.date}}</th>
+                <th>{{labels.table.course}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="base.activities.view({type: &quot;attendances&quot;, activity_id: attendance.activity.id, user_id: attendance.student.id})">
+              <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="base.activities.view({type: &quot;attendances&quot;, activity_id: attendance.activity.id, course_id: attendance.activity.course.id, user_id: attendance.student.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
                 <td class="hidden-xs td-bold">{{attendance.activity.name}}</td>
-                <td><span ng-class="activity.tag" ng-attr-title="{{attendance.activity.type.name}}" class="tag tag-auto">{{attendance.activity.type.name}}</span></td>
+                <td class="td-fit"><span ng-class="activity.tag" ng-attr-title="{{attendance.activity.type.name}}" class="tag tag-auto">{{attendance.activity.type.name}}</span></td>
                 <td class="td-blue">{{attendance.activity.date}}</td>
                 <td class="td-bold">{{attendance.activity.course.title}}</td>
               </tr>
               <tr ng-if="!user.attendances.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>
@@ -131,7 +131,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -141,24 +141,24 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Value</th>
-                <th class="hidden-xs">Name</th>
-                <th>Type</th>
-                <th class="hidden-xs">Date</th>
-                <th>Course</th>
+                <th class="td-fit">{{labels.table.value}}</th>
+                <th class="hidden-xs">{{labels.table.name}}</th>
+                <th class="td-fit">{{labels.table.type}}</th>
+                <th class="hidden-xs">{{labels.table.date}}</th>
+                <th>{{labels.table.course}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="grade in user.grades track by $index" ui-sref="base.activities.view({type: &quot;grades&quot;, activity_id: grade.activity.id, user_id: grade.student.id})">
+              <tr ng-repeat="grade in user.grades track by $index" ui-sref="base.activities.view({type: &quot;grades&quot;, activity_id: grade.activity.id, course_id: grade.activity.course.id, user_id: grade.student.id})">
                 <th scope="row" class="col-sm-1">{{$index+1}}</th>
-                <td class="td-bold td-lg td-blue"><span class="tag tag-auto tag-grade">{{grade.value}}</span></td>
+                <td class="td-bold td-lg td-fit"><span class="tag tag-auto tag-grade">{{grade.value}}</span></td>
                 <td class="hidden-xs td-bold">{{grade.activity.name}}</td>
-                <td><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{grade.activity.type.name}}</span></td>
+                <td class="td-fit"><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{grade.activity.type.name}}</span></td>
                 <td class="hidden-xs td-blue">{{grade.activity.date}}</td>
                 <td class="td-bold">{{grade.activity.course.title}}</td>
               </tr>
               <tr ng-if="!user.grades.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>
@@ -171,7 +171,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -181,8 +181,8 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Year</th>
+                <th>{{labels.table.name}}</th>
+                <th>{{labels.table.year}}</th>
               </tr>
             </thead>
             <tbody>
@@ -192,7 +192,7 @@
                 <td class="td-bold">{{group.year}}</td>
               </tr>
               <tr ng-if="!user.groups.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>
@@ -203,7 +203,7 @@
         <div class="table-wrapper">
           <div class="table-title">
             <div class="pagination-wrapper">
-              <h4>Page</h4>
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
               <ul class="pagination">
                 <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
               </ul>
@@ -213,9 +213,9 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Title</th>
-                <th>Year</th>
-                <th>Semester</th>
+                <th>{{labels.table.title}}</th>
+                <th>{{labels.table.year}}</th>
+                <th>{{labels.table.semester}}</th>
               </tr>
             </thead>
             <tbody>
@@ -226,7 +226,7 @@
                 <td class="td-bold">{{course.semester}}</td>
               </tr>
               <tr ng-if="!user.courses.length" class="disable-hover">
-                <td colspan="6" class="td-disabled text-center">No results have been found</td>
+                <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
               </tr>
             </tbody>
           </table>

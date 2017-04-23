@@ -1,0 +1,36 @@
+
+<div id="add-course-lecturer" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">school</i>
+        <h2>{{modal['add-course-lecturer'].title}}</h2>
+      </div>
+      <div class="modal-body">
+        <div ng-show="modal['add-course-lecturer'].loading" class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>Adăugare curs</h5>
+        </div>
+        <ul ng-hide="modal['add-course-lecturer'].loading">
+          <li>
+            <label for="course">Course</label>
+            <select name="course" ng-model="modal.local.courseId" ng-options="course as course.title for course in modal['add-course-lecturer'].data.courses track by course.id">
+              <option selected="selected" disabled="disabled" value="">Select course</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.course" class="error">{{modal.local.errors.course}}</li>
+          <li>
+            <label for="lecturer">Lecturer</label>
+            <select name="lecturer" ng-model="modal.local.lecturer" ng-options="lecturer as lecturer.fullName for lecturer in modal['add-course-lecturer'].data.lecturers | filter:modal['add-course-lecturer'].filterLecturers">
+              <option selected="selected" disabled="disabled" value="">Select lecturer</option>
+            </select>
+          </li>
+          <li ng-if="modal.local.errors.lecturer" class="error">{{modal.local.errors.lecturer}}</li>
+        </ul>
+      </div>
+      <div ng-hide="modal['add-course-lecturer'].loading" class="modal-footer text-center">
+        <button type="button" data-dismiss="modal" class="ebutton white-button">{{modal['add-course-lecturer'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;add-course-lecturer&quot;].action.submit(modal.local)" class="ebutton green-button">{{modal['add-course-lecturer'].submit}}</button>
+      </div>
+    </div>
+  </div>
+</div>

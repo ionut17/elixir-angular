@@ -10,6 +10,17 @@ app.factory("Groups", ["config", "$resource", "AuthService", function(config, $r
                 }
             }
         },
+        getAllUnpaged: {
+            url: config.apiEndpoint + "groups/all",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         getById: {
             url: config.apiEndpoint + "groups/:id",
             method: "GET",

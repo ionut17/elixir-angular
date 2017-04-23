@@ -35,9 +35,9 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams', function($scope, $rootScope, resolvedData, $state, Courses, $stateParams) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams','languageTranslator', function($scope, $rootScope, resolvedData, $state, Courses, $stateParams, languageTranslator) {
     //Init
-    $scope.title = 'Courses';
+    $scope.title = languageTranslator.tables.courses[$rootScope.language];
     $scope.courses = resolvedData.courses;
     $scope.pager = resolvedData.pager;
 
@@ -59,9 +59,17 @@ app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData',
       }
     });
 
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+      marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+    };
+
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Courses',
+      'title': languageTranslator.tables.courses[$rootScope.language],
       'icon': null,
       'state': 'base.courses.list',
       'params': null
@@ -137,7 +145,7 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData', '$stateParams', '$state', function($scope, $rootScope, resolvedData, $stateParams, $state) {
+app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData', '$stateParams', '$state', 'languageTranslator', function($scope, $rootScope, resolvedData, $stateParams, $state, languageTranslator) {
     //Init
     $scope.course = resolvedData.course;
     $scope.pager = resolvedData.pager ? resolvedData.pager : {};
@@ -148,10 +156,20 @@ app.controller('CoursesViewController', ['$scope', '$rootScope', 'resolvedData',
     $scope.title = $scope.course.title;
     $scope.authUser = $rootScope.authUser.user;
 
+    console.log($scope.course.activities);
+
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+      marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+    };
+
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
-      'title': 'Courses',
+      'title': languageTranslator.tables.courses[$rootScope.language],
       'icon': null,
       'state': 'base.courses.list',
       'params': null

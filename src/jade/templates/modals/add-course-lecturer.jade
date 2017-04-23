@@ -1,0 +1,24 @@
+#add-course-lecturer.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		.modal-content
+			.modal-icon
+				i.material-icons school
+				h2 {{modal['add-course-lecturer'].title}}
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['add-course-lecturer'].loading")
+					figure.preloader
+					h5 Adăugare curs
+				ul(ng-hide="modal['add-course-lecturer'].loading")
+					li
+						label(for='course') Course
+						select(name='course', ng-model='modal.local.courseId', ng-options="course as course.title for course in modal['add-course-lecturer'].data.courses track by course.id")
+							option(selected disabled value='') Select course
+					li.error(ng-if='modal.local.errors.course') {{modal.local.errors.course}}
+					li
+						label(for='lecturer') Lecturer
+						select(name='lecturer', ng-model='modal.local.lecturer', ng-options="lecturer as lecturer.fullName for lecturer in modal['add-course-lecturer'].data.lecturers | filter:modal['add-course-lecturer'].filterLecturers")
+							option(selected disabled value='') Select lecturer
+					li.error(ng-if='modal.local.errors.lecturer') {{modal.local.errors.lecturer}}
+			.modal-footer.text-center(ng-hide="modal['add-course-lecturer'].loading")
+				button.ebutton.white-button(type='button', data-dismiss='modal') {{modal['add-course-lecturer'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["add-course-lecturer"].action.submit(modal.local)') {{modal['add-course-lecturer'].submit}}

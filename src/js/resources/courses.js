@@ -60,6 +60,37 @@ app.factory("Courses", ["config", "$resource", "AuthService", function(config, $
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        addCourse: {
+            url: config.apiEndpoint + "courses",
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        addCourseLecturer: {
+            url: config.apiEndpoint + "courses/:course_id/lecturers",
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        addCourseStudents: {
+            url: config.apiEndpoint + "courses/:course_id/students",
+            method: "POST",
+            isArray: true,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
         }
     });
 }]);

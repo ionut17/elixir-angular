@@ -1,6 +1,6 @@
 
 <div class="pagination-wrapper">
-  <h4>Page</h4>
+  <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
   <ul class="pagination">
     <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
   </ul>

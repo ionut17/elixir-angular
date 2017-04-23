@@ -12,7 +12,7 @@
     }
 }
 
-@media screen and (max-width: 640px), screen and (max-height: 480px) {
+@media screen and (max-width: 768px) {
     figure.logo{
       width: 100px;
       height: 100px;
@@ -30,6 +30,194 @@
       .left-box, .right-box{
         width: 100%;
       }
+    }
+    //container
+    .container-header{
+      flex-wrap: wrap;
+      height: auto;
+      padding: 0;
+
+      .menu-toggle{
+        height: 70px;
+        border-bottom: none;
+      }
+      ul.right-list{
+        padding-right: 90px;
+        justify-content: center;
+        flex-grow: 1;
+        height: 70px;
+      }
+      ul.breadcrumbs-list{
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        order: 2;
+        padding: 10px 20px;
+        min-height: 70px;
+        justify-content: center;
+        width: 100%;
+
+        display: flex;
+        flex-wrap: wrap;
+
+        li{
+          padding: 10px 0;
+        }
+      }
+    }
+    .container-content{
+      padding: 20px;
+    }
+    .container-title{
+      padding: 30px 20px;
+      text-align: center;
+      .page-title-wrapper{
+        justify-content: center;
+      }
+    }
+    .container-tools{
+      justify-content: center;
+      height: auto;
+      min-height: 50px;
+      padding: 5px 20px;
+      flex-direction: column;
+
+      h4 {
+        margin: 20px 0 10px 0;
+      }
+
+      .tools{
+        justify-content: center;
+        flex-wrap: wrap;
+
+        button{
+          margin: 5px 0;
+        }
+      }
+    }
+    //Modals
+    .custom-modal .modal-content .modal-body ul li{
+      flex-direction: column;
+      &.error{
+        margin-left: 0;
+      }
+      &.filters select{
+        &:not(:last-child){
+          margin-right: 0;
+        }
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+      }
+      &.filters .search-bar-wrapper{
+        width: 100%;
+      }
+      label{
+        width: 100%;
+        text-align: left;
+        margin-bottom: 10px;
+        margin-right: 0;
+      }
+      select, input{
+        width: 100%;
+      }
+    }
+    .custom-modal .modal-content .modal-icon-titled{
+      padding: 20px;
+      flex-direction: column;
+      & section{
+        width: 100%;
+        &.left-aligned{
+          align-items: center;
+        }
+        &:first-child{
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          h2 {
+            margin: 0 0 0 20px;
+          }
+        }
+        &:not(:last-child){
+          padding: 0;
+          padding-bottom: 20px;
+          border-right: none;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        &:not(:first-child){
+          padding: 0;
+          padding-top: 20px;
+        }
+      }
+    }
+    .tabs-wrapper{
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    //Elements
+    span.tag{
+      width: 40px;
+      min-width: auto;
+      position: relative;
+      overflow: hidden;
+      &:after{
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px;
+        height: 100%;
+        background-color: rgba(128,128,128,1);
+      }
+      &.tag-attendance:after{
+        background-color: $attendanceColor;
+      }
+      &.tag-grade:after{
+        background-color: $gradeColor;
+      }
+      &.tag-file:after{
+        background-color: $fileColor;
+      }
+      &.tag-student:after{
+        background-color: $studentColor;
+      }
+      &.tag-lecturer:after{
+        background-color: $lecturerColor;
+      }
+      &.tag-admin:after{
+        background-color: $adminColor;
+      }
+    }
+    .td-actions{
+      & > *{
+        margin-top: 2.5px;
+        margin-bottom: 2.5px;
+      }
+    }
+    .search-bar{
+      width: 150px;
+    }
+    //coverbox
+    .coverbox-wrapper{
+      flex-direction: column;
+    }
+    .coverbox{
+      &.coverbox-sm{
+        max-width: 100%;
+      }
+      &:not(:last-child){
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+    }
+    //Table
+    .elixir-table tbody{
+      tr th:first-child{
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+      }
+    }
+    .table-wrapper{
+      overflow-x: scroll;
     }
 }
 

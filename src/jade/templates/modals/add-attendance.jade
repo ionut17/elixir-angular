@@ -1,0 +1,54 @@
+#add-attendance.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		//TODO Add steps to modals and make option to select multiple users to add attendance for them
+		.modal-content
+			.modal-icon-titled
+				section
+					i.material-icons event
+					h2 {{modal['add-attendance'].title}}
+				section.left-aligned
+					h1 {{modal['add-attendance'].step.current+'. '+modal['add-attendance'].step.title}}
+					p(ng-show='modal["add-attendance"].step.details.length' ng-repeat="detail in modal['add-attendance'].step.details" ng-class="detail.class") {{detail.content}}
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['add-attendance'].loading")
+					figure.preloader
+					h5 {{modal['add-attendance'].loadingMessage}}
+				ul(ng-hide="modal['add-attendance'].loading || modal['add-attendance'].step.current!==1")
+					li
+						label(for='course') {{modal['add-attendance'].labels.table.course}}
+						select(name='course', ng-model='modal.local.courseId', ng-change='modal["add-attendance"].refreshActivities()', ng-disabled='modal.local.courseDisabled', ng-options="course as course.title for course in modal['add-attendance'].data.courses track by course.id", placeholder='Select course' required)
+							option(selected disabled value='') {{modal['add-attendance'].labels.placeholders.selectCourse}}
+					li.error(ng-if='modal.local.errors.course') {{modal.local.errors.course}}
+					li
+						label(for='activity') {{modal['add-attendance'].labels.table.activity}}
+						select(name='activity', ng-model='modal.local.activityId', ng-disabled='modal.local.activityDisabled', ng-options="activity as activity.name for activity in modal['add-attendance'].data.activities track by activity.id", placeholder='Select activity' required)
+							option(selected disabled value='') {{modal['add-attendance'].labels.placeholders.selectActivity}}
+					li.error(ng-if='modal.local.errors.activity') {{modal.local.errors.activity}}
+				ul(ng-hide="modal['add-attendance'].loading || modal['add-attendance'].step.current!==2")
+					li.filters
+						select.sm-select(name='group', ng-model='modal.local.groupId', ng-change='modal["add-attendance"].filterStudents()', ng-options="group as group.name for group in modal['add-attendance'].data.groups track by group.id", placeholder='Select group' required)
+							option(selected value='') {{modal['add-attendance'].labels.table.allGroups}}
+						figure.search-bar-wrapper
+							.search-bar
+								input#search-bar-input(name="search" type="text" ng-model="modal['add-attendance'].search.value" placeholder="{{modal['add-attendance'].labels.table.search}}")
+								i.material-icons(ng-click="modal['add-attendance'].search.clear()" ng-show="modal['add-attendance'].search.value") close
+							a.search-button(ng-click="modal['add-attendance'].filterStudents()")
+								i.material-icons search
+						li.error.no-margin(ng-if='modal.local.errors.student') {{modal.local.errors.student}}
+			.table-wrapper.modal-table(ng-hide="modal['add-attendance'].loading || modal['add-attendance'].step.current!==2")
+				table.table.elixir-table
+					thead
+						tr
+							th.td-fit #
+							th Student
+							th.td-fit.checker {{modal['add-attendance'].labels.attended}}
+					tbody
+						tr(ng-repeat='student in modal.local.students track by $index' ng-show="student.visible" ng-click="modal['add-attendance'].toggleCheck($index)")
+							th.td-fit(scope='row') {{student.index}}
+							td.td-bold {{student.lastName+' '+student.firstName}}
+							td.td-fit.checker(ng-class="{'checked': student.checked}")
+						tr.disable-hover(ng-if='!modal.local.students.length')
+							td.td-disabled.text-center(colspan='6') {{modal['add-attendance'].errors.noResults}}
+			.modal-footer.text-center(ng-hide="modal['add-attendance'].loading")
+				button.ebutton.white-button(type='button', ng-click='modal["add-attendance"].action.cancel(modal.local)') {{modal['add-attendance'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["add-attendance"].action.submit(modal.local)') {{modal['add-attendance'].submit}}

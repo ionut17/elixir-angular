@@ -13,26 +13,26 @@
     <section class="right-box">
       <div ng-show="form.loading" class="preloader-wrapper">
         <figure class="preloader"></figure>
-        <h4>Autentificare</h4>
+        <h4>{{labels.login.loading}}</h4>
       </div>
       <form ng-submit="form.submit()" ng-hide="form.loading" class="eform">
         <section class="eform-group">
           <label ng-repeat="error in form.errors" class="error">{{error}}</label>
         </section>
         <section class="eform-group">
-          <label for="email" class="elabel">Email</label>
-          <input ng-model="form.email" type="email" name="email" placeholder="Enter email" required="required" class="einput"/>
+          <label for="email" class="elabel">{{labels.table.email}}</label>
+          <input ng-model="form.email" type="email" name="email" placeholder="{{labels.placeholders.enterEmail}}" required="required" class="einput"/>
         </section>
         <section class="eform-group">
-          <label for="password" class="elabel">Password</label>
-          <input ng-model="form.password" type="password" name="password" placeholder="Enter password" required="required" class="einput"/>
+          <label for="password" class="elabel">{{labels.table.password}}</label>
+          <input ng-model="form.password" type="password" name="password" placeholder="{{labels.placeholders.enterPassword}}" required="required" class="einput"/>
         </section>
-        <button type="submit" class="ebutton login-button">Login</button>
+        <button type="submit" class="ebutton login-button">{{labels.login.button}}</button>
       </form>
     </section>
   </section>
   <section class="col-lg-4 col-md-7 col-sm-9 col-xs-12 university-wrapper">
-    <p>Proiect realizat pentru Facultatea de Informatica, Iasi  </p>
+    <p>{{labels.login.description}}</p>
   </section>
 </section>
 <section class="notifications-wrapper">

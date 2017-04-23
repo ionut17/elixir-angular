@@ -11,31 +11,31 @@ section.container-title
     .col-md-12
       .page-title-wrapper
         ul.tabs-wrapper
-          li(ui-sref='base.users.view({detail: null})', ng-class='{active: user.detail=="overview"}') Overview
-          li(ui-sref='base.users.view({detail: "attendances", page: 0})', ng-class='{active: user.detail=="attendances"}', ng-if='user.type=="students"') Attendances
-          li(ui-sref='base.users.view({detail: "grades", page: 0})', ng-class='{active: user.detail=="grades"}', ng-if='user.type=="students"') Grades
-          li(ui-sref='base.users.view({detail: "files", page: 0})', ng-class='{active: user.detail=="files"}', ng-if='user.type=="students"') Files
-          li(ui-sref='base.users.view({detail: "groups", page: 0})', ng-class='{active: user.detail=="groups"}', ng-if='user.type=="students"') Groups
-          li(ui-sref='base.users.view({detail: "courses", page: 0})', ng-class='{active: user.detail=="courses"}', ng-if='user.type=="students" || user.type=="lecturers"') Courses
+          li(ui-sref='base.users.view({detail: null})', ng-class='{active: user.detail=="overview"}') {{labels.table.overview}}
+          li(ui-sref='base.users.view({detail: "attendances", page: 0})', ng-class='{active: user.detail=="attendances"}', ng-if='user.type=="students"') {{labels.table.attendances}}
+          li(ui-sref='base.users.view({detail: "grades", page: 0})', ng-class='{active: user.detail=="grades"}', ng-if='user.type=="students"') {{labels.table.grades}}
+          li(ui-sref='base.users.view({detail: "files", page: 0})', ng-class='{active: user.detail=="files"}', ng-if='user.type=="students"') {{labels.table.files}}
+          li(ui-sref='base.users.view({detail: "groups", page: 0})', ng-class='{active: user.detail=="groups"}', ng-if='user.type=="students"') {{labels.table.groups}}
+          li(ui-sref='base.users.view({detail: "courses", page: 0})', ng-class='{active: user.detail=="courses"}', ng-if='user.type=="students" || user.type=="lecturers"') {{labels.table.courses}}
 
 section.container-content
   .row(ng-if='user.detail=="overview"')
     .col-md-12.coverbox-wrapper
         div.coverbox(ng-if='user.hasAttendances', ui-sref='base.users.view({detail: "attendances"})')
           h2 {{user.attendances.length}}
-          h3 Attendances
+          h3 {{user.attendances.length == 1 ? labels.table.attendance : labels.table.attendances}}
         div.coverbox(ng-if='user.hasGrades', ui-sref='base.users.view({detail: "grades"})')
           h2 {{user.grades.length}}
-          h3 Grades
+          h3 {{user.grades.length == 1 ? labels.table.grade : labels.table.grades}}
         div.coverbox(ng-if='user.hasFiles', ui-sref='base.users.view({detail: "files"})')
           h2 {{user.files.length}}
-          h3 Files
+          h3 {{user.files.length == 1 ? labels.table.file : labels.table.files}}
         div.coverbox(ng-if='user.hasGroups', ui-sref='base.users.view({detail: "groups"})')
           h2 {{user.groups.length}}
-          h3 Groups
+          h3 {{user.groups.length == 1 ? labels.table.group : labels.table.groups}}
         div.coverbox(ng-if='user.hasCourses', ui-sref='base.users.view({detail: "courses"})')
           h2 {{user.courses.length}}
-          h3 Courses
+          h3 {{user.courses.length == 1 ? labels.table.course : labels.table.courses}}
   .row(ng-if='user.detail!="overview"')
     .col-wrapper.col-md-12(ng-if='user.hasAttendances || user.hasGrades || user.hasFiles' ng-class="{'col-lg-12': user.detail!='overview', 'col-lg-6': user.detail=='overview'}")
       // Files
@@ -48,22 +48,22 @@ section.container-content
             thead
               tr
                 th #
-                th File
-                th.hidden-xs Name
-                th Type
-                th.hidden-xs Date
-                th Course
+                th {{labels.table.file}}
+                th.hidden-xs {{labels.table.name}}
+                th.td-fit {{labels.table.type}}
+                th.hidden-xs {{labels.table.date}}
+                th {{labels.table.course}}
             tbody
-              tr(ng-repeat='file in user.files track by $index', ui-sref='base.activities.view({type: "files", activity_id: file.activity.id, user_id: file.student.id})')
+              tr(ng-repeat='file in user.files track by $index', ui-sref='base.activities.view({type: "files", activity_id: file.activity.id, course_id: file.activity.course.id, file_id: file.id, user_id: file.student.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.td-bold.td-blue {{file.fileName+'.'+file.extension}}
                 td.hidden-xs.td-bold {{file.activity.name}}
-                td
+                td.td-fit
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{grade.activity.type.name}}') {{file.activity.type.name}}
                 td.hidden-xs.td-blue {{file.activity.date}}
                 td.td-bold {{file.activity.course.title}}
               tr.disable-hover(ng-if='!user.files.length')
-                td.td-disabled.text-center(colspan='6') No results have been found
+                td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}
       // Attendances
       .col-md-12.col-sm-12(ng-if='user.hasAttendances')
         .table-wrapper
@@ -74,20 +74,20 @@ section.container-content
             thead
               tr
                 th #
-                th.hidden-xs Name
-                th Type
-                th Date
-                th Course
+                th.hidden-xs {{labels.table.name}}
+                th.td-fit {{labels.table.type}}
+                th {{labels.table.date}}
+                th {{labels.table.course}}
             tbody
-              tr(ng-repeat='attendance in user.attendances track by $index', ui-sref='base.activities.view({type: "attendances", activity_id: attendance.activity.id, user_id: attendance.student.id})')
+              tr(ng-repeat='attendance in user.attendances track by $index', ui-sref='base.activities.view({type: "attendances", activity_id: attendance.activity.id, course_id: attendance.activity.course.id, user_id: attendance.student.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.hidden-xs.td-bold {{attendance.activity.name}}
-                td
+                td.td-fit
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{attendance.activity.type.name}}') {{attendance.activity.type.name}}
                 td.td-blue {{attendance.activity.date}}
                 td.td-bold {{attendance.activity.course.title}}
               tr.disable-hover(ng-if='!user.attendances.length')
-                td.td-disabled.text-center(colspan='6') No results have been found
+                td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}
       // Grades
       .col-md-12.col-sm-12(ng-if='user.hasGrades')
         .table-wrapper
@@ -98,23 +98,23 @@ section.container-content
             thead
               tr
                 th #
-                th Value
-                th.hidden-xs Name
-                th Type
-                th.hidden-xs Date
-                th Course
+                th.td-fit {{labels.table.value}}
+                th.hidden-xs {{labels.table.name}}
+                th.td-fit {{labels.table.type}}
+                th.hidden-xs {{labels.table.date}}
+                th {{labels.table.course}}
             tbody
-              tr(ng-repeat='grade in user.grades track by $index', ui-sref='base.activities.view({type: "grades", activity_id: grade.activity.id, user_id: grade.student.id})')
+              tr(ng-repeat='grade in user.grades track by $index', ui-sref='base.activities.view({type: "grades", activity_id: grade.activity.id, course_id: grade.activity.course.id, user_id: grade.student.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
-                td.td-bold.td-lg.td-blue
+                td.td-bold.td-lg.td-fit
                   span.tag.tag-auto.tag-grade {{grade.value}}
                 td.hidden-xs.td-bold {{grade.activity.name}}
-                td
+                td.td-fit
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{grade.activity.type.name}}') {{grade.activity.type.name}}
                 td.hidden-xs.td-blue {{grade.activity.date}}
                 td.td-bold {{grade.activity.course.title}}
               tr.disable-hover(ng-if='!user.grades.length')
-                td.td-disabled.text-center(colspan='6') No results have been found
+                td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}
     .col-wrapper.col-md-12(ng-if='user.hasGroups || user.hasCourses' ng-class="{'col-lg-12': user.detail!='overview', 'col-lg-6': user.detail=='overview'}")
       // Groups
       .col-md-12.col-sm-12(ng-if='user.hasGroups')
@@ -126,15 +126,15 @@ section.container-content
             thead
               tr
                 th #
-                th Name
-                th Year
+                th {{labels.table.name}}
+                th {{labels.table.year}}
             tbody
               tr(ng-repeat='group in user.groups track by $index', ui-sref='base.groups.view({id: group.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
                 td.td-bold {{group.name}}
                 td.td-bold {{group.year}}
               tr.disable-hover(ng-if='!user.groups.length')
-                td.td-disabled.text-center(colspan='6') No results have been found
+                td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}
       // Courses
       .col-md-12.col-sm-12(ng-if='user.hasCourses')
         .table-wrapper
@@ -145,9 +145,9 @@ section.container-content
             thead
               tr
                 th #
-                th Title
-                th Year
-                th Semester
+                th {{labels.table.title}}
+                th {{labels.table.year}}
+                th {{labels.table.semester}}
             tbody
               tr(ng-repeat='course in user.courses track by $index', ui-sref='base.courses.view({id: course.id})')
                 th.col-sm-1(scope='row') {{$index+1}}
@@ -155,7 +155,7 @@ section.container-content
                 td.td-bold {{course.year}}
                 td.td-bold {{course.semester}}
               tr.disable-hover(ng-if='!user.courses.length')
-                td.td-disabled.text-center(colspan='6') No results have been found
+                td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}
               
 //Modals
 #add-group-modal.modal.custom-modal.fade(tabindex='-1', role='dialog')

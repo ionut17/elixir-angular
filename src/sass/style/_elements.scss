@@ -174,6 +174,9 @@ span.tag{
   &.tag-full{
     width: 100%;
     display: inline;
+    &:after{
+      display: none !important;
+    }
   }
 
   &.tag-lg{
@@ -380,10 +383,16 @@ span.tag{
 
 //Buttons
 
+a.ebutton.icon-button{
+  text-decoration: none !important;
+}
+
 .ebutton {
   box-shadow: none;
   border: 2px solid rgba(0,0,0,0.1);
   padding: 7px 20px;
+
+  white-space: nowrap;
 
   //opacity: 0.8;
   transition: all 200ms cubic-bezier(0.07, 0.97, 0.58, 1);
@@ -414,6 +423,7 @@ span.tag{
 
   &.sm-button{
     padding: 3px 10px;
+    font-size: 12px;
   }
 
   &.green-button{
@@ -428,7 +438,47 @@ span.tag{
     }
   }
 
-  &.white-button{
+  &.icon-button{
+    font-family: $contentFont;
+    font-weight: 400;
+    font-size: 14px;
+    color: $darkGrey;
+    background-color: white;
+    border: 1px solid $shadowGrey;
+    text-transform: capitalize;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+
+    i, span{
+      margin-right: 5px;
+    }
+
+    i{
+      font-size: 20px;
+      &.sm{
+        font-size: 16px;
+        margin: 0 7px 0 2px;
+      }
+      &:last-child{
+        margin-right: 0;
+      }
+    }
+
+    &:hover{
+      color: white;
+      background-color: $lightGreen;
+      border-color: $lightGreen;
+    }
+
+    &:not(:last-child){
+      margin-right: 10px;
+    }
+  }
+
+  &.white-button, &.white-button-alt{
     color: rgba(0,0,0,0.5);
     background-color: white;
     border-color: rgba(0,0,0,0.2);
@@ -438,6 +488,24 @@ span.tag{
       color: rgba(0,0,0,0.75);
       background-color: rgba(0,0,0,0.03);
       // border-color: rgba(0,0,0,0.4);
+    }
+  }
+  &.white-button-alt:hover{
+    color: white;
+    background-color: $lightGreen;
+  }
+
+  &.radio-button{
+    background-color: white;
+    border: 1px solid $shadowGrey;
+    color: $darkGrey;
+    flex-grow: 1;
+    &:not(:last-child){
+      margin-right: 20px;
+    }
+    &.checked{
+      color: white;
+      background-color: $lightGreen;
     }
   }
 
@@ -460,6 +528,17 @@ span.tag{
         background-color: $lightGreen;
         color: white;
       }
+    }
+  }
+
+  //Language toggle
+  &.language-toggle{
+    color: $darkGrey;
+    background-color: $lightgrey;
+    text-transform: uppercase;
+    &.active{
+      color: white;
+      background-color: $lightGreen;
     }
   }
 }
@@ -557,7 +636,7 @@ span.tag{
 
     padding: 0 0;
 
-    .modal-icon{
+    .modal-icon, .modal-icon-titled{
       display:flex;
       flex-direction: column;
       justify-content: center;
@@ -571,7 +650,7 @@ span.tag{
         color: $lightGreen;
       }
 
-      h2{
+      h1, h2{
         font-family: $headerFont;
         font-size: 16px;
         font-weight: 400;
@@ -582,6 +661,55 @@ span.tag{
         margin: 0;
         margin-top: 10px;
         padding: 0;
+      }
+
+      h1{
+        font-size: 24px;
+        &:first-child{
+          margin-top: 0;
+        }
+      }
+
+      h2{
+        text-align: center;
+      }
+    }
+
+    .modal-icon-titled{
+      padding: 40px;
+      flex-direction: row;
+      justify-content: flex-start;
+      // align-items: flex-start;
+      section{
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        &:not(:first-child){
+          padding-left: 40px;
+        }
+        &:not(:last-child){
+          padding-right: 40px;
+          border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        &.left-aligned{
+          align-items: flex-start;
+        }
+      }
+
+      h1:not(:last-child){
+        margin-bottom: 5px;
+      }
+
+      p{
+        margin: 5px 0 0 0;
+        color: lightgrey;
+        &.p-green{
+          color: $lightGreen;
+        }
+        &.p-sm{
+          font-size: 13px;
+        }
       }
     }
 
@@ -620,6 +748,10 @@ span.tag{
     .modal-body{
       padding: 25px 25px;
 
+      &.no-padding{
+        padding: 0;
+      }
+
       ul {
         list-style-type: none;
         margin: 0;
@@ -635,6 +767,10 @@ span.tag{
           text-align: left;
           display: block;
           margin-left: 115px;
+
+          &.no-margin{
+            margin: 0;
+          }
         }
 
         li{
@@ -642,6 +778,10 @@ span.tag{
           flex-direction: row;
           justify-content: center;
           align-items: center;
+
+          &.vertical{
+            flex-direction: column;
+          }
 
           &:not(:last-child){
             margin-bottom: 20px;
@@ -667,13 +807,28 @@ span.tag{
             border-radius: 0;
             padding: 8px 10px;
             flex-grow: 1;
-            text-transform: capitalize;
+            //TO LEAVE OR NOT TO LEAVE
+            // text-transform: capitalize;
 
             transition: all 200ms ease-in-out;
 
             &:focus{
               outline: none;
               border-color: lighten($lightGreen, 20);
+            }
+          }
+
+          &.filters{
+            select{
+              max-width: 150px;
+              flex-grow: 0;
+              &:not(:last-child){
+                margin-right: 20px;
+              }
+            }
+
+            .search-bar-wrapper, .search-bar-wrapper .search-bar{
+              flex-grow: 1;
             }
           }
 
@@ -703,11 +858,25 @@ span.tag{
   }
 }
 
+.multiple-checkboxes{
+  width: 100%;
+  padding: 0;
+  list-style-type: none;
+
+  li {
+    width: 100%;
+    input {
+      width: 50px;
+      flex-grow: 0 !important;
+    }
+  }
+}
+
 //Button boxes
 .coverbox-wrapper{
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 
   margin-bottom: 20px;
@@ -731,6 +900,9 @@ span.tag{
       }
     }
   }
+  &.no-after .coverbox:after{
+    display: none;
+  }
 }
 
 .coverbox{
@@ -752,6 +924,7 @@ span.tag{
 
   &.coverbox-sm{
     height: 125px;
+    max-width: calc(25% - 22.5px);
 
     h3{
       font-size: 18px;
@@ -813,8 +986,33 @@ span.tag{
   }
 }
 
-
 //End-notifications
+
+i.icon-button{
+  font-size: 18px;
+  color: $lightgrey;
+  color: $darkGrey;
+  padding: 5px;
+  border: 1px solid $shadowGrey;
+
+  transition: all 50ms ease-in-out;
+
+  &:hover{
+    color: $darkGrey;
+    background-color: white;
+    color: white;
+  }
+
+  &.icon-edit:hover{
+    background-color: $lightBlue;
+    border-color: $lightBlue;
+  }
+
+  &.icon-delete:hover{
+    background-color: $lightRed;
+    border-color: $lightRed;
+  }
+}
 
 .no-transform{
   text-transform: none !important;

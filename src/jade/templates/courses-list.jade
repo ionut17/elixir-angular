@@ -4,7 +4,19 @@ section.container-title
     .col-md-12
       .page-title-wrapper
           h2 {{title}}
-          button.ebutton.green-button(data-toggle='modal', data-target='#add-user-modal') Add Course
+          
+section.container-tools( ng-if="isAuthorized(authorizedRoles.courses.tools)")
+  section.tools
+    h3 {{labels.table.tools}}
+    button.ebutton.icon-button(ng-click="modal['add-course'].this()" ng-if="isAuthorized(authorizedRoles.courses.create)")
+      i.material-icons.sm school
+      span {{labels.buttons.addCourse}}
+    button.ebutton.icon-button(ng-click="modal['add-course-lecturer'].this()" ng-if="isAuthorized(authorizedRoles.courses.addLecturer)")
+      i.material-icons.sm playlist_add
+      span {{labels.buttons.addLecturerToCourse}}
+    button.ebutton.icon-button(ng-click="modal['add-course-students'].this()" ng-if="isAuthorized(authorizedRoles.courses.addStudents)")
+      i.material-icons.sm playlist_add
+      span {{labels.buttons.addStudentsToCourse}}
 
 section.container-content
   .row
@@ -17,16 +29,20 @@ section.container-content
           thead
             tr
               th #
-              th Title
-              th Year
-              th Semester
-              th Lecturers
+              th {{labels.table.title}}
+              th {{labels.table.year}}
+              th {{labels.table.semester}}
+              th.td-fit {{labels.table.lecturers}}
+              th.td-actions(ng-show="isAuthorized(authorizedRoles.courses.edit) || isAuthorized(authorizedRoles.courses.delete)") {{labels.table.actions}}
           tbody
             tr(ng-repeat='course in courses track by $index', ui-sref='base.courses.view({id: course.id})')
               th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
               td.td-bold {{course.title}}
               td.td-bold {{course.year}}
               td.td-bold {{course.semester}}
-              td.td-blue {{course.lecturers.length}}
+              td.td-blue.td-fit {{course.lecturers.length}}
+              td.td-actions(ng-show="isAuthorized(authorizedRoles.courses.edit) || isAuthorized(authorizedRoles.courses.delete)")
+                i.material-icons.icon-button.icon-edit(title="Edit" ng-if="isAuthorized(authorizedRoles.courses.edit)") mode_edit
+                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.courses.delete)") delete_forever
             tr.disable-hover(ng-if='!courses.length')
               td.td-disabled.text-center(colspan='6') No results have been found

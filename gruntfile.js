@@ -53,11 +53,16 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.registerTask('start_server', 'Start local server on localhost:1000', function(){
+    var terminal = require("child_process").exec;
+    terminal("php -S localhost:1000 -t public");
+  });
+
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   grunt.registerTask('default', ['sass']);
-  grunt.registerTask('start', ['sass','jade','concat','watch']);
+  grunt.registerTask('start', ['start_server','sass','jade','concat','watch']);
 };

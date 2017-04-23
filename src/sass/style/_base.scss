@@ -205,12 +205,30 @@
   justify-content: flex-start;
   align-items: center;
 
-  h3{
+  .tools{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-grow: 1;
+  }
+
+  .large-select{
+    padding: 5px 15px;
+    width: 100%;
+    max-width: 288px;
+  }
+
+  h3, h4{
     font-size: 20px;
     font-family: $headerFont;
     text-transform: capitalize;
     color: #9a9a9a;
     margin: 0 20px 0 0;
+  }
+
+  h4{
+    font-size: 14px;
+    margin-right: 10px;
   }
 }
 
@@ -453,20 +471,26 @@
 
 
 select.large-select{
-  padding: 5px 15px;
+  font-family: $contentFont;
+  color: #696868;
+  padding: 8px 15px;
   max-width: 300px;
   width: 100%;
   border: 1px solid $shadowGrey;
-  margin-right: 10px;
+  border-bottom: 2px solid $shadowGrey;
   position: relative;
 
   box-shadow: none;
   background: white;
   background-image: none;
+  cursor: pointer;
   // appearance:none;
 
-  &:focus{
+  transition: all 100ms ease-in-out;
+
+  &:hover, &:focus{
     outline: none;
+    border-bottom: 2px solid $lightGreen;
   }
 
   &:before{

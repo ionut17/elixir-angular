@@ -4,7 +4,13 @@ section.container-title
     .col-md-12
       .page-title-wrapper
           h2 {{title}}
-          button.ebutton.green-button(data-toggle='modal', data-target='#add-user-modal') Add Group
+
+section.container-tools.hide
+  section.tools
+    h3 {{labels.table.tools}}
+    button.ebutton.icon-button(ng-click="modal['add-group'].this()")
+      i.material-icons.sm playlist_add
+      span {{labels.buttons.addGroup}}
 
 section.container-content
   .row
@@ -17,14 +23,18 @@ section.container-content
           thead
             tr
               th #
-              th Name
-              th Year
-              th Students
+              th {{labels.table.name}}
+              th {{labels.table.year}}
+              th {{labels.table.students}}
+              th.td-actions(ng-show="isAuthorized(authorizedRoles.groups.edit) || isAuthorized(authorizedRoles.groups.delete)") {{labels.table.actions}}
           tbody
             tr(ng-repeat='group in groups track by $index', ui-sref='base.groups.view({id: group.id})')
               th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
               td.td-bold {{group.name}}
               td.td-bold {{group.year}}
               td.td-blue {{group.students.length}}
+              td.td-actions(ng-show="isAuthorized(authorizedRoles.groups.edit) || isAuthorized(authorizedRoles.groups.delete)")
+                i.material-icons.icon-button.icon-edit(title="Edit" ng-if="isAuthorized(authorizedRoles.groups.edit)") mode_edit
+                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.groups.delete)") delete_forever
             tr.disable-hover(ng-if='!groups.length')
-              td.td-disabled.text-center(colspan='6') No results have been found
+              td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}

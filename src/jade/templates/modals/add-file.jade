@@ -1,36 +1,37 @@
 #add-file.modal.custom-modal.fade(tabindex='-1', role='dialog')
 	.modal-dialog(role='document')
 		.modal-content
-			.modal-icon
-				i.material-icons file_upload
-				h2 {{modal['add-file'].title}}
-			.modal-header.hide
-				h2 {{modal['add-file'].title}}
-				button.close(type='button', data-dismiss='modal', aria-label='Close')
-				span(aria-hidden='true') ×
+			.modal-icon-titled
+				section
+					i.material-icons file_upload
+					h2 {{modal['add-file'].title}}
+				section.left-aligned
+					h1 {{modal['add-file'].step.current+'. '+modal['add-file'].step.title}}
+					p(ng-show='modal["add-file"].step.details.length' ng-repeat="detail in modal['add-file'].step.details" ng-class="detail.class") {{detail.content}}
 			.modal-body
 				div.preloader-wrapper(ng-show="modal['add-file'].loading")
 					figure.preloader
-					h5 Încărcare fișier
-				ul(ng-hide="modal['add-file'].loading")
+					h5 {{modal['add-file'].loadingMessage}}
+				ul(ng-hide="modal['add-file'].loading || modal['add-file'].step.current!==1")
 					li
 						label(for='course') Course
 						select(name='course', ng-model='modal.local.courseId', ng-change='modal["add-file"].refreshActivities()', ng-disabled='modal.local.courseDisabled', ng-options="course as course.title for course in modal['add-file'].data.courses track by course.id", placeholder='Select course' required)
 							option(selected disabled value='') Select course
-					li.error(ng-if='modal.local.errors.course') {{modal.user.errors.course}}
+					li.error(ng-if='modal.local.errors.course') {{modal.local.errors.course}}
 					li
 						label(for='activity') Activity
-						select(name='activity', ng-model='modal.local.activityId', ng-disabled='modal.local.activityDisabled', ng-options="activity.id as activity.name for activity in modal['add-file'].data.activities track by activity.id", placeholder='Select activity' required)
+						select(name='activity', ng-model='modal.local.activityId', ng-disabled='modal.local.activityDisabled', ng-options="activity as activity.name for activity in modal['add-file'].data.activities track by activity.id", placeholder='Select activity' required)
 							option(selected disabled value='') Select activity
-					li.error(ng-if='modal.local.errors.activity') {{modal.user.errors.activity}}
+					li.error(ng-if='modal.local.errors.activity') {{modal.local.errors.activity}}
+				ul(ng-hide="modal['add-file'].loading || modal['add-file'].step.current!==2")
 					li
 						label(for='file_name') File Name
 						input.no-transform(name='file_name', type='input', ng-model='modal.local.fileName' placeholder='Enter file name' required)
-					li.error(ng-if='modal.local.errors.fileName') {{modal.user.errors.fileName}}
+					li.error(ng-if='modal.local.errors.fileName') {{modal.local.errors.fileName}}
 					li
 						label(for='file') File
 						input#upload-file(name='file' type='file', ng-model='modal.local.file' placeholder='Choose File' required)
-					li.error(ng-if='modal.local.errors.file') {{modal.user.errors.file}}
+					li.error(ng-if='modal.local.errors.file') {{modal.local.errors.file}}
 			.modal-footer.text-center(ng-hide="modal['add-file'].loading")
-				button.ebutton.white-button(type='button', data-dismiss='modal') {{modal['add-file'].cancel}}
+				button.ebutton.white-button(type='button', ng-click='modal["add-file"].action.cancel(modal.local)') {{modal['add-file'].cancel}}
 				button.ebutton.green-button(type='button', ng-click='modal["add-file"].action.submit(modal.local)') {{modal['add-file'].submit}}

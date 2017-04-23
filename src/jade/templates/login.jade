@@ -10,18 +10,18 @@ section.login-wrapper
     section.right-box
       div.preloader-wrapper(ng-show="form.loading")
         figure.preloader
-        h4 Autentificare
+        h4 {{labels.login.loading}}
       form.eform(ng-submit="form.submit()" ng-hide="form.loading")
         section.eform-group
           label.error(ng-repeat="error in form.errors") {{error}}
         section.eform-group
-          label.elabel(for='email') Email
-          input.einput(ng-model="form.email" type='email' name='email' placeholder="Enter email" required)
+          label.elabel(for='email') {{labels.table.email}}
+          input.einput(ng-model="form.email" type='email' name='email' placeholder="{{labels.placeholders.enterEmail}}" required)
         section.eform-group
-          label.elabel(for='password') Password
-          input.einput(ng-model="form.password" type='password' name='password' placeholder="Enter password" required)
-        button(type='submit').ebutton.login-button Login
+          label.elabel(for='password') {{labels.table.password}}
+          input.einput(ng-model="form.password" type='password' name='password' placeholder="{{labels.placeholders.enterPassword}}" required)
+        button(type='submit').ebutton.login-button {{labels.login.button}}
   section.col-lg-4.col-md-7.col-sm-9.col-xs-12.university-wrapper
-    p Proiect realizat pentru Facultatea de Informatica, Iasi  
+    p {{labels.login.description}}
 
 include elements/notifications
