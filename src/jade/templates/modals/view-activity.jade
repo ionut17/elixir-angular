@@ -1,0 +1,43 @@
+#view-activity-modal.modal.custom-modal.fade(tabindex='-1', role='dialog')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-icon
+        i.material-icons assignment
+        h2 {{modal['view-activity'].title}}
+      .modal-body(ng-show="modal['view-activity'].loading")
+        div.preloader-wrapper
+          figure.preloader
+          h5 {{modal['view-activity'].loadingMessage}}
+      .table-wrapper.modal-table.activity-table(ng-hide="modal['view-activity'].loading")
+        //- .table-title {{table.title}}
+        table.table.elixir-table.elixir-table-horizontal
+          tbody
+            tr(ng-repeat='extraRow in modal["view-activity"].table.extraRows track by $index')
+              th.col-sm-3(scope='row') {{extraRow.title}}
+              td.td-bold(ng-class="{ 'td-spaced disable-hover': extraRow.hasDownloadButton, 'no-padding': extraRow.canEdit && modal['view-activity'].editMode }")
+                span(ng-class="extraRow.customClass" ng-hide="extraRow.canEdit && modal['view-activity'].editMode") {{extraRow.value}}
+                input.td-input(type='number' ng-model="modal['view-activity'].data.newGrade" ng-show="modal['view-activity'].editMode" ng-value="extraRow.value" ng-if="extraRow.canEdit")
+                a.ebutton.icon-button(ng-if="extraRow.hasDownloadButton" ng-href="{{modal['view-activity'].table.retrieveLink()}}" target="_blank")
+                  i.material-icons get_app
+            tr(ui-sref='base.users.view({type: modal["view-activity"].activity.user.type+"s", id: modal["view-activity"].activity.user.id})' ng-class="{'edit-disabled': modal['view-activity'].editMode}" ng-click='modal["view-activity"].action.cancel()')
+              th.col-sm-3(scope='row') {{modal['view-activity'].table.columns.user}}
+              td.td-bold
+                span.tag(ng-class='modal["view-activity"].activity.user.tag') {{modal['view-activity'].activity.user.type}}
+                | {{modal['view-activity'].activity.user.firstName+" "+modal['view-activity'].activity.user.lastName}}
+              td.td-blue {{modal['view-activity'].activity.user.email}}
+            tr(ui-sref='base.activities.list({course_id: modal["view-activity"].activity.activity.course.id, activity_id: modal["view-activity"].activity.id.activityId})' ng-class="{'edit-disabled': modal['view-activity'].editMode}" ng-click='modal["view-activity"].action.cancel()')
+              th.col-sm-3(scope='row') {{modal['view-activity'].table.columns.activity}}
+              td.td-bold
+                span.tag(ng-class='modal["view-activity"].activity.tag') {{modal["view-activity"].activity.activity.type.name}}
+                | {{modal['view-activity'].activity.activity.name}}
+              td {{modal['view-activity'].activity.activity.date}}
+            tr(ui-sref='base.courses.view({id: modal["view-activity"].activity.activity.course.id})' ng-class="{'edit-disabled': modal['view-activity'].editMode}" ng-click='modal["view-activity"].action.cancel()')
+              th.col-sm-3(scope='row') {{modal['view-activity'].table.columns.course}}
+              td.td-bold {{modal['view-activity'].activity.activity.course.title}}
+      .modal-footer.text-center(ng-hide="modal['view-activity'].loading")
+        button.ebutton.white-button.right(type='button', ng-click='modal["view-activity"].action.cancel()') {{modal['view-activity'].cancel}}
+        button.ebutton.green-button.right.m-r(type='button', ng-click='modal["view-activity"].saveEdit()' ng-show="modal['view-activity'].editMode") {{modal['view-activity'].labels.buttons.save}}
+        //- button.ebutton.red-button(type='button', class='left', ng-click='modal["view-activity"].action.delete()') {{modal['view-activity'].labels.buttons.delete}}
+        i.material-icons.icon-button.icon-delete.grid-button.left(title="Delete", ng-if="isAuthorized(authorizedRoles.activities.delete)" ng-click="modal.confirm.this(delete, 'delete', activity)") delete_forever
+        i.material-icons.icon-button.icon-edit.grid-button.left(title="Edit" ng-class="{'active': modal['view-activity'].editMode}" ng-if="isAuthorized(authorizedRoles.activities.edit) && modal['view-activity'].activity.type == 'grades'" ng-click="modal['view-activity'].toggleEdit()") mode_edit
+        //- button.ebutton.green-button(type='button', ng-click='modal["view-activity"].action.submit(modal.local)') {{modal['view-activity'].submit}}

@@ -18,8 +18,8 @@
             select#type(name='type', ng-model='modal.local.type', placeholder='Select type')
               option(selected disabled value='') {{modal['add-user'].labels.placeholders.selectUserType}}
               option(value='student') {{modal['add-user'].labels.table.student}}
-              option(value='lecturer' disabled) {{modal['add-user'].labels.table.lecturer}}
-              option(value='admin' disabled) {{modal['add-user'].labels.table.admin}}
+              option(value='lecturer') {{modal['add-user'].labels.table.lecturer}}
+              option(value='admin') {{modal['add-user'].labels.table.admin}}
           li.error(ng-if='modal.local.errors.type') {{modal.local.errors.type}}
           li
             label(for='first_name') {{modal['add-attendance'].labels.table.firstName}}

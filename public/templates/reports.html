@@ -1,0 +1,136 @@
+
+<section class="container-title">
+  <!-- Header-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <div>
+          <h2>{{title}}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row hide">
+    <div class="col-sm-12">
+      <div class="table-title standalone">{{labels.table.reportSettings}}</div>
+    </div>
+  </div>
+  <div class="row report-settings">
+    <div class="col-md-6 col-sm-12 col-xs-12">
+      <select name="course" ng-model="selectedCourseObj" ng-options="course as course.title for course in courses track by course.id" ng-change="refreshGenerateButton()" class="large-select report-select course-select full-width">
+        <option value="">{{labels.placeholders.selectCourse}}</option>
+      </select>
+    </div>
+    <div class="col-md-4 col-sm-6 col-xs-12 hide">
+      <select name="type" ng-model="selectType" ng-change="refreshGenerateButton()" class="hide large-select full-width">
+        <option value="">{{labels.placeholders.selectReportType}}</option>
+        <option value="attendances">{{labels.table.attendances}}</option>
+        <option value="grades">{{labels.table.grades}}</option>
+        <option value="files">{{labels.table.files}}</option>
+      </select>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-12">
+      <button type="button" ng-click="selectType=&quot;attendances&quot;;refreshGenerateButton()" ng-class="{&quot;checked&quot;: selectType==&quot;attendances&quot;}" class="ebutton radio-button report-button"><i class="material-icons">event</i><span>{{labels.table.attendances}}</span></button>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-12">
+      <button type="button" ng-click="selectType=&quot;grades&quot;;refreshGenerateButton()" ng-class="{&quot;checked&quot;: selectType==&quot;grades&quot;}" class="ebutton radio-button report-button"><i class="material-icons">spellcheck</i><span>{{labels.table.grades}}</span></button>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-12">
+      <button type="button" ng-click="selectType=&quot;files&quot;;refreshGenerateButton()" ng-class="{&quot;checked&quot;: selectType==&quot;files&quot;}" class="ebutton radio-button report-button"><i class="material-icons">attachment</i><span>{{labels.table.files}}</span></button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 report-generate-wrapper">
+      <button type="button" id="generateButton" ng-disabled="!canGenerate" ng-class="{'disabled': !canGenerate}" ng-click="generateReport()" class="ebutton green-button generate-button">{{labels.buttons.generateReport}}</button>
+    </div>
+  </div>
+</section>
+<section class="container-content">
+  <div class="row hide">
+    <div class="col-sm-12">
+      <div class="table-title standalone">{{labels.table.reportSettings}}</div>
+    </div>
+  </div>
+  <div class="row coverbox-wrapper hide">
+    <div class="col-md-6 col-sm-12 col-xs-12">
+      <select name="course" ng-model="selectedCourseObj" ng-options="course as course.title for course in courses track by course.id" ng-change="refreshGenerateButton()" class="large-select report-select course-select full-width">
+        <option value="">{{labels.placeholders.selectCourse}}</option>
+      </select>
+    </div>
+    <div class="col-md-4 col-sm-6 col-xs-12 hide">
+      <select name="type" ng-model="selectType" ng-change="refreshGenerateButton()" class="hide large-select full-width">
+        <option value="">{{labels.placeholders.selectReportType}}</option>
+        <option value="attendances">{{labels.table.attendances}}</option>
+        <option value="grades">{{labels.table.grades}}</option>
+        <option value="files">{{labels.table.files}}</option>
+      </select>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-12">
+      <button type="button" ng-click="selectType=&quot;attendances&quot;;refreshGenerateButton()" ng-class="{&quot;checked&quot;: selectType==&quot;attendances&quot;}" class="ebutton radio-button report-button"><i class="material-icons">event</i><span>{{labels.table.attendances}}</span></button>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-12">
+      <button type="button" ng-click="selectType=&quot;grades&quot;;refreshGenerateButton()" ng-class="{&quot;checked&quot;: selectType==&quot;grades&quot;}" class="ebutton radio-button report-button"><i class="material-icons">spellcheck</i><span>{{labels.table.grades}}</span></button>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-12">
+      <button type="button" ng-click="selectType=&quot;files&quot;;refreshGenerateButton()" ng-class="{&quot;checked&quot;: selectType==&quot;files&quot;}" class="ebutton radio-button report-button"><i class="material-icons">attachment</i><span>{{labels.table.files}}</span></button>
+    </div>
+  </div>
+  <div class="row hide">
+    <div class="col-xs-12 report-generate-wrapper hide">
+      <button type="button" id="generateButton" ng-disabled="!canGenerate" ng-class="{'disabled': !canGenerate}" ng-click="generateReport()" class="ebutton green-button generate-button">{{labels.buttons.generateReport}}</button>
+    </div>
+  </div>
+  <div ng-show="report.activities" class="row">
+    <div class="col-sm-12">
+      <div class="table-title standalone">{{labels.reportTarget}} - {{labels.reportType}}</div>
+    </div>
+  </div>
+  <div ng-show="report.activities" class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12 coverbox-wrapper">
+      <select name="type" ng-model="selectedGroup" ng-options="group.id as group.name for group in report.groups track by group.id" ng-change="filterStudents()" class="large-select full-width m-r">
+        <option value="">{{labels.table.allGroups}}</option>
+      </select>
+      <button ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(selectedCourseObj)" class="ebutton icon-button"><i class="material-icons sm">assignment</i><span>{{labels.buttons.addActivity}}</span></button>
+    </div>
+    <div class="col-md-8 col-sm-8 col-xs-12">
+      <button ng-click="edit.toggle()" ng-class="{'active': edit.status}" ng-if="selectedType!='files'" class="ebutton blue-button icon-button right"><i class="material-icons">mode_edit</i><span>{{labels.buttons.editMode}}</span></button>
+      <button ng-click="edit.save()" ng-show="edit.status" class="ebutton green-button right m-r">{{labels.buttons.save}}</button>
+    </div>
+  </div>
+  <div ng-show="report.activities" class="row">
+    <div class="col-md-12">
+      <div class="table-wrapper">
+        <table id="report" class="table elixir-table enable-td-hover">
+          <thead>
+            <tr>
+              <th class="col-sm-2 no-hover">{{labels.table.student}} \ {{labels.table.activity}}</th>
+              <th ng-repeat="activity in report.activities track by $index" title="{{activity.name}}" class="no-hover td-fit"><a ui-sref="base.activities.list({course_id: selectedCourse, activity_id: activity.id})">{{activity.name}}</a></th>
+              <th class="no-hover">{{labels.table.total}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="student in report.students track by $index" ng-show="student.visible" ng-if="report.activities.length">
+              <td class="td-bold no-hover"><a ui-sref="base.users.view({type: &quot;students&quot;, id: student.id})">{{student.lastName+' '+student.firstName}}</a></td>
+              <td ng-repeat="activity in report.activities" ng-click="goToActivity(student.id, activity.id)" ng-class="{'no-hover': reportValueOf(student.id, activity.id) === '', 'no-padding': edit.status, 'td-checker': selectedType == 'attendances', 'checked':reportValueOf(student.id, activity.id) !== ''}" class="td-bold"><span ng-hide="edit.status">{{reportValueOf(student.id, activity.id)}}</span>
+                <input type="text" ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='attendances'" ng-value="report.matrix[student.id][activity.id].text" class="td-input sm-td-input"/>
+                <input type="number" ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='grades'" ng-value="report.matrix[student.id][activity.id].text" class="td-input sm-td-input"/>
+              </td>
+              <td class="no-hover">{{getTotalOf(student.id)}}</td>
+            </tr>
+            <tr ng-if="!report.students.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{labels.errors.noStudents}}</td>
+            </tr>
+            <tr ng-if="!report.activities.length" class="disable-hover">
+              <td colspan="6" class="td-disabled text-center">{{labels.errors.noActivities}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div ng-show="report.activities" class="row">
+    <div class="col-sm-12">
+      <button ng-click="exportPDF()" class="ebutton white-button-alt">Export PDF</button>
+    </div>
+  </div>
+</section>

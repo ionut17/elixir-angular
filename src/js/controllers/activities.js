@@ -168,7 +168,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
 
     //Get specific page
     var previousType = null;
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.activities.list', $stateParams, {reload: true});
     };
@@ -182,7 +182,8 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
         params.user_id = activity.user.id;
         params.file_id = activity.extraId >= 0 ? activity.extraId : undefined;
         params.file_id = activity.id !== undefined ? activity.id : params.file_id;
-        $state.go('base.activities.view', params, {reload: true});
+        $scope.modal['view-activity'].this(params);
+        // $state.go('base.activities.view', params, {reload: true});
       } else{
         params.page = 0;
         $state.go('base.activities.list', params, {reload: true});
@@ -192,6 +193,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
     // Delete
     $scope.delete = function(params){
       var resource = null;
+      params.role = typeof params.role != 'undefined' ? params.role : 'activity';
       var label = params.role.capitalizeFirstLetter();
       var requestBody = {};
       switch (params.role){
@@ -218,6 +220,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       }
       //Removing activity
       resource.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1 && $scope.pager.currentPage > 0 ? parseInt($stateParams.page) - 1 : $stateParams.page;
         $state.go('base.activities.list', $stateParams, {reload: true});
         NotificationService.push({
           title: label+' Deleted',
@@ -234,7 +237,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
           type: NOTIFICATIONS_TYPES.error
         });
       });
-    }
+    };
 
     // Search
     $scope.search = $rootScope.search;

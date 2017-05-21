@@ -26,6 +26,9 @@ section.container-content
         div.coverbox.coverbox-sm(ng-if="isAuthorized(authorizedRoles.grades.create)" ng-click="modal['add-grade'].this()")
           i.material-icons spellcheck
           h3 {{dashboardLabels.addGrades}}
+        div.coverbox.coverbox-sm(ng-if="isAuthorized(authorizedRoles.import)" ui-sref='base.import')
+          i.material-icons import_export
+          h3 {{dashboardLabels.tables.import}}
   .row
     .col-md-6.col-sm-12.col-xs-12(ng-if="hasRole('student')")
       .table-wrapper

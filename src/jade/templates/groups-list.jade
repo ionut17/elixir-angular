@@ -17,8 +17,8 @@ section.container-content
     .col-md-12
       .table-wrapper
         .table-title
-          include elements/pagination
           include elements/search-bar
+          pagination(pager="pager" callback="getPage(index)")
         table.table.elixir-table
           thead
             tr
@@ -33,8 +33,8 @@ section.container-content
               td.td-bold {{group.name}}
               td.td-bold {{group.year}}
               td.td-blue {{group.students.length}}
-              td.td-actions(ng-show="isAuthorized(authorizedRoles.groups.edit) || isAuthorized(authorizedRoles.groups.delete)")
+              td.td-actions(ng-show="isAuthorized(authorizedRoles.groups.edit) || isAuthorized(authorizedRoles.groups.delete)" ng-click="$event.stopPropagation();")
                 i.material-icons.icon-button.icon-edit(title="Edit" ng-if="isAuthorized(authorizedRoles.groups.edit)") mode_edit
-                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.groups.delete)") delete_forever
+                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.groups.delete)" ng-click="modal.confirm.this(delete, 'delete', group)") delete_forever
             tr.disable-hover(ng-if='!groups.length')
               td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}

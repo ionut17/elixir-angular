@@ -149,8 +149,8 @@ app.config(function($stateProvider) {
   });
 });
 
-app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', 'languageTranslator', 'Students', 'Lecturers', 'Admins', 'Courses', 'Groups', 'Activities', 'Attendances', 'Grades', 'Files',
-      function($scope, $rootScope, $q, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService, languageTranslator, Students, Lecturers, Admins, Courses, Groups, Activities, Attendances, Grades, Files) {
+app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', 'languageTranslator', 'Students', 'Lecturers', 'Admins', 'Courses', 'Groups', 'Activities', 'Attendances', 'Grades', 'Files', 'Storage',
+      function($scope, $rootScope, $q, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService, languageTranslator, Students, Lecturers, Admins, Courses, Groups, Activities, Attendances, Grades, Files, Storage) {
   $scope.logout = function(){
     AuthService.logout();
     NotificationService.push({
@@ -200,6 +200,9 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
       users: languageTranslator.menu.users[$rootScope.language],
       account: languageTranslator.menu.account[$rootScope.language],
       settings: languageTranslator.menu.settings[$rootScope.language],
+      import: languageTranslator.menu.import[$rootScope.language],
+      reports: languageTranslator.menu.reports[$rootScope.language],
+      overview: languageTranslator.menu.overview[$rootScope.language],
       logout: languageTranslator.menu.logout[$rootScope.language]
     };
   };
@@ -317,6 +320,160 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
           $scope.modal.confirm.action.params = params;
         }
       },
+      'view-activity': {
+        action: {
+          callback: null,
+          params: null,
+          submit: function(){
+            if (typeof $scope.modal.confirm.action.callback == 'function'){
+              $scope.modal.confirm.action.callback($scope.modal.confirm.action.params);
+            };
+            angular.element('#view-activity-modal').modal('hide');
+            angular.element('.modal-backdrop').remove();
+          },
+          cancel: function(){
+            angular.element('#view-activity-modal').modal('hide');
+            angular.element('.modal-backdrop').remove();
+          }
+        },
+        title: languageTranslator.tables.activityDetails[$rootScope.language],
+        cancel: languageTranslator.buttons.close[$rootScope.language],
+        submit: languageTranslator.buttons.logout[$rootScope.language],
+        labels: {
+          placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+          table: $rootScope.getTranslatedObject(languageTranslator.tables),
+          errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+          buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+          marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+        },
+        table: {
+          title : '',
+          columns : {
+            user: languageTranslator.tables.student[$rootScope.language],
+            activity: languageTranslator.tables.activity[$rootScope.language],
+            course: languageTranslator.tables.course[$rootScope.language]
+          },
+          retrieveLink : function(){
+            return '';
+          },
+          extraRows : []
+        },
+        loading: false,
+        loadingMessage: languageTranslator.tables.loading[$rootScope.language],
+        data: {},
+        editMode: false,
+        toggleEdit: function(){
+          $scope.modal['view-activity'].editMode = !$scope.modal['view-activity'].editMode;
+        },
+        saveEdit: function(){
+          switch($scope.modal['view-activity'].activity.type){
+            case 'grades':
+              console.log('save edit');
+              if ($scope.modal['view-activity'].data.newGrade != $scope.modal['view-activity'].activity.value){
+                //Edit activity here
+                $scope.modal['view-activity'].loadingMessage = languageTranslator.modals.addGrades.loading2[$rootScope.language];
+                $scope.modal['view-activity'].loading = true;
+              }
+              break;
+          }
+        },
+        loading: false,
+        this: function(activityParams){
+          angular.element('#view-activity-modal').modal('show');
+          //Set edit mode settings
+          $scope.modal['view-activity'].editMode = false;
+          $scope.modal['view-activity'].loading = true;
+          $scope.modal['view-activity'].loadingMessage = languageTranslator.tables.loading[$rootScope.language];
+          //Load the data for the specific activity
+          var resource;
+          var params;
+          switch(activityParams.type){
+            case 'attendances':
+              resource = Attendances;
+              params = {
+                student_id: activityParams.user_id,
+                activity_id: activityParams.activity_id,
+              };
+              break;
+            case 'grades':
+              resource = Grades;
+              params = {
+                student_id: activityParams.user_id,
+                activity_id: activityParams.activity_id,
+              };
+              break;
+            case 'files':
+              resource = Files;
+              params = {
+                file_id: activityParams.file_id,
+              };
+              break;
+          }
+          //Set ordered title
+          $scope.modal["view-activity"].table.title = undefined;
+          switch ($rootScope.language){
+            case 'en':
+              $scope.modal["view-activity"].table.title  = [languageTranslator.tables[activityParams.type.slice(0,-1)][$rootScope.language],languageTranslator.tables.details[$rootScope.language]].join(' ');
+              break;
+            case 'ro':
+              $scope.modal["view-activity"].table.title  = [languageTranslator.tables.details[$rootScope.language], languageTranslator.tables[activityParams.type.slice(0,-1)][$rootScope.language]].join(' ');
+              break;
+          }
+          $scope.modal["view-activity"].title = $scope.modal["view-activity"].table.title;
+          //Get resource
+          resource.getById(params).$promise.then(function(response){
+            response.type = activityParams.type;
+            response.user = response.student;
+            response.user.type = 'student';
+            response.user.tag = 'tag-'+response.user.type;
+            delete response.student;
+            $scope.modal["view-activity"].activity = response;
+            //Set retrieve path
+            $scope.modal["view-activity"].table.retrieveLink = function(){
+              return config.apiEndpoint+'storage/retrieve/'+response.id+'?k='+$rootScope.authUser.token;
+            };
+            //Set extra rows
+            switch(response.type){
+              case 'attendances':
+                $scope.modal['view-activity'].table.extraRows = [];
+                break;
+              case 'grades':
+                $scope.modal['view-activity'].data.newGrade = $scope.modal['view-activity'].activity.value;
+                $scope.modal['view-activity'].table.extraRows = [{
+                    title : $scope.modal['view-activity'].labels.table.value,
+                    value : $scope.modal['view-activity'].activity.value,
+                    customClass : 'tag tag-auto tag-grade',
+                    canEdit: true
+                }];
+                break;
+              case 'files':
+                $scope.modal['view-activity'].table.extraRows = [{
+                    title : $scope.modal['view-activity'].labels.table.file,
+                    value : $scope.modal['view-activity'].activity.fileName+'.'+$scope.modal['view-activity'].activity.extension,
+                    customClass : '',
+                    hasDownloadButton: true,
+                    canEdit: false
+                  },{
+                    title: $scope.modal['view-activity'].labels.table.type,
+                    value : $scope.modal['view-activity'].activity.extension,
+                    customClass : 'tag tag-auto tag-file',
+                    canEdit: false
+                  },{
+                    title: $scope.modal['view-activity'].labels.table.uploadDate,
+                    value : $scope.modal['view-activity'].activity.uploadDate,
+                    customClass : 'td-blue',
+                    canEdit: false
+                }];
+                break;
+            }
+            $scope.modal['view-activity'].loading = false;
+          }, function(response){
+            console.log(response);
+            $rootScope.$broadcast("not-authorized");
+            return $q.reject("Rejection message!");
+          });
+        }
+      },
       'add-course': {
         action: {
           value: function(){},
@@ -376,7 +533,6 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
             $scope.modal.local.errors.course = $scope.modal.local.courseId == undefined ? 'Course required to continue' : undefined;
             $scope.modal.local.errors.lecturer = $scope.modal.local.lecturer == undefined ? 'Lecturer required to continue' : undefined;
             if ($scope.modal.local.errors.course === undefined && $scope.modal.local.errors.lecturer === undefined){
-              console.log($scope.modal.local.courseId.id, $scope.modal.local.lecturer.id);
               Courses.addCourseLecturer({
                   "course_id": $scope.modal.local.courseId.id,
                 }, {
@@ -397,9 +553,10 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                 console.log(error);
                 $scope.modal["add-course-lecturer"].loading = false;
               });
+            } else{
+              console.log($scope.modal.local);
+              $scope.modal["add-course-lecturer"].loading = false;
             }
-            console.log($scope.modal.local);
-            $scope.modal["add-course-lecturer"].loading = false;
           }
         },
         title: 'Add Lecturer to Course',
@@ -474,7 +631,6 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                 $scope.modal['add-course-students'].step.showStep($scope.modal['add-course-students'].step.max);
                 $scope.modal.local.errors.student = languageTranslator.errors.studentAtLeastRequiredCourse[$rootScope.language];
               } else{
-                $scope.modal["add-course-students"].loading = false;
                 Courses.addCourseStudents({
                     "course_id": $scope.modal.local.courseId.id,
                   }, {
@@ -694,7 +850,7 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
             $scope.modal.local.errors.type = paramObj.typeId == undefined ? languageTranslator.errors.typeRequired[$rootScope.language] : undefined;
             $scope.modal.local.errors.name = paramObj.name == undefined ? languageTranslator.errors.nameRequired[$rootScope.language] : undefined;
             $scope.modal.local.errors.date = paramObj.date == undefined ? languageTranslator.errors.dateRequired[$rootScope.language] : undefined;
-            if (paramObj.courseId !== undefined && paramObj.typeId !== undefined && paramObj.name !== undefined && paramObj.name.length >= 3 && paramObj.date !== undefined){
+            if (paramObj.courseId !== undefined && paramObj.typeId !== undefined && paramObj.name !== undefined && paramObj.date !== undefined){
               //Data
               Activities.addActivity(paramObj).$promise.then(function(response){
                 angular.element('#add-activity').modal('hide');
@@ -1460,6 +1616,7 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                     resource = Admins;
                     break;
                 }
+                console.log(data);
                 resource.add(data).$promise.then(function(response){
                   angular.element('#add-user').modal('hide');
                   angular.element('.modal-backdrop').remove();
@@ -1486,23 +1643,6 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                   }
                   $scope.modal["add-user"].loading = false;
                 });
-                // Final submit
-                // Attendances.addAttendances(data).$promise.then(function(response){
-                //   angular.element('#add-user').modal('hide');
-                //   angular.element('.modal-backdrop').remove();
-                //   $scope.modal["add-user"].loading = false;
-                //   $state.reload();
-                //   //Send success notification
-                //   NotificationService.push({
-                //     title: languageTranslator.modals.markAttendances.notificationSuccess.title[$rootScope.language],
-                //     content: [languageTranslator.modals.markAttendances.notificationSuccess.content[$rootScope.language],$scope.modal.local.activityId.name,'.'].join(''),
-                //     link: null,
-                //     type: NOTIFICATIONS_TYPES.success
-                //   });
-                // }, function(response){
-                //   console.log(response);
-                //   $scope.modal["add-user"].loading = false;
-                // });
               }
             }
           },
@@ -1599,6 +1739,74 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
           $scope.modal["add-user"].loading = false;
           //Got dependencies
           angular.element('#add-user').modal('show');
+        }
+      },
+      'import': {
+        action: {
+          value: null,
+          submit: function(){
+              $scope.modal["import"].loading = true;
+              var canContinue = true;
+              var data = {
+                file: document.getElementById('import-file').files[0]
+              };
+              if (typeof data.file == 'undefined'){
+                $scope.modal.local.errors.file = languageTranslator.errors.fileNotSelected[$rootScope.language];
+                canContinue = false;
+              }
+              //If can canContinue
+              if (canContinue){
+                //Build data
+                var formData = new FormData();
+                formData.append('file', data.file);
+                Storage.import({
+                  'type': $scope.modal['import'].data.type
+                }, formData).$promise.then(function(response){
+                  angular.element('#import').modal('hide');
+                  angular.element('.modal-backdrop').remove();
+                  $scope.modal["import"].loading = false;
+                  //Send success notification
+                  NotificationService.push({
+                    title: languageTranslator.modals.import.notificationSuccess.title[$rootScope.language],
+                    content: [languageTranslator.modals.import.notificationSuccess.content[$rootScope.language],' ',$scope.modal['import'].labels.table[$scope.modal['import'].data.type],'.'].join(''),
+                    link: null,
+                    type: NOTIFICATIONS_TYPES.success
+                  });
+                }, function(response){
+                  console.log(response);
+                  if (response.data)
+                    $scope.modal.local.errors.submit = response.data.message;
+                  $scope.modal["import"].loading = false;
+                });
+              }
+          },
+          cancel: function(){
+            angular.element('#import').modal('hide');
+            angular.element('.modal-backdrop').remove();
+          }
+        },
+        title: languageTranslator.modals.import.title[$rootScope.language],
+        description: languageTranslator.modals.import.description[$rootScope.language],
+        cancel: languageTranslator.buttons.cancel[$rootScope.language],
+        submit: languageTranslator.buttons.import[$rootScope.language],
+        data: {},
+        loading: false,
+        loadingMessage: languageTranslator.modals.import.loading[$rootScope.language],
+        labels: {
+          title: languageTranslator.modals.addUser.title[$rootScope.language],
+          placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+          table: $rootScope.getTranslatedObject(languageTranslator.tables),
+          errors: $rootScope.getTranslatedObject(languageTranslator.errors)
+        },
+        this: function(type){
+          $scope.modal["import"].loading = true;
+          $scope.modal.local = {};
+          $scope.modal.local.errors = {};
+          $scope.modal["import"].title = [languageTranslator.modals.import.title[$rootScope.language], $scope.modal["import"].labels.table[type]].join(" ");
+          $scope.modal["import"].data.type = type;
+          //Finish loading
+          $scope.modal["import"].loading = false;
+          angular.element('#import').modal('show');
         }
       }
     };
@@ -1734,6 +1942,16 @@ app.factory("Admins", ["config", "$resource", "AuthService", function(config, $r
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "admins/:admin_id",
+          method: "DELETE",
+          params: {student_id: '@admin_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);
@@ -1764,6 +1982,17 @@ app.factory("Attendances", ["config", "$resource", "AuthService", function(confi
             url: config.apiEndpoint + "attendances/:activity_id",
             method: "GET",
             // isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getByCourseId: {
+            url: config.apiEndpoint + "attendances/course/:course_id",
+            method: "GET",
+            isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -1888,6 +2117,16 @@ app.factory("Courses", ["config", "$resource", "AuthService", function(config, $
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "courses/:course_id",
+          method: "DELETE",
+          params: {student_id: '@course_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);
@@ -1918,6 +2157,17 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
             url: config.apiEndpoint + "files/:activity_id",
             method: "GET",
             // isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        getByCourseId: {
+            url: config.apiEndpoint + "files/course/:course_id",
+            method: "GET",
+            isArray: true,
             headers: {
                 'Accept': 'application/json',
                 Authorization: function() {
@@ -1981,6 +2231,17 @@ app.factory("Grades", ["config", "$resource", "AuthService", function(config, $r
                 }
             }
         },
+        getByCourseId: {
+            url: config.apiEndpoint + "grades/course/:course_id",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         addGrades: {
             url: config.apiEndpoint + "grades",
             method: "POST",
@@ -2037,6 +2298,16 @@ app.factory("Groups", ["config", "$resource", "AuthService", function(config, $r
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "groups/:group_id",
+          method: "DELETE",
+          params: {student_id: '@group_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);
@@ -2093,6 +2364,16 @@ app.factory("Lecturers", ["config", "$resource", "AuthService", function(config,
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "lecturers/:lecturer_id",
+          method: "DELETE",
+          params: {student_id: '@lecturer_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);
@@ -2104,6 +2385,16 @@ app.factory("Storage", ["config", "$resource", "AuthService", function(config, $
             method: "POST",
             headers: {
                 'Accept': 'application/download',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
+        import: {
+            url: config.apiEndpoint + "import/:type",
+            method: "POST",
+            headers: {
+                "Content-Type": undefined,
                 Authorization: function() {
                     return "Bearer "+AuthService.getToken();
                 }
@@ -2225,6 +2516,16 @@ app.factory("Students", ["config", "$resource", "AuthService", function(config, 
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "students/:student_id",
+          method: "DELETE",
+          params: {student_id: '@student_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);
@@ -2300,6 +2601,9 @@ app.constant("config", {
       },
       myAccount: ['*'],
       settings: ['*'],
+      importCore: ['ADMIN'],
+      import: ['LECTURER', 'ADMIN'],
+      reports: ['LECTURER', 'ADMIN'],
       users: {
         list: ['ADMIN'],
         view: ['*'],
@@ -2481,7 +2785,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
 
     //Get specific page
     var previousType = null;
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.activities.list', $stateParams, {reload: true});
     };
@@ -2495,7 +2799,8 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
         params.user_id = activity.user.id;
         params.file_id = activity.extraId >= 0 ? activity.extraId : undefined;
         params.file_id = activity.id !== undefined ? activity.id : params.file_id;
-        $state.go('base.activities.view', params, {reload: true});
+        $scope.modal['view-activity'].this(params);
+        // $state.go('base.activities.view', params, {reload: true});
       } else{
         params.page = 0;
         $state.go('base.activities.list', params, {reload: true});
@@ -2505,6 +2810,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
     // Delete
     $scope.delete = function(params){
       var resource = null;
+      params.role = typeof params.role != 'undefined' ? params.role : 'activity';
       var label = params.role.capitalizeFirstLetter();
       var requestBody = {};
       switch (params.role){
@@ -2531,6 +2837,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
       }
       //Removing activity
       resource.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1 && $scope.pager.currentPage > 0 ? parseInt($stateParams.page) - 1 : $stateParams.page;
         $state.go('base.activities.list', $stateParams, {reload: true});
         NotificationService.push({
           title: label+' Deleted',
@@ -2547,7 +2854,7 @@ app.controller('ActivitiesListController', ['$scope', '$rootScope', 'resolvedDat
           type: NOTIFICATIONS_TYPES.error
         });
       });
-    }
+    };
 
     // Search
     $scope.search = $rootScope.search;
@@ -3003,13 +3310,14 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams','languageTranslator', function($scope, $rootScope, resolvedData, $state, Courses, $stateParams, languageTranslator) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams','languageTranslator', 'NotificationService', 'NOTIFICATIONS_TYPES',
+        function($scope, $rootScope, resolvedData, $state, Courses, $stateParams, languageTranslator, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
     $scope.title = languageTranslator.tables.courses[$rootScope.language];
     $scope.courses = resolvedData.courses;
     $scope.pager = resolvedData.pager;
 
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.courses.list', $stateParams, {reload: true});
     };
@@ -3033,6 +3341,33 @@ app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData',
       errors: $rootScope.getTranslatedObject(languageTranslator.errors),
       buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
       marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+    };
+
+    // Delete
+    $scope.delete = function(params){
+      var requestBody = {
+        course_id: params.id
+      };
+      var label = $scope.labels.table.course;
+      //Removing course
+      Courses.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1  && $scope.pager.currentPage > 0 ? parseInt($stateParams.page) - 1 : $stateParams.page;
+        $state.go('base.courses.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: ['You have successfully deleted the',params.title,'course.'].join(' '),
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
     };
 
     //Add path to breadcrums list
@@ -3279,7 +3614,7 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
       buttons: $rootScope.getTranslatedObject(languageTranslator.buttons)
     };
 
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.groups.list', $stateParams, {reload: true});
     };
@@ -3296,6 +3631,33 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
         $rootScope.search.go();
       }
     });
+
+    // Delete
+    $scope.delete = function(params){
+      var requestBody = {
+        group_id: params.id
+      };
+      var label = $scope.labels.table.group;
+      //Removing course
+      Groups.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1 && $scope.pager.currentPage > 0  ? parseInt($stateParams.page) - 1 : $stateParams.page;
+        $state.go('base.groups.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: ['You have successfully deleted the',group.name,'group.'].join(' '),
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
+    };
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -3335,7 +3697,8 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 'languageTranslator', function($scope, $rootScope, resolvedData, languageTranslator) {
+app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 'languageTranslator', 'Groups', 'NotificationService', 'NOTIFICATIONS_TYPES',
+          function($scope, $rootScope, resolvedData, languageTranslator, Groups, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
     $scope.group = resolvedData.group;
     $scope.title = [languageTranslator.tables.group[$rootScope.language],$scope.group.name].join(' ');
@@ -3363,6 +3726,42 @@ app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 
       }
     };
     $rootScope.paths.length = 3;
+}]);
+
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.import', {
+        url: '/import',
+        templateUrl: 'templates/import.html',
+        controller: 'ImportController',
+        data: {
+          authorizedRoles: config.authorizedRoles.import
+        }
+    });
+});
+
+
+app.controller('ImportController', ['$scope', '$rootScope', 'languageTranslator', function($scope, $rootScope, languageTranslator) {
+    //Init
+    $scope.title = languageTranslator.pages.import.title[$rootScope.language];
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': languageTranslator.pages.import.title[$rootScope.language],
+      'icon': null,
+      'state': 'base.import',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
+
+    //Labels
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      importEntities: languageTranslator.pages.import.importEntities[$rootScope.language],
+      importRelations: languageTranslator.pages.import.importRelations[$rootScope.language],
+      importData: languageTranslator.pages.import.importData[$rootScope.language]
+    }
+
 }]);
 
 app.config(function($stateProvider) {
@@ -3431,6 +3830,295 @@ app.controller('LoginController', ['$scope', '$q','$state', '$timeout', 'AuthSer
         type: NOTIFICATIONS_TYPES.error
       });
     });
+
+}]);
+
+app.config(function($stateProvider, config) {
+    $stateProvider.state('base.reports', {
+        url: '/reports?course_id&type',
+        templateUrl: 'templates/reports.html',
+        controller: 'ReportsController',
+        data: {
+          authorizedRoles: config.authorizedRoles.import
+        },
+        resolve: {
+            resolvedData: ["Courses", "$http", "config", "$rootScope", "$q", "$stateParams", function(Courses, $http, config, $rootScope, $q, $stateParams) {
+              return Courses.getAllUnpaged().$promise.then(function(response){
+                //Modify course titles
+                angular.forEach(response, function(value, key) {
+                   value.title = [Array(value.year+1).join('I'),value.semester,' - ',value.title].join('');
+                });
+                response.sort( function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);} );
+                return {
+                  courses: response
+                }
+              }, function(response){
+                console.log(response);
+                $rootScope.$broadcast("not-authorized");
+                return $q.reject("Rejection message!");
+              });
+            }]
+        }
+    });
+});
+
+
+app.controller('ReportsController', ['$scope', '$q', '$rootScope', 'languageTranslator', 'resolvedData', 'Courses', 'Attendances', 'Grades', 'Files', '$state', '$stateParams', 'Groups', '$state',
+    function($scope, $q, $rootScope, languageTranslator, resolvedData, Courses, Attendances, Grades, Files, $state, $stateParams, Groups, $state) {
+    //Init
+    $scope.title = languageTranslator.pages.reports.title[$rootScope.language];
+    $scope.courses = resolvedData.courses;
+    //Add path to breadcrums list
+    $rootScope.paths[1] = {
+      'title': languageTranslator.pages.reports.title[$rootScope.language],
+      'icon': null,
+      'state': 'base.report',
+      'params': null
+    };
+    $rootScope.paths.length = 2;
+
+    //Labels
+    $scope.labels = {
+      placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+      buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+      table: $rootScope.getTranslatedObject(languageTranslator.tables),
+      errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+      reportTarget: languageTranslator.tables.course[$rootScope.language],
+      reportType: ''
+    };
+
+    //course
+    $scope.selectedCourseObj = typeof $stateParams.course_id != 'undefined' ? {'id':parseFloat($stateParams.course_id)} : '';
+    $scope.selectedCourse = typeof $stateParams.course_id != 'undefined' ? parseFloat($stateParams.course_id) : '';
+    $scope.selectType = typeof $stateParams.type != 'undefined' ? $stateParams.type : '';
+    $scope.selectedType = typeof $stateParams.type != 'undefined' ? $stateParams.type : '';
+    $scope.canGenerate = false;
+    $scope.refreshGenerateButton = function(){
+      $scope.canGenerate = $scope.selectedCourseObj != '' && $scope.selectType != '';
+    }
+    //Report
+    $scope.report = {
+      totals: {}
+    }
+    $scope.generateReport = function(){
+      $state.go('base.reports',{course_id: $scope.selectedCourseObj.id, type: $scope.selectType}, {reload:true});
+    }
+    $scope.loadReport = function(){
+      $scope.report = {
+        totals: {}
+      };
+      //Make query
+      var resource;
+      switch ($scope.selectedType){
+        case 'attendances':
+          resource = Attendances;
+          break;
+        case 'grades':
+          resource = Grades;
+          break;
+        case 'files':
+          resource = Files;
+          break;
+      };
+      $q.all([
+        resource.getByCourseId({'course_id':$scope.selectedCourse}).$promise,
+        Courses.getById({'id':$scope.selectedCourse}).$promise,
+        Groups.getAllUnpaged().$promise,
+      ]).then(function(response){
+        $scope.report[$scope.selectedType] = response[0];
+        $scope.report.groups = response[2];
+        $scope.report.activities = response[1].activities;
+        $scope.report.students = response[1].students;
+        $scope.report.students.sort( function(a,b) {return (a.lastName> b.lastName) ? 1 : ((b.lastName > a.lastName) ? -1 : 0);} );
+        //Adding checked/unchecked status (for group filtering)
+        angular.forEach($scope.report.students, function(student, key){
+          student.visible = true;
+        });
+        angular.forEach($scope.report.groups, function(group, key){
+          group.name = [group.year,group.name].join('-');
+        });
+        $scope.report.groups.sort( function(a,b) {return (a.name> b.name) ? 1 : ((b.name > a.name) ? -1 : 0);} );
+        //Setting labels
+        $scope.labels.reportTarget = response[1].title;
+        $scope.labels.reportType = languageTranslator.tables[$scope.selectedType][$rootScope.language];
+        //Generate matrix
+        $scope.report.matrix = {};
+        for (var studentIndex = 0; studentIndex < $scope.report.students.length; studentIndex += 1){
+          $scope.report.matrix[$scope.report.students[studentIndex].id] = {};
+          for (var activityIndex = 0; activityIndex < $scope.report.activities.length; activityIndex += 1){
+            $scope.report.matrix[$scope.report.students[studentIndex].id][$scope.report.activities[activityIndex].id] = {text: '', changed: ''};
+          }
+        }
+        //Mapping values
+        for (var activityIndex = 0; activityIndex < $scope.report[$scope.selectedType].length; activityIndex += 1){
+          var studentId = $scope.report[$scope.selectedType][activityIndex].student.id;
+          var activityId = $scope.report[$scope.selectedType][activityIndex].activity.id;
+          var value = {
+            text: undefined,
+            data: undefined,
+            changed: undefined
+          };
+          switch ($scope.selectedType){
+            case 'attendances':
+              value.text = languageTranslator.tables.attended[$rootScope.language];
+              break;
+            case 'grades':
+              value.text = parseFloat($scope.report[$scope.selectedType][activityIndex].value);
+              break;
+            case 'files':
+              value.text = 'F';
+              value.data = $scope.report[$scope.selectedType][activityIndex].id;
+              break;
+          };
+          value.changed = value.text;
+          $scope.report.matrix[studentId][activityId] = value;
+        }
+        console.log($scope.report);
+      });
+    };
+    if (typeof $stateParams.course_id != 'undefined' && typeof $stateParams.type != 'undefined'){
+      $scope.loadReport();
+      $scope.canGenerate = true;
+    }
+    $scope.reportValueOf = function(studentId, activityId){
+      return $scope.report.matrix[studentId][activityId].text;
+    };
+    $scope.reportDataOf = function(studentId, activityId){
+      return $scope.report.matrix[studentId][activityId].data;
+    }
+    $scope.getTotalOf = function(studentId){
+      var total = 0;
+      switch($scope.selectedType){
+        case 'attendances':
+        case 'files':
+          for (var key in $scope.report.matrix[studentId]){
+            if ($scope.report.matrix[studentId][key].text !== '')
+              total += 1;
+          }
+          break;
+        case 'grades':
+          for (var key in $scope.report.matrix[studentId]){
+            if ($scope.report.matrix[studentId][key].text !== '')
+              total += parseFloat($scope.report.matrix[studentId][key].text);
+          }
+          break;
+        default:
+          break;
+      }
+      return total;
+    };
+    //Go to activity
+    $scope.goToActivity = function(studentId, activityId){
+      if ($scope.reportValueOf(studentId,activityId) != '' && !$scope.edit.status){
+        var params = {
+          type: $scope.selectedType,
+          course_id: $scope.selectedCourse,
+          activity_id: activityId,
+          user_id: studentId,
+        };
+        params.file_id = $scope.selectedType === 'files' ? $scope.reportDataOf(studentId, activityId) : undefined;
+        $scope.modal['view-activity'].this(params);
+        // params.file_id = activity.id !== undefined ? activity.id : params.file_id;
+        // $state.go('base.activities.view', params, {reload: true});
+      }
+    };
+
+    //Edit mode
+    $scope.edit = {
+      status: false,
+      toggle: function(){
+        $scope.edit.status = !$scope.edit.status;
+      },
+      save: function(){
+        // Get resource
+        var resource, caller, newField;
+        switch ($scope.selectedType){
+          case 'attendances':
+            resource = Attendances;
+            caller = Attendances.addAttendances;
+            newField = 'studentIds';
+            break;
+          case 'grades':
+            resource = Grades;
+            caller = Grades.addGrades;
+            newField = 'studentsGrades';
+            break;
+          case 'files':
+            resource =  Files;
+            // caller = Files;
+            caller = null;
+            break;
+        };
+        var data;
+        //Parse
+        var currentStudent, currentActivity, data;
+        for (activity in $scope.report.activities){
+          currentActivity = $scope.report.activities[activity];
+          data = {
+            'activityId': currentActivity.id,
+          };
+          data[newField] = [];
+          for (student in $scope.report.students){
+            currentStudent = $scope.report.students[student];
+            if ($scope.report.matrix[currentStudent.id][currentActivity.id].text != $scope.report.matrix[currentStudent.id][currentActivity.id].changed){
+              if ($scope.report.matrix[currentStudent.id][currentActivity.id].changed !== ''){
+                //If added
+                switch ($scope.selectedType){
+                  case 'attendances':
+                    data[newField].push(currentStudent.id);
+                    $scope.report.matrix[currentStudent.id][currentActivity.id].text = languageTranslator.tables.attended[$rootScope.language];
+                    break;
+                  case 'grades':
+                    data[newField].push({'studentId': currentStudent.id, 'grade': parseFloat($scope.report.matrix[currentStudent.id][currentActivity.id].changed)});
+                    $scope.report.matrix[currentStudent.id][currentActivity.id].text = parseFloat($scope.report.matrix[currentStudent.id][currentActivity.id].changed);
+                    break;
+                };
+              } else{
+                $scope.report.matrix[currentStudent.id][currentActivity.id].text = '';
+                //If removed
+                resource.delete({
+                  activity_id: currentActivity.id,
+                  student_id: currentStudent.id
+                }).$promise.then(function(response){}, function(error){});
+              }
+            }
+          }
+          caller(data).$promise.then(function(response){}, function(error){});
+          $scope.edit.status = false;
+        }
+        // $state.reload();
+        //Manual reload
+      }
+    };
+
+    //Export to PDF
+    $scope.exportPDF = function(){
+      var pdf = new jsPDF('l', 'pt', 'letter');
+      var name = [$scope.labels.reportTarget, $scope.labels.reportType, new Date().toLocaleString()].join('_');
+      // source can be HTML-formatted string, or a reference
+      // to an actual DOM element from which the text will be scraped.
+      source = $('#report')[0];
+      var res = pdf.autoTableHtmlToJson(source);
+      pdf.autoTable(res.columns, res.data);
+      pdf.save(name+".pdf");
+    };
+    $scope.filterStudents = function(){
+      $scope.loading = true;
+      var paramGroup = $scope.selectedGroup;
+      angular.forEach($scope.report.students, function(student, key){
+        if (typeof paramGroup !== 'undefined' && paramGroup !== null){
+          student.visible = false;
+          angular.forEach(student.groups, function(group, gKey){
+            if (group.id === paramGroup){
+              student.visible = true;
+            }
+          });
+        } else{
+          student.visible = true;
+        }
+      });
+      $scope.loading = false;
+    };
 
 }]);
 
@@ -3633,12 +4321,14 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', 'languageTranslator',
-          function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins, languageTranslator) {
+app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', 'languageTranslator', '$state', "NotificationService", 'NOTIFICATIONS_TYPES',
+          function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins, languageTranslator, $state, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
-    $scope.title = $stateParams.type ? $stateParams.type : languageTranslator.tables.users[$rootScope.language];
+    $scope.title = $stateParams.type ? languageTranslator.tables[$stateParams.type][$rootScope.language] : languageTranslator.tables.users[$rootScope.language];
     $scope.users = resolvedData.users;
     $scope.pager = resolvedData.pager;
+
+    $scope.authUser = $rootScope.authUser.user;
 
     $scope.labels = {
       placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
@@ -3669,14 +4359,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
         //Return modified response
         $scope.users = response.content;
         $scope.pager = response.pager;
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
       });
-    }
-    //Get specific page
-    $scope.pager.getPage = function(index){
-      $scope.refresh(index);
     };
 
     $scope.search = $rootScope.search;
@@ -3688,6 +4371,52 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
         $rootScope.search.go();
       }
     });
+
+    // Delete
+    $scope.delete = function(params){
+      var resource = null;
+      var label = params.type.capitalizeFirstLetter();
+      var requestBody = {};
+      switch (params.type){
+        case 'student':
+          resource = Students;
+          requestBody = {
+            student_id: params.id
+          };
+          break;
+        case 'lecturer':
+          resource = Lecturers;
+          requestBody = {
+            lecturer_id: params.id
+          };
+          break;
+        case 'admin':
+          resource = Admins;
+          requestBody = {
+            admin_id: params.id
+          };
+          break;
+      }
+      //Removing user
+      resource.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1 && $scope.pager.currentPage > 0 ? parseInt($stateParams.page) - 1 : $stateParams.page;
+        $state.go('base.users.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: 'You have successfully deleted the '+label,
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
+    };
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -3865,7 +4594,7 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     //Init
     $scope.user = resolvedData.user;
     $scope.pager = resolvedData.pager ? resolvedData.pager : {};
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.users.view', $stateParams, {reload: true});
     };
@@ -3912,9 +4641,9 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     };
     $rootScope.paths.length = 4;
     if ($stateParams.detail){
-      $scope.title = [$scope.user.lastName, $scope.user.firstName,"-", $stateParams.detail].join(" ");
+      $scope.title = [$scope.user.lastName, $scope.user.firstName,"-", languageTranslator.tables[$stateParams.detail][$rootScope.language]].join(" ");
       $rootScope.paths[4] = {
-        'title':  $stateParams.detail,
+        'title': languageTranslator.tables[$stateParams.detail][$rootScope.language],
         'icon': null,
         'state': 'base.users.view',
         'params': {
@@ -3976,6 +4705,58 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
 
 }]);
 
+app.directive('pagination', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    templateUrl: '/templates/elements/pagination.html',
+    scope: {
+      pager: '=',
+      callback: '&'
+    },
+    link: function (scope, element, attrs) {
+      var $paginationList = $(element[0].querySelector('.pagination-list'));
+      scope.selectPage = function(index){
+        //Calculate offset
+        var offset = 0;
+        var minPage = 4;
+        var maxPage = scope.pager.totalPages - minPage - 1;
+        if (scope.pager.totalPages >= 10){
+          if (index > minPage && index < maxPage) {
+            offset = -(index-minPage)*40;
+          } else if (index >= maxPage){
+            offset = -(scope.pager.totalPages-10)*40;
+          }
+        }
+        //Apply offset
+        $paginationList.css('left', offset);
+        //Call callback
+        scope.callback({'index':index});
+      };
+
+      scope.previousPage = function(){
+        if (scope.pager.hasPreviousPage){
+          scope.selectPage(scope.pager.currentPage - 1);
+        }
+      }
+
+      scope.nextPage = function(){
+        if (scope.pager.hasNextPage){
+          scope.selectPage(scope.pager.currentPage + 1);
+        }
+      }
+
+      scope.firstPage = function(){
+        scope.selectPage(0);
+      }
+
+      scope.lastPage = function(){
+        scope.selectPage(scope.pager.totalPages-1);
+      }
+    }
+  };
+});
+
 app.directive('preloader', function() {
   return {
     restrict: 'E',
@@ -4020,13 +4801,29 @@ app.constant("languageTranslator", {
       "en": 'Management',
       "ro": 'Administrativ'
     },
+    overview: {
+      "en": 'Overview',
+      "ro": 'General'
+    },
     account: {
       "en": 'Account',
       "ro": 'Cont'
+    },
+    import: {
+      "en": 'Import',
+      "ro": 'Import'
+    },
+    reports: {
+      "en": 'Reports',
+      "ro": 'Rapoarte'
     }
   },
 
   tables: {
+    loading: {
+      "en": 'Loading',
+      "ro": 'Încărcare'
+    },
     viewAll: {
       "en": 'View All',
       "ro": 'Vizualizare'
@@ -4175,6 +4972,10 @@ app.constant("languageTranslator", {
       "en": 'Filter by course',
       "ro": 'Filtrează dupa curs'
     },
+    filter: {
+      "en": 'Filter',
+      "ro": 'Filtrează'
+    },
     attendance: {
       "en": 'Attendance',
       "ro": 'Prezența'
@@ -4214,10 +5015,50 @@ app.constant("languageTranslator", {
     at: {
       "en": 'at',
       "ro": 'la'
+    },
+    import: {
+      "en": 'Import',
+      "ro": 'Importă'
+    },
+    reportSettings: {
+      "en": 'Report Settings',
+      "ro": 'Setări Raport'
+    },
+    report: {
+      "en": 'Report',
+      "ro": 'Raport'
+    },
+    attended: {
+      "en": 'A',
+      "ro": 'P'
+    },
+    total: {
+      "en": 'Total',
+      "ro": 'Total'
+    },
+    courseOwnerships: {
+      "en": 'Courses ownerships',
+      "ro": 'Titulari de curs'
+    },
+    courseAttendants: {
+      "en": 'Courses attendants',
+      "ro": 'Studenți asignați la cursuri'
+    },
+    groupStudents: {
+      "en": 'Groups students',
+      "ro": 'Studenți asignați la grupe'
+    },
+    activityDetails: {
+      "en": 'Activity Details',
+      "ro": 'Detalii Activitate'
     }
   },
 
   buttons: {
+    generateReport: {
+      "en": 'Generate Report',
+      "ro": 'Generează Raport'
+    },
     cancel: {
       "en": 'Cancel',
       "ro": 'Anulează'
@@ -4233,6 +5074,10 @@ app.constant("languageTranslator", {
     save: {
       "en": 'Save',
       "ro": 'Salvează'
+    },
+    close: {
+      "en": 'Close',
+      "ro": 'Închide'
     },
     addActivity: {
       "en": 'Add Activity',
@@ -4277,6 +5122,14 @@ app.constant("languageTranslator", {
     delete: {
       "en": 'Delete',
       "ro": 'Șterge'
+    },
+    import: {
+      "en": 'Import',
+      "ro": 'Importă'
+    },
+    editMode: {
+      "en": 'Edit Mode',
+      "ro": 'Modul de editare'
     }
   },
 
@@ -4366,6 +5219,10 @@ app.constant("languageTranslator", {
       loading: {
         "en": 'Saving Grades',
         "ro": 'Salvare Note'
+      },
+      loading2: {
+        "en": 'Saving grade',
+        "ro": 'Salvare notă'
       },
       step: [
         {
@@ -4503,6 +5360,30 @@ app.constant("languageTranslator", {
         }
       }
     },
+    import: {
+      title: {
+        "en": 'Import',
+        "ro": 'Importă'
+      },
+      loading: {
+        "en": 'Importing data',
+        "ro": 'Se importă datele'
+      },
+      description: {
+        "en": 'You can import data into the application. You have to follow the format provided for a successful import.',
+        "ro": 'Poți importa date în aplicație. Trebuie să respecți formatul oferit pentru a putea importa date.'
+      },
+      notificationSuccess: {
+        title: {
+          "en": 'Data imported',
+          "ro": 'Date importate'
+        },
+        content: {
+          "en": 'You have successfully imported the data of',
+          "ro": 'Ai adaugat cu succes datele despre'
+        }
+      }
+    },
     placeholders: {
       selectCourse: {
         "en": 'Select course',
@@ -4532,9 +5413,17 @@ app.constant("languageTranslator", {
         "en": 'Enter email',
         "ro": 'Introdu adresa de email',
       },
+      enterGrade: {
+        "en": 'Enter grade',
+        "ro": 'Introdu nota'
+      },
       enterPassword: {
         "en": 'Enter password',
         "ro": 'Introdu parola'
+      },
+      selectReportType: {
+        "en": 'Report type',
+        "ro": 'Tipul raportului'
       }
     }
   },
@@ -4599,6 +5488,18 @@ app.constant("languageTranslator", {
     studentAtLeastRequiredCourse: {
       "en": 'Select at least 1 student to add course for!',
       "ro": 'Selectează cel puțin un student pe care sa-l adaugi la curs!'
+    },
+    fileNotSelected: {
+      "en": 'Select a file to upload',
+      "ro": 'Selectează un fișier pentru a-l încărca'
+    },
+    noStudents: {
+      "en": 'No students available',
+      "ro": 'Nu exista studenți'
+    },
+    noActivities: {
+      "en": 'No activities available',
+      "ro": 'Nu exista activități'
     }
   },
 
@@ -4725,6 +5626,30 @@ app.constant("languageTranslator", {
           "en": 'unavailable',
           "ro": 'indisponibil'
         }
+      }
+    },
+    import: {
+      title: {
+        "en": 'Import Data',
+        "ro": 'Importă Date'
+      },
+      importEntities: {
+        "en": 'Import Entities',
+        "ro": 'Importă Entități'
+      },
+      importRelations: {
+        "en": 'Import relations',
+        "ro": 'Importă relații'
+      },
+      importData: {
+        "en": 'Import Data',
+        "ro": 'Importă Date'
+      }
+    },
+    reports: {
+      title: {
+        "en": 'Reports',
+        "ro": 'Rapoarte'
       }
     }
   }

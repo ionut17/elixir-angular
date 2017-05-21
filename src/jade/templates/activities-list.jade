@@ -42,11 +42,11 @@ section.container-content
     .col-lg-3.col-md-4.coverbox-wrapper.vertical.hide
         div.coverbox.coverbox-sm(ui-sref='base.activities.list({type: null, course_id: course.id, page: 0})' ng-if='!singleCourse' ng-repeat='course in courses track by course.id')
           h3 {{course.title}}
-    .col-lg-6.col-md-12
+    .col-lg-12.col-md-12
       .table-wrapper
         .table-title
-          include elements/pagination
           include elements/search-bar
+          pagination(pager="pager" callback="getPage(index)")
         table.table.elixir-table
           thead
             tr

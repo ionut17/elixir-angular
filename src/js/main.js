@@ -149,8 +149,8 @@ app.config(function($stateProvider) {
   });
 });
 
-app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', 'languageTranslator', 'Students', 'Lecturers', 'Admins', 'Courses', 'Groups', 'Activities', 'Attendances', 'Grades', 'Files',
-      function($scope, $rootScope, $q, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService, languageTranslator, Students, Lecturers, Admins, Courses, Groups, Activities, Attendances, Grades, Files) {
+app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '$state', '$timeout', 'config', 'NOTIFICATIONS_TYPES', 'NotificationService', 'languageTranslator', 'Students', 'Lecturers', 'Admins', 'Courses', 'Groups', 'Activities', 'Attendances', 'Grades', 'Files', 'Storage',
+      function($scope, $rootScope, $q, AuthService, $state, $timeout, config, NOTIFICATIONS_TYPES, NotificationService, languageTranslator, Students, Lecturers, Admins, Courses, Groups, Activities, Attendances, Grades, Files, Storage) {
   $scope.logout = function(){
     AuthService.logout();
     NotificationService.push({
@@ -200,6 +200,9 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
       users: languageTranslator.menu.users[$rootScope.language],
       account: languageTranslator.menu.account[$rootScope.language],
       settings: languageTranslator.menu.settings[$rootScope.language],
+      import: languageTranslator.menu.import[$rootScope.language],
+      reports: languageTranslator.menu.reports[$rootScope.language],
+      overview: languageTranslator.menu.overview[$rootScope.language],
       logout: languageTranslator.menu.logout[$rootScope.language]
     };
   };
@@ -317,6 +320,160 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
           $scope.modal.confirm.action.params = params;
         }
       },
+      'view-activity': {
+        action: {
+          callback: null,
+          params: null,
+          submit: function(){
+            if (typeof $scope.modal.confirm.action.callback == 'function'){
+              $scope.modal.confirm.action.callback($scope.modal.confirm.action.params);
+            };
+            angular.element('#view-activity-modal').modal('hide');
+            angular.element('.modal-backdrop').remove();
+          },
+          cancel: function(){
+            angular.element('#view-activity-modal').modal('hide');
+            angular.element('.modal-backdrop').remove();
+          }
+        },
+        title: languageTranslator.tables.activityDetails[$rootScope.language],
+        cancel: languageTranslator.buttons.close[$rootScope.language],
+        submit: languageTranslator.buttons.logout[$rootScope.language],
+        labels: {
+          placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+          table: $rootScope.getTranslatedObject(languageTranslator.tables),
+          errors: $rootScope.getTranslatedObject(languageTranslator.errors),
+          buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
+          marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+        },
+        table: {
+          title : '',
+          columns : {
+            user: languageTranslator.tables.student[$rootScope.language],
+            activity: languageTranslator.tables.activity[$rootScope.language],
+            course: languageTranslator.tables.course[$rootScope.language]
+          },
+          retrieveLink : function(){
+            return '';
+          },
+          extraRows : []
+        },
+        loading: false,
+        loadingMessage: languageTranslator.tables.loading[$rootScope.language],
+        data: {},
+        editMode: false,
+        toggleEdit: function(){
+          $scope.modal['view-activity'].editMode = !$scope.modal['view-activity'].editMode;
+        },
+        saveEdit: function(){
+          switch($scope.modal['view-activity'].activity.type){
+            case 'grades':
+              console.log('save edit');
+              if ($scope.modal['view-activity'].data.newGrade != $scope.modal['view-activity'].activity.value){
+                //Edit activity here
+                $scope.modal['view-activity'].loadingMessage = languageTranslator.modals.addGrades.loading2[$rootScope.language];
+                $scope.modal['view-activity'].loading = true;
+              }
+              break;
+          }
+        },
+        loading: false,
+        this: function(activityParams){
+          angular.element('#view-activity-modal').modal('show');
+          //Set edit mode settings
+          $scope.modal['view-activity'].editMode = false;
+          $scope.modal['view-activity'].loading = true;
+          $scope.modal['view-activity'].loadingMessage = languageTranslator.tables.loading[$rootScope.language];
+          //Load the data for the specific activity
+          var resource;
+          var params;
+          switch(activityParams.type){
+            case 'attendances':
+              resource = Attendances;
+              params = {
+                student_id: activityParams.user_id,
+                activity_id: activityParams.activity_id,
+              };
+              break;
+            case 'grades':
+              resource = Grades;
+              params = {
+                student_id: activityParams.user_id,
+                activity_id: activityParams.activity_id,
+              };
+              break;
+            case 'files':
+              resource = Files;
+              params = {
+                file_id: activityParams.file_id,
+              };
+              break;
+          }
+          //Set ordered title
+          $scope.modal["view-activity"].table.title = undefined;
+          switch ($rootScope.language){
+            case 'en':
+              $scope.modal["view-activity"].table.title  = [languageTranslator.tables[activityParams.type.slice(0,-1)][$rootScope.language],languageTranslator.tables.details[$rootScope.language]].join(' ');
+              break;
+            case 'ro':
+              $scope.modal["view-activity"].table.title  = [languageTranslator.tables.details[$rootScope.language], languageTranslator.tables[activityParams.type.slice(0,-1)][$rootScope.language]].join(' ');
+              break;
+          }
+          $scope.modal["view-activity"].title = $scope.modal["view-activity"].table.title;
+          //Get resource
+          resource.getById(params).$promise.then(function(response){
+            response.type = activityParams.type;
+            response.user = response.student;
+            response.user.type = 'student';
+            response.user.tag = 'tag-'+response.user.type;
+            delete response.student;
+            $scope.modal["view-activity"].activity = response;
+            //Set retrieve path
+            $scope.modal["view-activity"].table.retrieveLink = function(){
+              return config.apiEndpoint+'storage/retrieve/'+response.id+'?k='+$rootScope.authUser.token;
+            };
+            //Set extra rows
+            switch(response.type){
+              case 'attendances':
+                $scope.modal['view-activity'].table.extraRows = [];
+                break;
+              case 'grades':
+                $scope.modal['view-activity'].data.newGrade = $scope.modal['view-activity'].activity.value;
+                $scope.modal['view-activity'].table.extraRows = [{
+                    title : $scope.modal['view-activity'].labels.table.value,
+                    value : $scope.modal['view-activity'].activity.value,
+                    customClass : 'tag tag-auto tag-grade',
+                    canEdit: true
+                }];
+                break;
+              case 'files':
+                $scope.modal['view-activity'].table.extraRows = [{
+                    title : $scope.modal['view-activity'].labels.table.file,
+                    value : $scope.modal['view-activity'].activity.fileName+'.'+$scope.modal['view-activity'].activity.extension,
+                    customClass : '',
+                    hasDownloadButton: true,
+                    canEdit: false
+                  },{
+                    title: $scope.modal['view-activity'].labels.table.type,
+                    value : $scope.modal['view-activity'].activity.extension,
+                    customClass : 'tag tag-auto tag-file',
+                    canEdit: false
+                  },{
+                    title: $scope.modal['view-activity'].labels.table.uploadDate,
+                    value : $scope.modal['view-activity'].activity.uploadDate,
+                    customClass : 'td-blue',
+                    canEdit: false
+                }];
+                break;
+            }
+            $scope.modal['view-activity'].loading = false;
+          }, function(response){
+            console.log(response);
+            $rootScope.$broadcast("not-authorized");
+            return $q.reject("Rejection message!");
+          });
+        }
+      },
       'add-course': {
         action: {
           value: function(){},
@@ -376,7 +533,6 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
             $scope.modal.local.errors.course = $scope.modal.local.courseId == undefined ? 'Course required to continue' : undefined;
             $scope.modal.local.errors.lecturer = $scope.modal.local.lecturer == undefined ? 'Lecturer required to continue' : undefined;
             if ($scope.modal.local.errors.course === undefined && $scope.modal.local.errors.lecturer === undefined){
-              console.log($scope.modal.local.courseId.id, $scope.modal.local.lecturer.id);
               Courses.addCourseLecturer({
                   "course_id": $scope.modal.local.courseId.id,
                 }, {
@@ -397,9 +553,10 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                 console.log(error);
                 $scope.modal["add-course-lecturer"].loading = false;
               });
+            } else{
+              console.log($scope.modal.local);
+              $scope.modal["add-course-lecturer"].loading = false;
             }
-            console.log($scope.modal.local);
-            $scope.modal["add-course-lecturer"].loading = false;
           }
         },
         title: 'Add Lecturer to Course',
@@ -474,7 +631,6 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                 $scope.modal['add-course-students'].step.showStep($scope.modal['add-course-students'].step.max);
                 $scope.modal.local.errors.student = languageTranslator.errors.studentAtLeastRequiredCourse[$rootScope.language];
               } else{
-                $scope.modal["add-course-students"].loading = false;
                 Courses.addCourseStudents({
                     "course_id": $scope.modal.local.courseId.id,
                   }, {
@@ -694,7 +850,7 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
             $scope.modal.local.errors.type = paramObj.typeId == undefined ? languageTranslator.errors.typeRequired[$rootScope.language] : undefined;
             $scope.modal.local.errors.name = paramObj.name == undefined ? languageTranslator.errors.nameRequired[$rootScope.language] : undefined;
             $scope.modal.local.errors.date = paramObj.date == undefined ? languageTranslator.errors.dateRequired[$rootScope.language] : undefined;
-            if (paramObj.courseId !== undefined && paramObj.typeId !== undefined && paramObj.name !== undefined && paramObj.name.length >= 3 && paramObj.date !== undefined){
+            if (paramObj.courseId !== undefined && paramObj.typeId !== undefined && paramObj.name !== undefined && paramObj.date !== undefined){
               //Data
               Activities.addActivity(paramObj).$promise.then(function(response){
                 angular.element('#add-activity').modal('hide');
@@ -1460,6 +1616,7 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                     resource = Admins;
                     break;
                 }
+                console.log(data);
                 resource.add(data).$promise.then(function(response){
                   angular.element('#add-user').modal('hide');
                   angular.element('.modal-backdrop').remove();
@@ -1486,23 +1643,6 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
                   }
                   $scope.modal["add-user"].loading = false;
                 });
-                // Final submit
-                // Attendances.addAttendances(data).$promise.then(function(response){
-                //   angular.element('#add-user').modal('hide');
-                //   angular.element('.modal-backdrop').remove();
-                //   $scope.modal["add-user"].loading = false;
-                //   $state.reload();
-                //   //Send success notification
-                //   NotificationService.push({
-                //     title: languageTranslator.modals.markAttendances.notificationSuccess.title[$rootScope.language],
-                //     content: [languageTranslator.modals.markAttendances.notificationSuccess.content[$rootScope.language],$scope.modal.local.activityId.name,'.'].join(''),
-                //     link: null,
-                //     type: NOTIFICATIONS_TYPES.success
-                //   });
-                // }, function(response){
-                //   console.log(response);
-                //   $scope.modal["add-user"].loading = false;
-                // });
               }
             }
           },
@@ -1599,6 +1739,74 @@ app.controller('BaseController', ['$scope', '$rootScope', '$q', 'AuthService', '
           $scope.modal["add-user"].loading = false;
           //Got dependencies
           angular.element('#add-user').modal('show');
+        }
+      },
+      'import': {
+        action: {
+          value: null,
+          submit: function(){
+              $scope.modal["import"].loading = true;
+              var canContinue = true;
+              var data = {
+                file: document.getElementById('import-file').files[0]
+              };
+              if (typeof data.file == 'undefined'){
+                $scope.modal.local.errors.file = languageTranslator.errors.fileNotSelected[$rootScope.language];
+                canContinue = false;
+              }
+              //If can canContinue
+              if (canContinue){
+                //Build data
+                var formData = new FormData();
+                formData.append('file', data.file);
+                Storage.import({
+                  'type': $scope.modal['import'].data.type
+                }, formData).$promise.then(function(response){
+                  angular.element('#import').modal('hide');
+                  angular.element('.modal-backdrop').remove();
+                  $scope.modal["import"].loading = false;
+                  //Send success notification
+                  NotificationService.push({
+                    title: languageTranslator.modals.import.notificationSuccess.title[$rootScope.language],
+                    content: [languageTranslator.modals.import.notificationSuccess.content[$rootScope.language],' ',$scope.modal['import'].labels.table[$scope.modal['import'].data.type],'.'].join(''),
+                    link: null,
+                    type: NOTIFICATIONS_TYPES.success
+                  });
+                }, function(response){
+                  console.log(response);
+                  if (response.data)
+                    $scope.modal.local.errors.submit = response.data.message;
+                  $scope.modal["import"].loading = false;
+                });
+              }
+          },
+          cancel: function(){
+            angular.element('#import').modal('hide');
+            angular.element('.modal-backdrop').remove();
+          }
+        },
+        title: languageTranslator.modals.import.title[$rootScope.language],
+        description: languageTranslator.modals.import.description[$rootScope.language],
+        cancel: languageTranslator.buttons.cancel[$rootScope.language],
+        submit: languageTranslator.buttons.import[$rootScope.language],
+        data: {},
+        loading: false,
+        loadingMessage: languageTranslator.modals.import.loading[$rootScope.language],
+        labels: {
+          title: languageTranslator.modals.addUser.title[$rootScope.language],
+          placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
+          table: $rootScope.getTranslatedObject(languageTranslator.tables),
+          errors: $rootScope.getTranslatedObject(languageTranslator.errors)
+        },
+        this: function(type){
+          $scope.modal["import"].loading = true;
+          $scope.modal.local = {};
+          $scope.modal.local.errors = {};
+          $scope.modal["import"].title = [languageTranslator.modals.import.title[$rootScope.language], $scope.modal["import"].labels.table[type]].join(" ");
+          $scope.modal["import"].data.type = type;
+          //Finish loading
+          $scope.modal["import"].loading = false;
+          angular.element('#import').modal('show');
         }
       }
     };

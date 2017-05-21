@@ -1,0 +1,111 @@
+section.container-title
+  // Header
+  .row
+    .col-md-12
+      .page-title-wrapper
+          div
+            h2 {{title}}
+  .row.hide
+    .col-sm-12
+      div.table-title.standalone {{labels.table.reportSettings}}
+  .row.report-settings
+    .col-md-6.col-sm-12.col-xs-12
+      select.large-select.report-select.course-select.full-width(name='course', ng-model='selectedCourseObj', ng-options="course as course.title for course in courses track by course.id", ng-change='refreshGenerateButton()')
+        option(value='') {{labels.placeholders.selectCourse}}
+    .col-md-4.col-sm-6.col-xs-12.hide
+      select.hide.large-select.full-width(name='type', ng-model='selectType', ng-change='refreshGenerateButton()')
+        option(value='') {{labels.placeholders.selectReportType}}
+        option(value='attendances') {{labels.table.attendances}}
+        option(value='grades') {{labels.table.grades}}
+        option(value='files') {{labels.table.files}}
+    .col-md-2.col-sm-4.col-xs-12
+      button.ebutton.radio-button.report-button(type='button' ng-click='selectType="attendances";refreshGenerateButton()' ng-class='{"checked": selectType=="attendances"}')
+        i.material-icons event
+        span {{labels.table.attendances}}
+    .col-md-2.col-sm-4.col-xs-12
+      button.ebutton.radio-button.report-button(type='button' ng-click='selectType="grades";refreshGenerateButton()' ng-class='{"checked": selectType=="grades"}')
+        i.material-icons spellcheck
+        span {{labels.table.grades}}
+    .col-md-2.col-sm-4.col-xs-12
+      button.ebutton.radio-button.report-button(type='button' ng-click='selectType="files";refreshGenerateButton()' ng-class='{"checked": selectType=="files"}')
+        i.material-icons attachment
+        span {{labels.table.files}}
+  .row
+    .col-xs-12.report-generate-wrapper
+      button.ebutton.green-button.generate-button(type='button' id="generateButton" ng-disabled="!canGenerate" ng-class="{'disabled': !canGenerate}" ng-click="generateReport()") {{labels.buttons.generateReport}}
+
+section.container-content
+  .row.hide
+    .col-sm-12
+      div.table-title.standalone {{labels.table.reportSettings}}
+  .row.coverbox-wrapper.hide
+    .col-md-6.col-sm-12.col-xs-12
+      select.large-select.report-select.course-select.full-width(name='course', ng-model='selectedCourseObj', ng-options="course as course.title for course in courses track by course.id", ng-change='refreshGenerateButton()')
+        option(value='') {{labels.placeholders.selectCourse}}
+    .col-md-4.col-sm-6.col-xs-12.hide
+      select.hide.large-select.full-width(name='type', ng-model='selectType', ng-change='refreshGenerateButton()')
+        option(value='') {{labels.placeholders.selectReportType}}
+        option(value='attendances') {{labels.table.attendances}}
+        option(value='grades') {{labels.table.grades}}
+        option(value='files') {{labels.table.files}}
+    .col-md-2.col-sm-4.col-xs-12
+      button.ebutton.radio-button.report-button(type='button' ng-click='selectType="attendances";refreshGenerateButton()' ng-class='{"checked": selectType=="attendances"}')
+        i.material-icons event
+        span {{labels.table.attendances}}
+    .col-md-2.col-sm-4.col-xs-12
+      button.ebutton.radio-button.report-button(type='button' ng-click='selectType="grades";refreshGenerateButton()' ng-class='{"checked": selectType=="grades"}')
+        i.material-icons spellcheck
+        span {{labels.table.grades}}
+    .col-md-2.col-sm-4.col-xs-12
+      button.ebutton.radio-button.report-button(type='button' ng-click='selectType="files";refreshGenerateButton()' ng-class='{"checked": selectType=="files"}')
+        i.material-icons attachment
+        span {{labels.table.files}}
+  .row.hide
+    .col-xs-12.report-generate-wrapper.hide
+      button.ebutton.green-button.generate-button(type='button' id="generateButton" ng-disabled="!canGenerate" ng-class="{'disabled': !canGenerate}" ng-click="generateReport()") {{labels.buttons.generateReport}}
+  .row(ng-show="report.activities")
+    .col-sm-12
+      div.table-title.standalone
+        | {{labels.reportTarget}} - {{labels.reportType}}
+  .row(ng-show="report.activities")
+    .col-md-4.col-sm-4.col-xs-12.coverbox-wrapper
+      select.large-select.full-width.m-r(name='type', ng-model='selectedGroup', ng-options="group.id as group.name for group in report.groups track by group.id", ng-change='filterStudents()')
+        option(value='') {{labels.table.allGroups}}
+      button.ebutton.icon-button(ng-if="isAuthorized(authorizedRoles.activities.create)" ng-click="modal['add-activity'].this(selectedCourseObj)")
+        i.material-icons.sm assignment
+        span {{labels.buttons.addActivity}}
+    .col-md-8.col-sm-8.col-xs-12
+      button.ebutton.blue-button.icon-button.right(ng-click="edit.toggle()" ng-class="{'active': edit.status}" ng-if="selectedType!='files'")
+        i.material-icons mode_edit
+        span {{labels.buttons.editMode}}
+      button.ebutton.green-button.right.m-r(ng-click="edit.save()" ng-show="edit.status") {{labels.buttons.save}}
+  .row(ng-show="report.activities")
+    .col-md-12
+      .table-wrapper
+        table.table.elixir-table.enable-td-hover#report
+          thead
+            tr
+              th.col-sm-2.no-hover {{labels.table.student}} \ {{labels.table.activity}}
+              th.no-hover.td-fit(ng-repeat="activity in report.activities track by $index" title="{{activity.name}}")
+                a(ui-sref='base.activities.list({course_id: selectedCourse, activity_id: activity.id})') {{activity.name}}
+              th.no-hover {{labels.table.total}}
+          tbody
+            tr(ng-repeat='student in report.students track by $index' ng-show='student.visible' ng-if="report.activities.length")
+              td.td-bold.no-hover
+                a(ui-sref='base.users.view({type: "students", id: student.id})') {{student.lastName+' '+student.firstName}}
+              td.td-bold(ng-repeat="activity in report.activities" ng-click="goToActivity(student.id, activity.id)" ng-class="{'no-hover': reportValueOf(student.id, activity.id) === '', 'no-padding': edit.status, 'td-checker': selectedType == 'attendances', 'checked':reportValueOf(student.id, activity.id) !== ''}")
+                span(ng-hide="edit.status") {{reportValueOf(student.id, activity.id)}}
+                input.td-input.sm-td-input(type='text' ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='attendances'" ng-value="report.matrix[student.id][activity.id].text")
+                input.td-input.sm-td-input(type='number' ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='grades'" ng-value="report.matrix[student.id][activity.id].text")
+              td.no-hover {{getTotalOf(student.id)}}
+            tr.disable-hover(ng-if='!report.students.length')
+              td.td-disabled.text-center(colspan='6') {{labels.errors.noStudents}}
+            tr.disable-hover(ng-if='!report.activities.length')
+              td.td-disabled.text-center(colspan='6') {{labels.errors.noActivities}}
+  .row(ng-show="report.activities")
+    .col-sm-12
+        button.ebutton.white-button-alt(ng-click="exportPDF()") Export PDF
+        
+      
+      
+  

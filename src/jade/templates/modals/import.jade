@@ -1,0 +1,22 @@
+#import.modal.custom-modal.fade(tabindex='-1', role='dialog')
+	.modal-dialog(role='document')
+		.modal-content
+			.modal-icon
+				i.material-icons file_upload
+				h2 {{modal['import'].title}}
+			.modal-body
+				div.preloader-wrapper(ng-show="modal['import'].loading")
+					figure.preloader
+					h5 {{modal['import'].loadingMessage}}
+				p(ng-hide="modal['import'].loading")
+					span.tag.tag-student CSV
+					| {{modal['import'].description}}
+				ul(ng-hide="modal['import'].loading")
+					li
+						label(for='file') {{modal['import'].labels.table.file}}
+						input#import-file(name='file' type='file', ng-model='modal.local.file' placeholder='Choose File' required)
+					li.error(ng-if='modal.local.errors.file') {{modal.local.errors.file}}
+					li.error(ng-if='modal.local.errors.submit') {{modal.local.errors.submit}}
+			.modal-footer.text-center(ng-hide="modal['import'].loading")
+				button.ebutton.white-button(type='button', ng-click='modal["import"].action.cancel(modal.local)') {{modal['import'].cancel}}
+				button.ebutton.green-button(type='button', ng-click='modal["import"].action.submit(modal.local)') {{modal['import'].submit}}

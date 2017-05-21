@@ -9,6 +9,16 @@ app.factory("Storage", ["config", "$resource", "AuthService", function(config, $
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        import: {
+            url: config.apiEndpoint + "import/:type",
+            method: "POST",
+            headers: {
+                "Content-Type": undefined,
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
         }
     });
 }]);

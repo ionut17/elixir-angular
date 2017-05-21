@@ -1,0 +1,46 @@
+
+<div id="view-activity-modal" tabindex="-1" role="dialog" class="modal custom-modal fade">
+  <div role="document" class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-icon"><i class="material-icons">assignment</i>
+        <h2>{{modal['view-activity'].title}}</h2>
+      </div>
+      <div ng-show="modal['view-activity'].loading" class="modal-body">
+        <div class="preloader-wrapper">
+          <figure class="preloader"></figure>
+          <h5>{{modal['view-activity'].loadingMessage}}</h5>
+        </div>
+      </div>
+      <div ng-hide="modal['view-activity'].loading" class="table-wrapper modal-table activity-table">
+        <table class="table elixir-table elixir-table-horizontal">
+          <tbody>
+            <tr ng-repeat="extraRow in modal[&quot;view-activity&quot;].table.extraRows track by $index">
+              <th scope="row" class="col-sm-3">{{extraRow.title}}</th>
+              <td ng-class="{ 'td-spaced disable-hover': extraRow.hasDownloadButton, 'no-padding': extraRow.canEdit &amp;&amp; modal['view-activity'].editMode }" class="td-bold"><span ng-class="extraRow.customClass" ng-hide="extraRow.canEdit &amp;&amp; modal['view-activity'].editMode">{{extraRow.value}}</span>
+                <input type="number" ng-model="modal['view-activity'].data.newGrade" ng-show="modal['view-activity'].editMode" ng-value="extraRow.value" ng-if="extraRow.canEdit" class="td-input"/><a ng-if="extraRow.hasDownloadButton" ng-href="{{modal['view-activity'].table.retrieveLink()}}" target="_blank" class="ebutton icon-button"><i class="material-icons">get_app</i></a>
+              </td>
+            </tr>
+            <tr ui-sref="base.users.view({type: modal[&quot;view-activity&quot;].activity.user.type+&quot;s&quot;, id: modal[&quot;view-activity&quot;].activity.user.id})" ng-class="{'edit-disabled': modal['view-activity'].editMode}" ng-click="modal[&quot;view-activity&quot;].action.cancel()">
+              <th scope="row" class="col-sm-3">{{modal['view-activity'].table.columns.user}}</th>
+              <td class="td-bold"><span ng-class="modal[&quot;view-activity&quot;].activity.user.tag" class="tag">{{modal['view-activity'].activity.user.type}}</span>{{modal['view-activity'].activity.user.firstName+" "+modal['view-activity'].activity.user.lastName}}</td>
+              <td class="td-blue">{{modal['view-activity'].activity.user.email}}</td>
+            </tr>
+            <tr ui-sref="base.activities.list({course_id: modal[&quot;view-activity&quot;].activity.activity.course.id, activity_id: modal[&quot;view-activity&quot;].activity.id.activityId})" ng-class="{'edit-disabled': modal['view-activity'].editMode}" ng-click="modal[&quot;view-activity&quot;].action.cancel()">
+              <th scope="row" class="col-sm-3">{{modal['view-activity'].table.columns.activity}}</th>
+              <td class="td-bold"><span ng-class="modal[&quot;view-activity&quot;].activity.tag" class="tag">{{modal["view-activity"].activity.activity.type.name}}</span>{{modal['view-activity'].activity.activity.name}}</td>
+              <td>{{modal['view-activity'].activity.activity.date}}</td>
+            </tr>
+            <tr ui-sref="base.courses.view({id: modal[&quot;view-activity&quot;].activity.activity.course.id})" ng-class="{'edit-disabled': modal['view-activity'].editMode}" ng-click="modal[&quot;view-activity&quot;].action.cancel()">
+              <th scope="row" class="col-sm-3">{{modal['view-activity'].table.columns.course}}</th>
+              <td class="td-bold">{{modal['view-activity'].activity.activity.course.title}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div ng-hide="modal['view-activity'].loading" class="modal-footer text-center">
+        <button type="button" ng-click="modal[&quot;view-activity&quot;].action.cancel()" class="ebutton white-button right">{{modal['view-activity'].cancel}}</button>
+        <button type="button" ng-click="modal[&quot;view-activity&quot;].saveEdit()" ng-show="modal['view-activity'].editMode" class="ebutton green-button right m-r">{{modal['view-activity'].labels.buttons.save}}</button><i title="Delete" ng-if="isAuthorized(authorizedRoles.activities.delete)" ng-click="modal.confirm.this(delete, 'delete', activity)" class="material-icons icon-button icon-delete grid-button left">delete_forever</i><i title="Edit" ng-class="{'active': modal['view-activity'].editMode}" ng-if="isAuthorized(authorizedRoles.activities.edit) &amp;&amp; modal['view-activity'].activity.type == 'grades'" ng-click="modal['view-activity'].toggleEdit()" class="material-icons icon-button icon-edit grid-button left">mode_edit</i>
+      </div>
+    </div>
+  </div>
+</div>

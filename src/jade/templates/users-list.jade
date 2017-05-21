@@ -36,15 +36,15 @@ section.container-content
     .col-md-12
       .table-wrapper
         .table-title
-          include elements/pagination
           include elements/search-bar
+          pagination(pager="pager" callback="refresh(index)" class="right")
         table.table.elixir-table
           thead
             tr
               th.td-fit #
               th.col-sm-1(ng-hide='users.singleType') {{labels.table.type}}
-              th.col-sm-2 {{labels.table.firstName}}
               th.col-sm-2 {{labels.table.lastName}}
+              th.col-sm-2 {{labels.table.firstName}}
               th {{labels.table.email}}
               th.td-actions(ng-show="isAuthorized(authorizedRoles.users.edit) || isAuthorized(authorizedRoles.users.delete)") {{labels.table.actions}}
           tbody
@@ -52,11 +52,11 @@ section.container-content
               th.td-fit(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
               td(ng-hide='users.singleType')
                 span.tag(ng-class='user.tag') {{user.type}}
-              td {{user.firstName}}
               td.td-bold {{user.lastName}}
+              td {{user.firstName}}
               td.td-blue.td-break {{user.email}}
-              td.td-actions(ng-show="isAuthorized(authorizedRoles.users.edit) || isAuthorized(authorizedRoles.users.delete)")
+              td.td-actions(ng-show="isAuthorized(authorizedRoles.users.edit) || isAuthorized(authorizedRoles.users.delete)" ng-click="$event.stopPropagation();")
                 i.material-icons.icon-button.icon-edit(title="Edit" ng-if="isAuthorized(authorizedRoles.users.edit)") mode_edit
-                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.users.delete)") delete_forever
+                i.material-icons.icon-button.icon-delete(title="Delete" ng-if="isAuthorized(authorizedRoles.users.delete) && !(user.id===authUser.id && user.type===authUser.type)" ng-click="modal.confirm.this(delete, 'delete', user)") delete_forever
             tr.disable-hover(ng-if='!users.length')
               td.td-disabled.text-center(colspan='6') {{labels.errors.noResults}}

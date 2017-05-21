@@ -50,6 +50,16 @@ app.factory("Lecturers", ["config", "$resource", "AuthService", function(config,
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "lecturers/:lecturer_id",
+          method: "DELETE",
+          params: {student_id: '@lecturer_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

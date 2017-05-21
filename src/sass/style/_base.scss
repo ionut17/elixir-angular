@@ -486,6 +486,10 @@ select.large-select{
   cursor: pointer;
   // appearance:none;
 
+  &.full-width{
+    max-width: 100% !important;
+  }
+
   transition: all 100ms ease-in-out;
 
   &:hover, &:focus{
@@ -501,7 +505,7 @@ select.large-select{
     color: black;
     font-size: 24px;
   }
-}
+};
 
 //Transition
 .state-transition{
@@ -511,6 +515,21 @@ select.large-select{
     overflow: hidden;
     opacity: 0.5;
   }
+}
+
+.right{
+  float: right;
+}
+.left{
+  float: left;
+}
+
+.m-r{
+  margin-right: 10px;
+}
+
+.no-padding{
+  padding: 0 !important;
 }
 
 //Modal dialog

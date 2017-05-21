@@ -22,8 +22,8 @@
             <select id="type" name="type" ng-model="modal.local.type" placeholder="Select type">
               <option selected="selected" disabled="disabled" value="">{{modal['add-user'].labels.placeholders.selectUserType}}</option>
               <option value="student">{{modal['add-user'].labels.table.student}}</option>
-              <option value="lecturer" disabled="disabled">{{modal['add-user'].labels.table.lecturer}}</option>
-              <option value="admin" disabled="disabled">{{modal['add-user'].labels.table.admin}}</option>
+              <option value="lecturer">{{modal['add-user'].labels.table.lecturer}}</option>
+              <option value="admin">{{modal['add-user'].labels.table.admin}}</option>
             </select>
           </li>
           <li ng-if="modal.local.errors.type" class="error">{{modal.local.errors.type}}</li>

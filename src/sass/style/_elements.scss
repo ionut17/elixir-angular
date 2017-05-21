@@ -420,6 +420,18 @@ a.ebutton.icon-button{
       font-size: 24px;
     }
   }
+  &.icon-radio-button{
+    height: 40px;
+    max-width: 155px;
+    background-color: $backgroundColor !important;
+    border-width: 1px !important;
+    color: $darkGrey;
+    &:hover, &.checked{
+      color: white !important;
+      border-color: $lightGreen !important;
+      background-color: $lightGreen !important;
+    }
+  }
 
   &.sm-button{
     padding: 3px 10px;
@@ -438,19 +450,26 @@ a.ebutton.icon-button{
     }
   }
 
+  &.disabled{
+    color: $darkGrey !important;
+    background-color: $lightgrey !important;
+    border: none !important;
+    opacity: 0.75;
+  }
+
   &.icon-button{
-    font-family: $contentFont;
-    font-weight: 400;
+    // font-family: $contentFont;
+    font-weight: 700;
     font-size: 14px;
     color: $darkGrey;
     background-color: white;
     border: 1px solid $shadowGrey;
-    text-transform: capitalize;
+    // text-transform: capitalize;
 
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px 10px;
+    padding: 7px 20px;
 
     i, span{
       margin-right: 5px;
@@ -478,7 +497,7 @@ a.ebutton.icon-button{
     }
   }
 
-  &.white-button, &.white-button-alt{
+  &.white-button, &.white-button-alt, &.blue-button{
     color: rgba(0,0,0,0.5);
     background-color: white;
     border-color: rgba(0,0,0,0.2);
@@ -490,9 +509,31 @@ a.ebutton.icon-button{
       // border-color: rgba(0,0,0,0.4);
     }
   }
-  &.white-button-alt:hover{
+  &.white-button-alt:hover, &.white-button-alt.active{
     color: white;
     background-color: $lightGreen;
+  }
+  &.white-button-alt.active:hover{
+    background-color: darken($lightGreen, 10);
+  }
+
+  &.blue-button:hover, &.blue-button.active{
+    background-color: $lightBlue;
+    color: white;
+  }
+  &.blue-button.active:hover{
+    background-color: darken($lightBlue, 10);
+  }
+
+  &.red-button{
+    background-color: $lightRed;
+    color: white;
+    border-color: rgba(0,0,0,0.1);
+    text-decoration: none;
+
+    &:hover{
+      background-color: darken($lightRed, 10);
+    }
   }
 
   &.radio-button{
@@ -545,7 +586,6 @@ a.ebutton.icon-button{
 
 //Pagination
 .pagination-wrapper{
-  width: 100%;
   height: 35px;
 
   display: flex;
@@ -568,16 +608,42 @@ a.ebutton.icon-button{
     height: 100%;
     margin: 0;
     padding: 0;
+    left: 0;
+    overflow: hidden;
+    max-width: 400px;
+    position: relative;
+    border-radius: 0 !important;
+    background: transparent;
+  }
+
+  .pagination-list{
+    background: transparent;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     list-style-type: none;
+    position: relative;
+    top: 0;
+    bottom: 0;
+    height: 35px;
+
+    border-radius: 0 !important;
 
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-sizing: border-box;
+    border-right: none;
+    border-left: none;
+  }
 
-    li{
+
+    li, span.control-arrow{
       // padding: 5px 0;
       width: 40px;
+      min-width: 40px;
       height: 100%;
       padding-bottom: 2px;
 
@@ -593,14 +659,10 @@ a.ebutton.icon-button{
       background-color: white;
       background-color: lighten($shadowGrey, 2);
       color: rgba(0,0,0,0.3);
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-right: 1px solid rgba(0, 0, 0, 0.05);
 
       cursor: pointer;
       transition: all 100ms ease-in-out;
-
-      &:not(:first-child){
-        border-left: 0px solid white;
-      }
 
       &:hover{
         color: white;
@@ -612,12 +674,8 @@ a.ebutton.icon-button{
         // border-top: 4px solid $lightGreen;
         color: rgba(0,0,0,0.6);
         background-color: $sidebarLighter;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
         background-color: white;
-
-        &:not(:first-child){
-          border-left: 0px solid white;
-        }
 
         &:hover{
           background-color: $lightGreen;
@@ -625,7 +683,22 @@ a.ebutton.icon-button{
         }
       }
     }
-  }
+
+    span.control-arrow{
+      user-select: none;
+      background-color: white;
+      border: 1px solid rgba(0,0,0,0.1);
+      &.disabled{
+        background-color: lighten($shadowGrey, 2);
+        opacity: 0.5;
+        cursor: default;
+        &:hover{
+          background-color: lighten($shadowGrey, 2);
+          color: rgba(0,0,0,0.3);
+          border: 1px solid rgba(0,0,0,0.05);
+        }
+      }
+    }
 }
 
 //Modal
@@ -751,6 +824,17 @@ a.ebutton.icon-button{
       &.no-padding{
         padding: 0;
       }
+      font-family: $contentFont;
+
+      p{
+        margin-bottom: 20px;
+        color: grey;
+        span{
+          width: 40px;
+          display: block;
+          margin-bottom: 10px;
+        }
+      }
 
       ul {
         list-style-type: none;
@@ -848,11 +932,15 @@ a.ebutton.icon-button{
     }
 
     .modal-footer{
-      padding: 20px 0;
+      padding: 20px;
       // padding-bottom: 0;
 
       &.text-center{
         text-align: center;
+      }
+
+      .grid-button:not(:last-child){
+        margin-right: 10px;
       }
     }
   }
@@ -905,6 +993,14 @@ a.ebutton.icon-button{
   }
 }
 
+.scroll-wrapper{
+  height: calc(100vh - 250px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border-top: 5px solid $lightgrey;
+  border-bottom: 5px solid $lightgrey;
+}
+
 .coverbox{
   width: 100%;
   height: 250px;
@@ -925,6 +1021,10 @@ a.ebutton.icon-button{
   &.coverbox-sm{
     height: 125px;
     max-width: calc(25% - 22.5px);
+
+    &.no-max-width{
+      max-width: 100%;
+    }
 
     h3{
       font-size: 18px;
@@ -995,7 +1095,9 @@ i.icon-button{
   padding: 5px;
   border: 1px solid $shadowGrey;
 
+  cursor: pointer;
   transition: all 50ms ease-in-out;
+  user-select: none;
 
   &:hover{
     color: $darkGrey;
@@ -1003,19 +1105,76 @@ i.icon-button{
     color: white;
   }
 
-  &.icon-edit:hover{
+  &.icon-edit:hover, &.icon-edit.active{
     background-color: $lightBlue;
     border-color: $lightBlue;
+    color: white;
+  }
+  &.icon-edit.active:hover{
+    background-color: darken($lightBlue, 10);
+    border-color: darken($lightBlue, 10);
   }
 
-  &.icon-delete:hover{
+  &.icon-delete:hover, &.icon-delete.active{
     background-color: $lightRed;
     border-color: $lightRed;
+    color: white;
+  }
+  &.icon-delete.active:hover{
+    background-color: darken($lightRed, 10);
+    border-color: darken($lightRed, 10);
+  }
+
+  &.grid-button {
+    padding: 8px;
   }
 }
 
 .no-transform{
   text-transform: none !important;
+}
+
+//Report
+select.large-select.report-select{
+  padding: 28px 15px;
+  font-size: 18px;
+}
+.report-settings{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.report-button{
+  width: 100%;
+  padding: 12px 15px;
+  flex-grow: 1;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .material-icons{
+    font-size: 32px;
+    margin-bottom: 5px;
+  }
+  &.checked, &:hover{
+    color: white;
+    background-color: $lightGreen !important;
+  }
+  &.checked:hover{
+    background-color: darken($lightGreen, 5);
+  }
+}
+.report-generate-wrapper{
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  .generate-button{
+    font-size: 16px;
+    padding: 14px 32px;
+  }
 }
 
 

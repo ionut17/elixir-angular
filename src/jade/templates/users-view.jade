@@ -42,20 +42,20 @@ section.container-content
       .col-md-12.col-sm-12(ng-if='user.hasFiles')
         .table-wrapper
           .table-title
-            include elements/pagination
+            pagination(pager="pager" callback="getPage(index)")
             //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
-                th #
+                th.td-fit  #
                 th {{labels.table.file}}
                 th.hidden-xs {{labels.table.name}}
                 th.td-fit {{labels.table.type}}
                 th.hidden-xs {{labels.table.date}}
                 th {{labels.table.course}}
             tbody
-              tr(ng-repeat='file in user.files track by $index', ui-sref='base.activities.view({type: "files", activity_id: file.activity.id, course_id: file.activity.course.id, file_id: file.id, user_id: file.student.id})')
-                th.col-sm-1(scope='row') {{$index+1}}
+              tr(ng-repeat='file in user.files track by $index', ng-click='modal["view-activity"].this({type: "files", activity_id: file.activity.id, course_id: file.activity.course.id, file_id: file.id, user_id: file.student.id})')
+                th.td-fit(scope='row') {{$index+1}}
                 td.td-bold.td-blue {{file.fileName+'.'+file.extension}}
                 td.hidden-xs.td-bold {{file.activity.name}}
                 td.td-fit
@@ -68,19 +68,19 @@ section.container-content
       .col-md-12.col-sm-12(ng-if='user.hasAttendances')
         .table-wrapper
           .table-title
-            include elements/pagination
+            pagination(pager="pager" callback="getPage(index)")
             //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
-                th #
+                th.td-fit  #
                 th.hidden-xs {{labels.table.name}}
                 th.td-fit {{labels.table.type}}
                 th {{labels.table.date}}
                 th {{labels.table.course}}
             tbody
-              tr(ng-repeat='attendance in user.attendances track by $index', ui-sref='base.activities.view({type: "attendances", activity_id: attendance.activity.id, course_id: attendance.activity.course.id, user_id: attendance.student.id})')
-                th.col-sm-1(scope='row') {{$index+1}}
+              tr(ng-repeat='attendance in user.attendances track by $index', ng-click='modal["view-activity"].this({type: "attendances", activity_id: attendance.activity.id, course_id: attendance.activity.course.id, user_id: attendance.student.id})')
+                th.td-fit(scope='row') {{$index+1}}
                 td.hidden-xs.td-bold {{attendance.activity.name}}
                 td.td-fit
                   span.tag.tag-auto(ng-class='activity.tag' ng-attr-title='{{attendance.activity.type.name}}') {{attendance.activity.type.name}}
@@ -92,20 +92,20 @@ section.container-content
       .col-md-12.col-sm-12(ng-if='user.hasGrades')
         .table-wrapper
           .table-title
-            include elements/pagination
+            pagination(pager="pager" callback="getPage(index)")
             //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
-                th #
+                th.td-fit  #
                 th.td-fit {{labels.table.value}}
                 th.hidden-xs {{labels.table.name}}
                 th.td-fit {{labels.table.type}}
                 th.hidden-xs {{labels.table.date}}
                 th {{labels.table.course}}
             tbody
-              tr(ng-repeat='grade in user.grades track by $index', ui-sref='base.activities.view({type: "grades", activity_id: grade.activity.id, course_id: grade.activity.course.id, user_id: grade.student.id})')
-                th.col-sm-1(scope='row') {{$index+1}}
+              tr(ng-repeat='grade in user.grades track by $index', ng-click='modal["view-activity"].this({type: "grades", activity_id: grade.activity.id, course_id: grade.activity.course.id, user_id: grade.student.id})')
+                th.td-fit(scope='row') {{$index+1}}
                 td.td-bold.td-lg.td-fit
                   span.tag.tag-auto.tag-grade {{grade.value}}
                 td.hidden-xs.td-bold {{grade.activity.name}}
@@ -120,17 +120,17 @@ section.container-content
       .col-md-12.col-sm-12(ng-if='user.hasGroups')
         .table-wrapper
           .table-title
-            include elements/pagination
+            pagination(pager="pager" callback="getPage(index)")
             //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
-                th #
+                th.td-fit  #
                 th {{labels.table.name}}
                 th {{labels.table.year}}
             tbody
               tr(ng-repeat='group in user.groups track by $index', ui-sref='base.groups.view({id: group.id})')
-                th.col-sm-1(scope='row') {{$index+1}}
+                th.td-fit(scope='row') {{$index+1}}
                 td.td-bold {{group.name}}
                 td.td-bold {{group.year}}
               tr.disable-hover(ng-if='!user.groups.length')
@@ -139,18 +139,18 @@ section.container-content
       .col-md-12.col-sm-12(ng-if='user.hasCourses')
         .table-wrapper
           .table-title
-            include elements/pagination
+            pagination(pager="pager" callback="getPage(index)")
             //- include elements/search-bar
           table.table.elixir-table
             thead
               tr
-                th #
+                th.td-fit  #
                 th {{labels.table.title}}
                 th {{labels.table.year}}
                 th {{labels.table.semester}}
             tbody
               tr(ng-repeat='course in user.courses track by $index', ui-sref='base.courses.view({id: course.id})')
-                th.col-sm-1(scope='row') {{$index+1}}
+                th.td-fit(scope='row') {{$index+1}}
                 td.td-bold {{course.title}}
                 td.td-bold {{course.year}}
                 td.td-bold {{course.semester}}

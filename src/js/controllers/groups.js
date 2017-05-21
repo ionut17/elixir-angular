@@ -47,7 +47,7 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
       buttons: $rootScope.getTranslatedObject(languageTranslator.buttons)
     };
 
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.groups.list', $stateParams, {reload: true});
     };
@@ -64,6 +64,33 @@ app.controller('GroupsListController', ['$scope', '$rootScope', 'resolvedData', 
         $rootScope.search.go();
       }
     });
+
+    // Delete
+    $scope.delete = function(params){
+      var requestBody = {
+        group_id: params.id
+      };
+      var label = $scope.labels.table.group;
+      //Removing course
+      Groups.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1 && $scope.pager.currentPage > 0  ? parseInt($stateParams.page) - 1 : $stateParams.page;
+        $state.go('base.groups.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: ['You have successfully deleted the',group.name,'group.'].join(' '),
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
+    };
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -103,7 +130,8 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 'languageTranslator', function($scope, $rootScope, resolvedData, languageTranslator) {
+app.controller('GroupsViewController', ['$scope', '$rootScope', 'resolvedData', 'languageTranslator', 'Groups', 'NotificationService', 'NOTIFICATIONS_TYPES',
+          function($scope, $rootScope, resolvedData, languageTranslator, Groups, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
     $scope.group = resolvedData.group;
     $scope.title = [languageTranslator.tables.group[$rootScope.language],$scope.group.name].join(' ');

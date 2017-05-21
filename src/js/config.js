@@ -53,6 +53,9 @@ app.constant("config", {
       },
       myAccount: ['*'],
       settings: ['*'],
+      importCore: ['ADMIN'],
+      import: ['LECTURER', 'ADMIN'],
+      reports: ['LECTURER', 'ADMIN'],
       users: {
         list: ['ADMIN'],
         view: ['*'],

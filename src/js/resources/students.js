@@ -111,6 +111,16 @@ app.factory("Students", ["config", "$resource", "AuthService", function(config, 
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "students/:student_id",
+          method: "DELETE",
+          params: {student_id: '@student_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

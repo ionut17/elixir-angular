@@ -31,6 +31,17 @@ app.factory("Grades", ["config", "$resource", "AuthService", function(config, $r
                 }
             }
         },
+        getByCourseId: {
+            url: config.apiEndpoint + "grades/course/:course_id",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         addGrades: {
             url: config.apiEndpoint + "grades",
             method: "POST",

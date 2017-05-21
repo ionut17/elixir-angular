@@ -31,6 +31,17 @@ app.factory("Attendances", ["config", "$resource", "AuthService", function(confi
                 }
             }
         },
+        getByCourseId: {
+            url: config.apiEndpoint + "attendances/course/:course_id",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         addAttendances: {
             url: config.apiEndpoint + "attendances",
             method: "POST",

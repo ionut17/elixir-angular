@@ -44,11 +44,13 @@
       <div ng-if="course.hasLecturers" class="col-md-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
+            <div ng-show="pager.totalPages&gt;0" class="pagination-wrapper">
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4><span ng-click="firstPage()" ng-show="pager.totalPages&gt;10" ng-class="{'disabled': pager.firstPage}" class="control-arrow"><i class="material-icons">first_page</i></span><span ng-click="previousPage()" ng-class="{'disabled': !pager.hasPreviousPage}" class="control-arrow"><i class="material-icons">chevron_left</i></span>
+              <div class="pagination">
+                <ul class="pagination-list">
+                  <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="selectPage($index)">{{$index+1}}</li>
+                </ul>
+              </div><span ng-click="nextPage()" ng-class="{'disabled': !pager.hasNextPage}" class="control-arrow"><i class="material-icons">chevron_right</i></span><span ng-click="lastPage()" ng-show="pager.totalPages&gt;10" ng-class="{'disabled': pager.lastPage}" class="control-arrow"><i class="material-icons">last_page</i></span>
             </div>
           </div>
           <table class="table elixir-table">
@@ -62,7 +64,7 @@
             </thead>
             <tbody>
               <tr ng-repeat="user in course.lecturers track by $index" ui-sref="base.users.view({type: 'lecturers', id: user.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+                <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
                 <td>{{user.firstName}}</td>
                 <td class="td-bold">{{user.lastName}}</td>
                 <td class="td-blue">{{user.email}}</td>
@@ -78,11 +80,13 @@
       <div ng-if="course.hasStudents &amp;&amp; authUser.type!='student'" class="col-md-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
+            <div ng-show="pager.totalPages&gt;0" class="pagination-wrapper">
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4><span ng-click="firstPage()" ng-show="pager.totalPages&gt;10" ng-class="{'disabled': pager.firstPage}" class="control-arrow"><i class="material-icons">first_page</i></span><span ng-click="previousPage()" ng-class="{'disabled': !pager.hasPreviousPage}" class="control-arrow"><i class="material-icons">chevron_left</i></span>
+              <div class="pagination">
+                <ul class="pagination-list">
+                  <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="selectPage($index)">{{$index+1}}</li>
+                </ul>
+              </div><span ng-click="nextPage()" ng-class="{'disabled': !pager.hasNextPage}" class="control-arrow"><i class="material-icons">chevron_right</i></span><span ng-click="lastPage()" ng-show="pager.totalPages&gt;10" ng-class="{'disabled': pager.lastPage}" class="control-arrow"><i class="material-icons">last_page</i></span>
             </div>
           </div>
           <table class="table elixir-table">
@@ -96,7 +100,7 @@
             </thead>
             <tbody>
               <tr ng-repeat="user in course.students track by $index" ui-sref="base.users.view({type: 'students', id: user.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+                <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
                 <td>{{user.firstName}}</td>
                 <td class="td-bold">{{user.lastName}}</td>
                 <td class="td-blue">{{user.email}}</td>
@@ -114,11 +118,13 @@
       <div ng-if="course.hasActivities &amp;&amp; authUser.type!='student'" class="col-md-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
+            <div ng-show="pager.totalPages&gt;0" class="pagination-wrapper">
+              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4><span ng-click="firstPage()" ng-show="pager.totalPages&gt;10" ng-class="{'disabled': pager.firstPage}" class="control-arrow"><i class="material-icons">first_page</i></span><span ng-click="previousPage()" ng-class="{'disabled': !pager.hasPreviousPage}" class="control-arrow"><i class="material-icons">chevron_left</i></span>
+              <div class="pagination">
+                <ul class="pagination-list">
+                  <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="selectPage($index)">{{$index+1}}</li>
+                </ul>
+              </div><span ng-click="nextPage()" ng-class="{'disabled': !pager.hasNextPage}" class="control-arrow"><i class="material-icons">chevron_right</i></span><span ng-click="lastPage()" ng-show="pager.totalPages&gt;10" ng-class="{'disabled': pager.lastPage}" class="control-arrow"><i class="material-icons">last_page</i></span>
             </div>
           </div>
           <table class="table elixir-table">
@@ -132,7 +138,7 @@
             </thead>
             <tbody>
               <tr ng-repeat="activity in course.activities track by $index" ui-sref="base.activities.list({activity_id: activity.id, course_id: course.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+                <th scope="row" class="col-sm-1">{{pager.defaultPageSize*pager.currentPage+$index+1}}</th>
                 <td><span ng-class="activity.tag" class="tag">{{activity.type.name}}</span></td>
                 <td>{{activity.name}}</td>
                 <td class="td-blue">{{activity.date}}</td>

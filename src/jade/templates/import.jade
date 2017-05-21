@@ -1,0 +1,52 @@
+section.container-title
+  // Header
+  .row
+    .col-md-12
+      .page-title-wrapper
+          div
+            h2 {{title}}
+
+section.container-content
+  div.table-title.standalone(ng-if="isAuthorized(authorizedRoles.importCore)") {{labels.importEntities}}
+  .row
+    .col-md-12.coverbox-wrapper.no-after(ng-if="isAuthorized(authorizedRoles.importCore)")
+      //- {{labels.table.import}} 
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('students')")
+        i.material-icons import_export
+        h3 {{labels.table.students}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('lecturers')")
+        i.material-icons import_export
+        h3 {{labels.table.lecturers}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('courses')")
+        i.material-icons import_export
+        h3 {{labels.table.courses}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('groups')")
+        i.material-icons import_export
+        h3 {{labels.table.groups}}
+  div.table-title.standalone(ng-if="isAuthorized(authorizedRoles.import)") {{labels.importRelations}}
+  .row
+    .col-md-12.coverbox-wrapper.no-after(ng-if="isAuthorized(authorizedRoles.import)")
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('courses_ownerships')" ng-if="isAuthorized(authorizedRoles.importCore)")
+        i.material-icons import_export
+        h3 {{labels.table.courseOwnerships}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('courses_attendants')")
+        i.material-icons import_export
+        h3 {{labels.table.courseAttendants}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('groups_students')")
+        i.material-icons import_export
+        h3 {{labels.table.groupStudents}}
+  div.table-title.standalone(ng-if="isAuthorized(authorizedRoles.import)") {{labels.importData}}
+  .row
+    .col-md-12.coverbox-wrapper.no-after(ng-if="isAuthorized(authorizedRoles.import)")
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('activities')")
+        i.material-icons import_export
+        h3 {{labels.table.activities}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('attendances')")
+        i.material-icons import_export
+        h3 {{labels.table.attendances}}
+      div.coverbox.coverbox-sm(ng-click="modal['import'].this('grades')")
+        i.material-icons import_export
+        h3 {{labels.table.grades}}
+      
+      
+  

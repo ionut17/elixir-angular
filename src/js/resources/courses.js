@@ -91,6 +91,16 @@ app.factory("Courses", ["config", "$resource", "AuthService", function(config, $
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "courses/:course_id",
+          method: "DELETE",
+          params: {student_id: '@course_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

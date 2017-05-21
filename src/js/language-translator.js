@@ -34,13 +34,29 @@ app.constant("languageTranslator", {
       "en": 'Management',
       "ro": 'Administrativ'
     },
+    overview: {
+      "en": 'Overview',
+      "ro": 'General'
+    },
     account: {
       "en": 'Account',
       "ro": 'Cont'
+    },
+    import: {
+      "en": 'Import',
+      "ro": 'Import'
+    },
+    reports: {
+      "en": 'Reports',
+      "ro": 'Rapoarte'
     }
   },
 
   tables: {
+    loading: {
+      "en": 'Loading',
+      "ro": 'Încărcare'
+    },
     viewAll: {
       "en": 'View All',
       "ro": 'Vizualizare'
@@ -189,6 +205,10 @@ app.constant("languageTranslator", {
       "en": 'Filter by course',
       "ro": 'Filtrează dupa curs'
     },
+    filter: {
+      "en": 'Filter',
+      "ro": 'Filtrează'
+    },
     attendance: {
       "en": 'Attendance',
       "ro": 'Prezența'
@@ -228,10 +248,50 @@ app.constant("languageTranslator", {
     at: {
       "en": 'at',
       "ro": 'la'
+    },
+    import: {
+      "en": 'Import',
+      "ro": 'Importă'
+    },
+    reportSettings: {
+      "en": 'Report Settings',
+      "ro": 'Setări Raport'
+    },
+    report: {
+      "en": 'Report',
+      "ro": 'Raport'
+    },
+    attended: {
+      "en": 'A',
+      "ro": 'P'
+    },
+    total: {
+      "en": 'Total',
+      "ro": 'Total'
+    },
+    courseOwnerships: {
+      "en": 'Courses ownerships',
+      "ro": 'Titulari de curs'
+    },
+    courseAttendants: {
+      "en": 'Courses attendants',
+      "ro": 'Studenți asignați la cursuri'
+    },
+    groupStudents: {
+      "en": 'Groups students',
+      "ro": 'Studenți asignați la grupe'
+    },
+    activityDetails: {
+      "en": 'Activity Details',
+      "ro": 'Detalii Activitate'
     }
   },
 
   buttons: {
+    generateReport: {
+      "en": 'Generate Report',
+      "ro": 'Generează Raport'
+    },
     cancel: {
       "en": 'Cancel',
       "ro": 'Anulează'
@@ -247,6 +307,10 @@ app.constant("languageTranslator", {
     save: {
       "en": 'Save',
       "ro": 'Salvează'
+    },
+    close: {
+      "en": 'Close',
+      "ro": 'Închide'
     },
     addActivity: {
       "en": 'Add Activity',
@@ -291,6 +355,14 @@ app.constant("languageTranslator", {
     delete: {
       "en": 'Delete',
       "ro": 'Șterge'
+    },
+    import: {
+      "en": 'Import',
+      "ro": 'Importă'
+    },
+    editMode: {
+      "en": 'Edit Mode',
+      "ro": 'Modul de editare'
     }
   },
 
@@ -380,6 +452,10 @@ app.constant("languageTranslator", {
       loading: {
         "en": 'Saving Grades',
         "ro": 'Salvare Note'
+      },
+      loading2: {
+        "en": 'Saving grade',
+        "ro": 'Salvare notă'
       },
       step: [
         {
@@ -517,6 +593,30 @@ app.constant("languageTranslator", {
         }
       }
     },
+    import: {
+      title: {
+        "en": 'Import',
+        "ro": 'Importă'
+      },
+      loading: {
+        "en": 'Importing data',
+        "ro": 'Se importă datele'
+      },
+      description: {
+        "en": 'You can import data into the application. You have to follow the format provided for a successful import.',
+        "ro": 'Poți importa date în aplicație. Trebuie să respecți formatul oferit pentru a putea importa date.'
+      },
+      notificationSuccess: {
+        title: {
+          "en": 'Data imported',
+          "ro": 'Date importate'
+        },
+        content: {
+          "en": 'You have successfully imported the data of',
+          "ro": 'Ai adaugat cu succes datele despre'
+        }
+      }
+    },
     placeholders: {
       selectCourse: {
         "en": 'Select course',
@@ -546,9 +646,17 @@ app.constant("languageTranslator", {
         "en": 'Enter email',
         "ro": 'Introdu adresa de email',
       },
+      enterGrade: {
+        "en": 'Enter grade',
+        "ro": 'Introdu nota'
+      },
       enterPassword: {
         "en": 'Enter password',
         "ro": 'Introdu parola'
+      },
+      selectReportType: {
+        "en": 'Report type',
+        "ro": 'Tipul raportului'
       }
     }
   },
@@ -613,6 +721,18 @@ app.constant("languageTranslator", {
     studentAtLeastRequiredCourse: {
       "en": 'Select at least 1 student to add course for!',
       "ro": 'Selectează cel puțin un student pe care sa-l adaugi la curs!'
+    },
+    fileNotSelected: {
+      "en": 'Select a file to upload',
+      "ro": 'Selectează un fișier pentru a-l încărca'
+    },
+    noStudents: {
+      "en": 'No students available',
+      "ro": 'Nu exista studenți'
+    },
+    noActivities: {
+      "en": 'No activities available',
+      "ro": 'Nu exista activități'
     }
   },
 
@@ -739,6 +859,30 @@ app.constant("languageTranslator", {
           "en": 'unavailable',
           "ro": 'indisponibil'
         }
+      }
+    },
+    import: {
+      title: {
+        "en": 'Import Data',
+        "ro": 'Importă Date'
+      },
+      importEntities: {
+        "en": 'Import Entities',
+        "ro": 'Importă Entități'
+      },
+      importRelations: {
+        "en": 'Import relations',
+        "ro": 'Importă relații'
+      },
+      importData: {
+        "en": 'Import Data',
+        "ro": 'Importă Date'
+      }
+    },
+    reports: {
+      title: {
+        "en": 'Reports',
+        "ro": 'Rapoarte'
       }
     }
   }

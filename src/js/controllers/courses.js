@@ -35,13 +35,14 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams','languageTranslator', function($scope, $rootScope, resolvedData, $state, Courses, $stateParams, languageTranslator) {
+app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData', '$state', 'Courses', '$stateParams','languageTranslator', 'NotificationService', 'NOTIFICATIONS_TYPES',
+        function($scope, $rootScope, resolvedData, $state, Courses, $stateParams, languageTranslator, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
     $scope.title = languageTranslator.tables.courses[$rootScope.language];
     $scope.courses = resolvedData.courses;
     $scope.pager = resolvedData.pager;
 
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.courses.list', $stateParams, {reload: true});
     };
@@ -65,6 +66,33 @@ app.controller('CoursesListController', ['$scope', '$rootScope', 'resolvedData',
       errors: $rootScope.getTranslatedObject(languageTranslator.errors),
       buttons: $rootScope.getTranslatedObject(languageTranslator.buttons),
       marked: languageTranslator.modals.addGrades.marked[$rootScope.language]
+    };
+
+    // Delete
+    $scope.delete = function(params){
+      var requestBody = {
+        course_id: params.id
+      };
+      var label = $scope.labels.table.course;
+      //Removing course
+      Courses.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1  && $scope.pager.currentPage > 0 ? parseInt($stateParams.page) - 1 : $stateParams.page;
+        $state.go('base.courses.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: ['You have successfully deleted the',params.title,'course.'].join(' '),
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
     };
 
     //Add path to breadcrums list

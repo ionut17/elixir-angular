@@ -1,4 +1,13 @@
-.pagination-wrapper
+.pagination-wrapper(ng-show="pager.totalPages>0")
   h4 {{language == 'en' ? 'Page' : 'Pagina'}}
-  ul.pagination
-    li(ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)") {{$index+1}}
+  span.control-arrow(ng-click="firstPage()" ng-show="pager.totalPages>10" ng-class="{'disabled': pager.firstPage}")
+    i.material-icons first_page
+  span.control-arrow(ng-click="previousPage()" ng-class="{'disabled': !pager.hasPreviousPage}")
+    i.material-icons chevron_left
+  .pagination
+    ul.pagination-list
+      li(ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="selectPage($index)") {{$index+1}}
+  span.control-arrow(ng-click="nextPage()" ng-class="{'disabled': !pager.hasNextPage}")
+    i.material-icons chevron_right
+  span.control-arrow(ng-click="lastPage()" ng-show="pager.totalPages>10" ng-class="{'disabled': pager.lastPage}")
+    i.material-icons last_page

@@ -29,6 +29,16 @@ app.factory("Admins", ["config", "$resource", "AuthService", function(config, $r
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "admins/:admin_id",
+          method: "DELETE",
+          params: {student_id: '@admin_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

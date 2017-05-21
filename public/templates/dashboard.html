@@ -30,6 +30,9 @@
       <div ng-if="isAuthorized(authorizedRoles.grades.create)" ng-click="modal['add-grade'].this()" class="coverbox coverbox-sm"><i class="material-icons">spellcheck</i>
         <h3>{{dashboardLabels.addGrades}}</h3>
       </div>
+      <div ng-if="isAuthorized(authorizedRoles.import)" ui-sref="base.import" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{dashboardLabels.tables.import}}</h3>
+      </div>
     </div>
   </div>
   <div class="row">

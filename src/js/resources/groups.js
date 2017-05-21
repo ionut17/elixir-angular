@@ -30,6 +30,16 @@ app.factory("Groups", ["config", "$resource", "AuthService", function(config, $r
                     return "Bearer "+AuthService.getToken();
                 }
             }
+        },
+        delete: {
+          url: config.apiEndpoint + "groups/:group_id",
+          method: "DELETE",
+          params: {student_id: '@group_id'},
+          headers: {
+              Authorization: function() {
+                  return "Bearer "+AuthService.getToken();
+              }
+          }
         }
     });
 }]);

@@ -75,12 +75,14 @@ app.config(function($stateProvider, config) {
     });
 });
 
-app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', 'languageTranslator',
-          function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins, languageTranslator) {
+app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', 'config', 'resolvedData', 'Users', 'Students','Lecturers','Admins', 'languageTranslator', '$state', "NotificationService", 'NOTIFICATIONS_TYPES',
+          function($scope, $rootScope, $stateParams, config, resolvedData, Users, Students, Lecturers, Admins, languageTranslator, $state, NotificationService, NOTIFICATIONS_TYPES) {
     //Init
-    $scope.title = $stateParams.type ? $stateParams.type : languageTranslator.tables.users[$rootScope.language];
+    $scope.title = $stateParams.type ? languageTranslator.tables[$stateParams.type][$rootScope.language] : languageTranslator.tables.users[$rootScope.language];
     $scope.users = resolvedData.users;
     $scope.pager = resolvedData.pager;
+
+    $scope.authUser = $rootScope.authUser.user;
 
     $scope.labels = {
       placeholders: $rootScope.getTranslatedObject(languageTranslator.modals.placeholders),
@@ -111,14 +113,7 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
         //Return modified response
         $scope.users = response.content;
         $scope.pager = response.pager;
-        $scope.pager.getPage = function(index){
-          $scope.refresh(index);
-        };
       });
-    }
-    //Get specific page
-    $scope.pager.getPage = function(index){
-      $scope.refresh(index);
     };
 
     $scope.search = $rootScope.search;
@@ -130,6 +125,52 @@ app.controller('UsersListController', ['$scope', '$rootScope', '$stateParams', '
         $rootScope.search.go();
       }
     });
+
+    // Delete
+    $scope.delete = function(params){
+      var resource = null;
+      var label = params.type.capitalizeFirstLetter();
+      var requestBody = {};
+      switch (params.type){
+        case 'student':
+          resource = Students;
+          requestBody = {
+            student_id: params.id
+          };
+          break;
+        case 'lecturer':
+          resource = Lecturers;
+          requestBody = {
+            lecturer_id: params.id
+          };
+          break;
+        case 'admin':
+          resource = Admins;
+          requestBody = {
+            admin_id: params.id
+          };
+          break;
+      }
+      //Removing user
+      resource.delete(requestBody).$promise.then(function(response){
+        $stateParams.page = $scope.pager.currentPageSize == 1 && $scope.pager.currentPage > 0 ? parseInt($stateParams.page) - 1 : $stateParams.page;
+        $state.go('base.users.list', $stateParams, {reload: true});
+        NotificationService.push({
+          title: label+' Deleted',
+          content: 'You have successfully deleted the '+label,
+          link: null,
+          type: NOTIFICATIONS_TYPES.success
+        });
+      }, function(response){
+        console.log(response);
+        NotificationService.push({
+          title: label+' Not Deleted',
+          content: 'An error has occured. The '+label+' hasn\'t been deleted.',
+          link: null,
+          type: NOTIFICATIONS_TYPES.error
+        });
+      });
+    };
 
     //Add path to breadcrums list
     $rootScope.paths[1] = {
@@ -307,7 +348,7 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     //Init
     $scope.user = resolvedData.user;
     $scope.pager = resolvedData.pager ? resolvedData.pager : {};
-    $scope.pager.getPage = function(index){
+    $scope.getPage = function(index){
       $stateParams.page = index;
       $state.go('base.users.view', $stateParams, {reload: true});
     };
@@ -354,9 +395,9 @@ app.controller('UsersViewController', ['$scope', '$rootScope', '$stateParams', '
     };
     $rootScope.paths.length = 4;
     if ($stateParams.detail){
-      $scope.title = [$scope.user.lastName, $scope.user.firstName,"-", $stateParams.detail].join(" ");
+      $scope.title = [$scope.user.lastName, $scope.user.firstName,"-", languageTranslator.tables[$stateParams.detail][$rootScope.language]].join(" ");
       $rootScope.paths[4] = {
-        'title':  $stateParams.detail,
+        'title': languageTranslator.tables[$stateParams.detail][$rootScope.language],
         'icon': null,
         'state': 'base.users.view',
         'params': {

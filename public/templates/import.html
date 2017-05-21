@@ -1,0 +1,60 @@
+
+<section class="container-title">
+  <!-- Header-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="page-title-wrapper">
+        <div>
+          <h2>{{title}}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="container-content">
+  <div ng-if="isAuthorized(authorizedRoles.importCore)" class="table-title standalone">{{labels.importEntities}}</div>
+  <div class="row">
+    <div ng-if="isAuthorized(authorizedRoles.importCore)" class="col-md-12 coverbox-wrapper no-after">
+      <div ng-click="modal['import'].this('students')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.students}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('lecturers')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.lecturers}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('courses')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.courses}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('groups')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.groups}}</h3>
+      </div>
+    </div>
+  </div>
+  <div ng-if="isAuthorized(authorizedRoles.import)" class="table-title standalone">{{labels.importRelations}}</div>
+  <div class="row">
+    <div ng-if="isAuthorized(authorizedRoles.import)" class="col-md-12 coverbox-wrapper no-after">
+      <div ng-click="modal['import'].this('courses_ownerships')" ng-if="isAuthorized(authorizedRoles.importCore)" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.courseOwnerships}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('courses_attendants')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.courseAttendants}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('groups_students')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.groupStudents}}</h3>
+      </div>
+    </div>
+  </div>
+  <div ng-if="isAuthorized(authorizedRoles.import)" class="table-title standalone">{{labels.importData}}</div>
+  <div class="row">
+    <div ng-if="isAuthorized(authorizedRoles.import)" class="col-md-12 coverbox-wrapper no-after">
+      <div ng-click="modal['import'].this('activities')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.activities}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('attendances')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.attendances}}</h3>
+      </div>
+      <div ng-click="modal['import'].this('grades')" class="coverbox coverbox-sm"><i class="material-icons">import_export</i>
+        <h3>{{labels.table.grades}}</h3>
+      </div>
+    </div>
+  </div>
+</section>

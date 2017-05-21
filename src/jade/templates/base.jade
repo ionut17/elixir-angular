@@ -8,47 +8,48 @@ section.main-container
     span.tag.tag-full.tag-lg(ng-class='authUser.class') {{authUser.type}}
     nav.sidebar-links
       ul
-        label {{menuLabels.management}}
+        label {{menuLabels.overview}}
         li(ng-if="isAuthorized(authorizedRoles.dashboard.view)")
           a(ui-sref='base.dashboard', ui-sref-active='active')
-            i.fa.fa-tachometer(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') dashboard
+            i.material-icons dashboard
             span {{menuLabels.dashboard}}
         li(ng-if="isAuthorized(authorizedRoles.activities.list)")
           a(ui-sref='base.activities.list({type: null, course_id: null, activity_id: null})', ng-class="{active:$state.includes('base.activities')}")
-            i.fa.fa-check-square-o(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') assignment
+            i.material-icons assignment
             span {{menuLabels.activities}}
+        li(ng-if="isAuthorized(authorizedRoles.reports)")
+          a(ui-sref='base.reports', ui-sref-active='active')
+            i.material-icons sort
+            span {{menuLabels.reports}}
+        label {{menuLabels.management}}
         li(ng-if="isAuthorized(authorizedRoles.courses.list)")
           a(ui-sref='base.courses.list', ng-class="{active:$state.includes('base.courses')}")
-            i.fa.fa-graduation-cap(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') school
+            i.material-icons school
             span {{menuLabels.courses}}
         li(ng-if="isAuthorized(authorizedRoles.groups.list)")
           a(ui-sref='base.groups.list', ng-class="{active:$state.includes('base.groups')}")
-            i.fa.fa-book(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') library_books
+            i.material-icons library_books
             span {{menuLabels.groups}}
         li(ng-if="isAuthorized(authorizedRoles.users.list)")
           a(ui-sref='base.users.list({type: null})', ng-class="{active: $state.includes('base.users')}")
-            i.fa.fa-users(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') people
+            i.material-icons people
             span {{menuLabels.users}}
+        li(ng-if="isAuthorized(authorizedRoles.import)")
+          a(ui-sref='base.import', ui-sref-active='active')
+            i.material-icons import_export
+            span {{menuLabels.import}}
         label {{menuLabels.account}}
         li.hide(ng-if="isAuthorized(authorizedRoles.myAccount)")
           a(ui-sref='base.users.view({type: authUser.type, id: authUser.id, detail: null})', ui-sref-active='active')
-            i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') person
+            i.material-icons person
             span My Account
         li(ng-if="isAuthorized(authorizedRoles.settings)")
           a(ui-sref='base.settings', ui-sref-active='active')
-            i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') settings
+            i.material-icons settings
             span {{menuLabels.settings}}
         li
           a(ng-click="modal.confirm.this(logout, 'logout')")
-            i.fa.fa-cog(aria-hidden='true', ng-show='icons.showAwesome')
-            i.material-icons(ng-show='icons.showMaterial') exit_to_app
+            i.material-icons exit_to_app
             span {{menuLabels.logout}}
   // Content
   section.body-container
@@ -58,18 +59,18 @@ section.main-container
       ul.breadcrumbs-list
         li(ng-repeat='path in paths')
           a(ng-href="{{getPath(path.state, path.params)}}")
-            i.material-icons(ng-show='icons.showMaterial' ng-if='path.icon') {{path.icon}}
+            i.material-icons(ng-if='path.icon') {{path.icon}}
             span(ng-if='path.title') {{path.title}}
           i.material-icons.breadcrumb-separator(ng-show='icons.showMaterial') chevron_right
       ul.right-list
         li.hide
           a(href="")
-            i.material-icons(ng-show='icons.showMaterial') notifications
+            i.material-icons notifications
             span Notifications
         li.hide
           figure.search-bar-wrapper
             input.search-bar(name="search" type="text" placeholder="Search")
-            i.material-icons(ng-show='icons.showMaterial') search
+            i.material-icons search
         li
           a(ui-sref='base.users.view({type: authUser.group, id: authUser.id, detail: null})')
             i.material-icons person
@@ -79,6 +80,7 @@ section.main-container
       include elements/notifications
 
 //- Modals
+include modals/view-activity
 include modals/confirm
 include modals/add-activity
 include modals/add-file
@@ -88,3 +90,4 @@ include modals/add-course
 include modals/add-course-lecturer
 include modals/add-course-students
 include modals/add-user
+include modals/import

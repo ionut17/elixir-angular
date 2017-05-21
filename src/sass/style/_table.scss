@@ -39,6 +39,14 @@
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
+
+  &.standalone{
+    // margin-bottom: 10px;
+    border: none;
+    a {
+      cursor: pointer;
+    }
+  }
 }
 
 .elixir-table{
@@ -80,6 +88,13 @@
       }
     }
 
+    tr.edit-disabled{
+      opacity: 0.6;
+      cursor: normal;
+      pointer-events: none;
+      user-select: none;
+    }
+
   }
 
   thead tr{
@@ -116,6 +131,20 @@
         background-color: white;
         cursor: default;
       }
+    }
+  }
+
+  &.enable-td-hover{
+    tbody tr:hover{
+      cursor: default;
+    }
+    tbody tr td:hover, thead tr th:hover{
+      background-color: lighten($lightgrey, 15);
+      cursor: pointer;
+    }
+    tbody tr td.no-hover:hover, thead tr th.no-hover:hover{
+      background-color: transparent;
+      cursor: default;
     }
   }
 
@@ -177,6 +206,13 @@
   td, th{
     padding-top: 6px;
     padding-bottom: 6px;
+  }
+}
+
+.modal-table.activity-table .elixir-table tbody tr{
+  td, th{
+    padding-top: 16px;
+    padding-bottom: 16px;
   }
 }
 
@@ -289,4 +325,17 @@
   background-color: lightgrey !important;
   border: none !important;
   opacity: 0.5 !important;
+}
+
+.td-input{
+  width: 100%;
+  padding: 16px;
+  border: none;
+  outline: none;
+  &:focus{
+    outline: none;
+  }
+  &.sm-td-input{
+    padding: 10px 15px;
+  }
 }

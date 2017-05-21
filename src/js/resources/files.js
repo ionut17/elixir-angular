@@ -31,6 +31,17 @@ app.factory("Files", ["config", "$resource", "AuthService", function(config, $re
                 }
             }
         },
+        getByCourseId: {
+            url: config.apiEndpoint + "files/course/:course_id",
+            method: "GET",
+            isArray: true,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: function() {
+                    return "Bearer "+AuthService.getToken();
+                }
+            }
+        },
         getByActivityIdStudentId: {
             url: config.apiEndpoint + "files/:activity_id/:student_id",
             method: "GET",

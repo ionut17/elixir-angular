@@ -56,17 +56,12 @@
       <div ng-if="user.hasFiles" class="col-md-12 col-sm-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
-            </div>
+            <pagination pager="pager" callback="getPage(index)"></pagination>
           </div>
           <table class="table elixir-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th class="td-fit"> #</th>
                 <th>{{labels.table.file}}</th>
                 <th class="hidden-xs">{{labels.table.name}}</th>
                 <th class="td-fit">{{labels.table.type}}</th>
@@ -75,8 +70,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="file in user.files track by $index" ui-sref="base.activities.view({type: &quot;files&quot;, activity_id: file.activity.id, course_id: file.activity.course.id, file_id: file.id, user_id: file.student.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <tr ng-repeat="file in user.files track by $index" ng-click="modal[&quot;view-activity&quot;].this({type: &quot;files&quot;, activity_id: file.activity.id, course_id: file.activity.course.id, file_id: file.id, user_id: file.student.id})">
+                <th scope="row" class="td-fit">{{$index+1}}</th>
                 <td class="td-bold td-blue">{{file.fileName+'.'+file.extension}}</td>
                 <td class="hidden-xs td-bold">{{file.activity.name}}</td>
                 <td class="td-fit"><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{file.activity.type.name}}</span></td>
@@ -94,17 +89,12 @@
       <div ng-if="user.hasAttendances" class="col-md-12 col-sm-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
-            </div>
+            <pagination pager="pager" callback="getPage(index)"></pagination>
           </div>
           <table class="table elixir-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th class="td-fit"> #</th>
                 <th class="hidden-xs">{{labels.table.name}}</th>
                 <th class="td-fit">{{labels.table.type}}</th>
                 <th>{{labels.table.date}}</th>
@@ -112,8 +102,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="attendance in user.attendances track by $index" ui-sref="base.activities.view({type: &quot;attendances&quot;, activity_id: attendance.activity.id, course_id: attendance.activity.course.id, user_id: attendance.student.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <tr ng-repeat="attendance in user.attendances track by $index" ng-click="modal[&quot;view-activity&quot;].this({type: &quot;attendances&quot;, activity_id: attendance.activity.id, course_id: attendance.activity.course.id, user_id: attendance.student.id})">
+                <th scope="row" class="td-fit">{{$index+1}}</th>
                 <td class="hidden-xs td-bold">{{attendance.activity.name}}</td>
                 <td class="td-fit"><span ng-class="activity.tag" ng-attr-title="{{attendance.activity.type.name}}" class="tag tag-auto">{{attendance.activity.type.name}}</span></td>
                 <td class="td-blue">{{attendance.activity.date}}</td>
@@ -130,17 +120,12 @@
       <div ng-if="user.hasGrades" class="col-md-12 col-sm-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
-            </div>
+            <pagination pager="pager" callback="getPage(index)"></pagination>
           </div>
           <table class="table elixir-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th class="td-fit"> #</th>
                 <th class="td-fit">{{labels.table.value}}</th>
                 <th class="hidden-xs">{{labels.table.name}}</th>
                 <th class="td-fit">{{labels.table.type}}</th>
@@ -149,8 +134,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="grade in user.grades track by $index" ui-sref="base.activities.view({type: &quot;grades&quot;, activity_id: grade.activity.id, course_id: grade.activity.course.id, user_id: grade.student.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+              <tr ng-repeat="grade in user.grades track by $index" ng-click="modal[&quot;view-activity&quot;].this({type: &quot;grades&quot;, activity_id: grade.activity.id, course_id: grade.activity.course.id, user_id: grade.student.id})">
+                <th scope="row" class="td-fit">{{$index+1}}</th>
                 <td class="td-bold td-lg td-fit"><span class="tag tag-auto tag-grade">{{grade.value}}</span></td>
                 <td class="hidden-xs td-bold">{{grade.activity.name}}</td>
                 <td class="td-fit"><span ng-class="activity.tag" ng-attr-title="{{grade.activity.type.name}}" class="tag tag-auto">{{grade.activity.type.name}}</span></td>
@@ -170,24 +155,19 @@
       <div ng-if="user.hasGroups" class="col-md-12 col-sm-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
-            </div>
+            <pagination pager="pager" callback="getPage(index)"></pagination>
           </div>
           <table class="table elixir-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th class="td-fit"> #</th>
                 <th>{{labels.table.name}}</th>
                 <th>{{labels.table.year}}</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-repeat="group in user.groups track by $index" ui-sref="base.groups.view({id: group.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+                <th scope="row" class="td-fit">{{$index+1}}</th>
                 <td class="td-bold">{{group.name}}</td>
                 <td class="td-bold">{{group.year}}</td>
               </tr>
@@ -202,17 +182,12 @@
       <div ng-if="user.hasCourses" class="col-md-12 col-sm-12">
         <div class="table-wrapper">
           <div class="table-title">
-            <div class="pagination-wrapper">
-              <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-              <ul class="pagination">
-                <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-              </ul>
-            </div>
+            <pagination pager="pager" callback="getPage(index)"></pagination>
           </div>
           <table class="table elixir-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th class="td-fit"> #</th>
                 <th>{{labels.table.title}}</th>
                 <th>{{labels.table.year}}</th>
                 <th>{{labels.table.semester}}</th>
@@ -220,7 +195,7 @@
             </thead>
             <tbody>
               <tr ng-repeat="course in user.courses track by $index" ui-sref="base.courses.view({id: course.id})">
-                <th scope="row" class="col-sm-1">{{$index+1}}</th>
+                <th scope="row" class="td-fit">{{$index+1}}</th>
                 <td class="td-bold">{{course.title}}</td>
                 <td class="td-bold">{{course.year}}</td>
                 <td class="td-bold">{{course.semester}}</td>

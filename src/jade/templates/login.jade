@@ -21,7 +21,7 @@ section.login-wrapper
           label.elabel(for='password') {{labels.table.password}}
           input.einput(ng-model="form.password" type='password' name='password' placeholder="{{labels.placeholders.enterPassword}}" required)
         button(type='submit').ebutton.login-button {{labels.login.button}}
-  section.col-lg-4.col-md-7.col-sm-9.col-xs-12.university-wrapper
+  section.col-lg-4.col-md-7.col-sm-9.col-xs-12.university-wrapper.hidden-xs
     p {{labels.login.description}}
 
 include elements/notifications

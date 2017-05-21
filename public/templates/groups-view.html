@@ -22,7 +22,6 @@
               <th>{{labels.table.firstName}}</th>
               <th>{{labels.table.lastName}}</th>
               <th>{{labels.table.email}}</th>
-              <th>{{labels.table.actions}}</th>
             </tr>
           </thead>
           <tbody>
@@ -31,7 +30,6 @@
               <td>{{user.firstName}}</td>
               <td class="td-bold">{{user.lastName}}</td>
               <td class="td-blue">{{user.email}}</td>
-              <td><i aria-hidden="true" class="fa fa-times"></i></td>
             </tr>
             <tr ng-if="!group.students.length" class="disable-hover">
               <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>

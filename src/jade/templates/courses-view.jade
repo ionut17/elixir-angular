@@ -44,7 +44,7 @@ section.container-content
                 th {{labels.table.email}}
             tbody
               tr(ng-repeat='user in course.lecturers track by $index', ui-sref="base.users.view({type: 'lecturers', id: user.id})")
-                th.col-sm-1(scope='row') {{$index+1}}
+                th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
                 td {{user.firstName}}
                 td.td-bold {{user.lastName}}
                 td.td-blue {{user.email}}
@@ -65,7 +65,7 @@ section.container-content
                 th {{labels.table.email}}
             tbody
               tr(ng-repeat='user in course.students track by $index', ui-sref="base.users.view({type: 'students', id: user.id})")
-                th.col-sm-1(scope='row') {{$index+1}}
+                th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
                 td {{user.firstName}}
                 td.td-bold {{user.lastName}}
                 td.td-blue {{user.email}}
@@ -87,7 +87,7 @@ section.container-content
                 th {{labels.table.date}}
             tbody
               tr(ng-repeat='activity in course.activities track by $index', ui-sref='base.activities.list({activity_id: activity.id, course_id: course.id})')
-                th.col-sm-1(scope='row') {{$index+1}}
+                th.col-sm-1(scope='row') {{pager.defaultPageSize*pager.currentPage+$index+1}}
                 td
                   span.tag(ng-class='activity.tag') {{activity.type.name}}
                 td {{activity.name}}

@@ -20,17 +20,12 @@
     <div class="col-md-12">
       <div class="table-wrapper">
         <div class="table-title">
-          <div class="pagination-wrapper">
-            <h4>{{language == 'en' ? 'Page' : 'Pagina'}}</h4>
-            <ul class="pagination">
-              <li ng-repeat="page in pager.pages track by $index" ng-class="{active: $index==pager.currentPage}" ng-click="pager.getPage($index)">{{$index+1}}</li>
-            </ul>
-          </div>
           <figure class="search-bar-wrapper">
             <div class="search-bar">
               <input id="search-bar-input" name="search" type="text" ng-model="search.value" placeholder="{{language == 'en' ? 'Search' : 'Caută'}}"/><i ng-click="search.clear()" ng-show="search.value" class="material-icons">close</i>
             </div><a ng-click="search.go()" class="search-button"><i class="material-icons">search</i></a>
           </figure>
+          <pagination pager="pager" callback="getPage(index)"></pagination>
         </div>
         <table class="table elixir-table">
           <thead>
@@ -48,7 +43,7 @@
               <td class="td-bold">{{group.name}}</td>
               <td class="td-bold">{{group.year}}</td>
               <td class="td-blue">{{group.students.length}}</td>
-              <td ng-show="isAuthorized(authorizedRoles.groups.edit) || isAuthorized(authorizedRoles.groups.delete)" class="td-actions"><i title="Edit" ng-if="isAuthorized(authorizedRoles.groups.edit)" class="material-icons icon-button icon-edit">mode_edit</i><i title="Delete" ng-if="isAuthorized(authorizedRoles.groups.delete)" class="material-icons icon-button icon-delete">delete_forever</i></td>
+              <td ng-show="isAuthorized(authorizedRoles.groups.edit) || isAuthorized(authorizedRoles.groups.delete)" ng-click="$event.stopPropagation();" class="td-actions"><i title="Edit" ng-if="isAuthorized(authorizedRoles.groups.edit)" class="material-icons icon-button icon-edit">mode_edit</i><i title="Delete" ng-if="isAuthorized(authorizedRoles.groups.delete)" ng-click="modal.confirm.this(delete, 'delete', group)" class="material-icons icon-button icon-delete">delete_forever</i></td>
             </tr>
             <tr ng-if="!groups.length" class="disable-hover">
               <td colspan="6" class="td-disabled text-center">{{labels.errors.noResults}}</td>
