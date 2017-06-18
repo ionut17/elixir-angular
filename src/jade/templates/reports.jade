@@ -93,9 +93,9 @@ section.container-content
             tr(ng-repeat='student in report.students track by $index' ng-show='student.visible' ng-if="report.activities.length")
               td.td-bold.no-hover
                 a(ui-sref='base.users.view({type: "students", id: student.id})') {{student.lastName+' '+student.firstName}}
-              td.td-bold(ng-repeat="activity in report.activities" ng-click="goToActivity(student.id, activity.id)" ng-class="{'no-hover': reportValueOf(student.id, activity.id) === '', 'no-padding': edit.status, 'td-checker': selectedType == 'attendances', 'checked':reportValueOf(student.id, activity.id) !== ''}")
-                span(ng-hide="edit.status") {{reportValueOf(student.id, activity.id)}}
-                input.td-input.sm-td-input(type='text' ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='attendances'" ng-value="report.matrix[student.id][activity.id].text")
+              td.td-bold(ng-repeat="activity in report.activities" ng-click="goToActivity(student.id, activity.id)" ng-class="{'no-hover': reportValueOf(student.id, activity.id) === '' && !edit.status, 'no-padding': edit.status, 'checked': (reportValueOf(student.id, activity.id) !== '' && selectedType == 'attendances' && !edit.status) || (edit.status && selectedType=='attendances' && report.matrix[student.id][activity.id].changed != '')}")
+                span(ng-hide="edit.status || selectedType=='attendances'") {{reportValueOf(student.id, activity.id)}}
+                //- input.td-input.sm-td-input(type='text' ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='attendances'" ng-value="report.matrix[student.id][activity.id].text")
                 input.td-input.sm-td-input(type='number' ng-model="report.matrix[student.id][activity.id].changed" ng-show="edit.status" ng-if="selectedType=='grades'" ng-value="report.matrix[student.id][activity.id].text")
               td.no-hover {{getTotalOf(student.id)}}
             tr.disable-hover(ng-if='!report.students.length')
@@ -104,7 +104,8 @@ section.container-content
               td.td-disabled.text-center(colspan='6') {{labels.errors.noActivities}}
   .row(ng-show="report.activities")
     .col-sm-12
-        button.ebutton.white-button-alt(ng-click="exportPDF()") Export PDF
+      button.ebutton.white-button-alt(ng-click="export('csv')") Export CSV
+      button.ebutton.white-button-alt(ng-click="export('pdf')") Export PDF
         
       
       

@@ -174,7 +174,9 @@ app.controller('ReportsController', ['$scope', '$q', '$rootScope', 'languageTran
     };
     //Go to activity
     $scope.goToActivity = function(studentId, activityId){
-      if ($scope.reportValueOf(studentId,activityId) != '' && !$scope.edit.status){
+      if ($scope.edit.status && $scope.selectedType=='attendances'){
+        $scope.report.matrix[studentId][activityId].changed = $scope.report.matrix[studentId][activityId].changed != '' ? '' : 'P';
+      } else if ($scope.reportValueOf(studentId,activityId) != '' && !$scope.edit.status){
         var params = {
           type: $scope.selectedType,
           course_id: $scope.selectedCourse,
@@ -257,15 +259,43 @@ app.controller('ReportsController', ['$scope', '$q', '$rootScope', 'languageTran
     };
 
     //Export to PDF
-    $scope.exportPDF = function(){
-      var pdf = new jsPDF('l', 'pt', 'letter');
+    $scope.export = function(type){
       var name = [$scope.labels.reportTarget, $scope.labels.reportType, new Date().toLocaleString()].join('_');
-      // source can be HTML-formatted string, or a reference
-      // to an actual DOM element from which the text will be scraped.
-      source = $('#report')[0];
-      var res = pdf.autoTableHtmlToJson(source);
-      pdf.autoTable(res.columns, res.data);
-      pdf.save(name+".pdf");
+      switch (type){
+        case 'pdf':
+          var pdf = new jsPDF('l', 'pt', 'letter');
+          // source can be HTML-formatted string, or a reference
+          // to an actual DOM element from which the text will be scraped.
+          source = $('#report')[0];
+          var res = pdf.autoTableHtmlToJson(source);
+          pdf.autoTable(res.columns, res.data);
+          pdf.save(name+".pdf");
+          break;
+        case 'csv':
+          var data = ['Student'].concat($scope.report.activities.map(function(activity){ return activity.name})).concat(['Total']).join(',');
+          var currentLine = [];
+          var currentString = '';
+          for (var studentIndex = 0; studentIndex < $scope.report.students.length; studentIndex += 1){
+            currentLine = [[$scope.report.students[studentIndex].firstName,$scope.report.students[studentIndex].lastName].join(" ")];
+            for (var activityIndex = 0; activityIndex < $scope.report.activities.length; activityIndex += 1){
+              currentLine.push($scope.report.matrix[$scope.report.students[studentIndex].id][$scope.report.activities[activityIndex].id].text);
+            }
+            currentLine.push($scope.getTotalOf($scope.report.students[studentIndex].id));
+            currentString = currentLine.join(',');
+            data = [data,currentString].join('\n');
+          };
+          var csvData = "data:text/csv;charset=utf-8,"+data;
+          var encodedUri = encodeURI(csvData);
+          var link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", [name,".csv"].join(''));
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+          break;
+        default:
+          break;
+      }
     };
     $scope.filterStudents = function(){
       $scope.loading = true;

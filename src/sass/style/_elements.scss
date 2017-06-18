@@ -1177,6 +1177,15 @@ select.large-select.report-select{
   }
 }
 
+//Snapshot Selector
+select.snapshot-select{
+  width: 100%;
+
+  &.in-form{
+    max-width: 100%;
+    margin-top: 10px;
+  }
+}
 
 //Datepicker overwrite
 .datepicker {

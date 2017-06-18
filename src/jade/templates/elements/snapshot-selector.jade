@@ -1,0 +1,3 @@
+div(ng-if="snapshots.length")
+  label.elabel(for='snapshot') Snapshot
+  select.large-select.snapshot-select.in-form(name='snapshot' ng-options="snapshot as snapshot.label for snapshot in snapshots track by snapshot.id" ng-model="selectedSnapshot" ng-change="snapshotService.setSnapshot(selectedSnapshot)")

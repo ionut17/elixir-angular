@@ -20,7 +20,7 @@ app.config(function($urlRouterProvider, $locationProvider) {
 
 });
 
-app.run(function($rootScope, $timeout, $state, $cookies, config, languageTranslator) {
+app.run(function($rootScope, $timeout, $state, $cookies, config, languageTranslator, SnapshotService) {
   $rootScope.$state = $state;
   $rootScope.loading = false;
   var cookieAuthUser = $cookies.getObject('authUser');
@@ -36,6 +36,15 @@ app.run(function($rootScope, $timeout, $state, $cookies, config, languageTransla
       }
     }
   }
+
+  //SnapshotService
+  $rootScope.snapshotService = SnapshotService;
+  SnapshotService.getAllSnapshots().then(function(response){
+    $rootScope.snapshots = response;
+  }, function(response){
+    $rootScope.snapshots = [];
+  });
+  //End SnapshotService
 
   $rootScope.menuVisible = true;
 

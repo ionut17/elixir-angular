@@ -1,7 +1,5 @@
 div(ui-view='')
 section.login-wrapper
-  section.col-lg-4.col-md-7.col-sm-9.col-xs-12.university-wrapper.hide
-    figure.university-logo
   section.login-box.col-lg-4.col-md-7.col-sm-9.col-xs-12(ng-class="{'loading-state': form.loading}")
     section.left-box
       figure.logo
@@ -20,6 +18,8 @@ section.login-wrapper
         section.eform-group
           label.elabel(for='password') {{labels.table.password}}
           input.einput(ng-model="form.password" type='password' name='password' placeholder="{{labels.placeholders.enterPassword}}" required)
+        section.eform-group
+          snapshot-selector(snapshots='snapshots' snapshot-service='snapshotService') 
         button(type='submit').ebutton.login-button {{labels.login.button}}
   section.col-lg-4.col-md-7.col-sm-9.col-xs-12.university-wrapper.hidden-xs
     p {{labels.login.description}}
